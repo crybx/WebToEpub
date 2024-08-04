@@ -70,9 +70,18 @@ class DefaultParserSiteSettings {
             if (!util.isNullOrEmpty(config.removeCss))
             {
                 logic.removeUnwanted = function(element) {
-                    for (let e of element.querySelectorAll(config.removeCss)) {
-                        e.remove();
+                    // There's a "not a valid selector" coming from this line
+                    // when removeCss appears to be url.
+                    // Wrap this in a try catch so things don't fail.
+                    try {
+                        let elems = element.querySelectorAll(config.removeCss);
+                        for (let e of elems) {
+                            e.remove();
+                        }
+                    } catch (e) {
+                        console.log("Invalid selector: " + config.removeCss);
                     }
+
                 };
             }
         }
