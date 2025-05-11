@@ -578,7 +578,7 @@ var main = (function() {
     }
 
     function findnovelupdatesurl(url, dom, titelname) {
-        try {    
+        try {
             let searchurl = [...dom.querySelectorAll("a")].filter(a => a.textContent==titelname)[0];
             setUiFieldToValue("metadataUrlInput", searchurl.href);
             url = getValueFromUiField("metadataUrlInput");

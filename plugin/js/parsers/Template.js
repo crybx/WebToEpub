@@ -88,7 +88,7 @@ class TemplateParser extends Parser {
     */
 
     // author of the story
-    // Optional, if not provided, will default to "<unknown>"
+    // Optional, if not provided, will default to "Unknown"
     /*
     extractAuthor(dom) {
         // typical implementation is find node with the author's name and return name from title

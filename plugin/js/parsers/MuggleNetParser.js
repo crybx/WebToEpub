@@ -41,7 +41,7 @@ class MuggleNetParser extends Parser {
     }
 
     extractTextFromPageTitle(dom, index) {
-        let text = "<unknown>";
+        let text = "Unknown";
         let links = [...dom.querySelectorAll("div#pagetitle a")];
         if (index < links.length) {
             text = links[index].textContent.trim();

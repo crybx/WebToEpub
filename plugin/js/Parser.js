@@ -266,7 +266,8 @@ class Parser {
     * default implementation
     */
     extractAuthor(dom) {  // eslint-disable-line no-unused-vars
-        return "<unknown>";
+        // Unknown is the unset value for Calibre
+        return "Unknown";
     }
 
     /**
