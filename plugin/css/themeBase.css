@@ -1,0 +1,148 @@
+/* Base theme system for WebToEpub */
+/* This file defines the base color palette and semantic variable mappings */
+/* Loaded first via HTML <link> tag - themes override only the base colors */
+
+:root {
+    /* ===== BASE COLOR PALETTE ===== */
+    /* Define each color once - themes override these */
+    
+    /* Primary colors (main brand/action colors) */
+    --color-primary: #285959;
+    --color-primary-hover: #269898;
+    --color-primary-light: #28fefe;
+    --color-primary-dark: #285959;
+    
+    /* Secondary colors (complementary actions) */
+    --color-secondary: #28fefe;
+    --color-secondary-hover: #62fefe80;
+    --color-secondary-light: #28fefe;
+    
+    /* Neutral colors (backgrounds, borders, text) */
+    --color-neutral-50: #f8f9fa;
+    --color-neutral-100: #f6f6f6;
+    --color-neutral-200: #eee;
+    --color-neutral-300: #ddd;
+    --color-neutral-400: #ccc;
+    --color-neutral-500: #999;
+    --color-neutral-600: #666;
+    --color-neutral-700: #555;
+    --color-neutral-800: #333;
+    --color-neutral-900: #1a1a1a;
+    
+    /* Surface colors (cards, modals, containers) */
+    --color-surface-primary: white;
+    --color-surface-secondary: #f9f9f9;
+    --color-surface-tertiary: #eeffff;
+    
+    /* Status colors */
+    --color-success: #228B22;
+    --color-success-light: #90ee90;
+    --color-warning: #B8860B;
+    --color-warning-light: #ffff99;
+    --color-error: #dc3545;
+    --color-error-bg: rgba(220, 53, 69, 0.1);
+    --color-error-light: #f27070;
+    --color-info: #17a2b8;
+    --color-info-light: #d4a574;
+    
+    /* ===== SEMANTIC VARIABLES ===== */
+    /* These reference base colors - prefer overriding base colors instead of these */
+    /* But themes CAN override these if fine-grained control is needed */
+    
+    /* Base elements */
+    --body-bg: var(--color-surface-primary);
+    --body-text: var(--color-neutral-800);
+    
+    /* Input elements */
+    --input-bg: var(--color-surface-primary);
+    --input-text: var(--color-neutral-800);
+    --input-border: var(--color-neutral-300);
+    --input-disabled-bg: var(--color-neutral-100);
+    --input-disabled-text: var(--color-neutral-600);
+    --input-disabled-border: var(--color-neutral-300);
+    
+    /* Buttons */
+    --button-bg: var(--color-surface-primary);
+    --button-bg-gradient: linear-gradient(to bottom, var(--color-surface-primary) 5%, var(--color-neutral-100) 100%);
+    --button-text: var(--color-neutral-600);
+    --button-border: var(--color-neutral-300);
+    --button-hover-bg: var(--color-neutral-100);
+    --button-hover-gradient: linear-gradient(to bottom, var(--color-neutral-100) 5%, var(--color-surface-primary) 100%);
+    --button-hover-text: var(--color-neutral-600);
+    
+    /* Sidebar */
+    --sidebar-bg: var(--color-neutral-50);
+    --sidebar-text: var(--color-neutral-800);
+    --sidebar-shadow: -4px 0 8px rgba(0, 0, 0, 0.2);
+    --sidebar-hover-bg: rgba(0, 123, 255, 0.1);
+    
+    /* Icons */
+    --icon-primary: var(--color-primary);
+    --icon-secondary: var(--color-primary-hover);
+    --icon-accent: var(--color-success);
+    --icon-hover: var(--color-secondary-hover);
+    
+    /* Clickable elements */
+    --clickable-hover-bg: var(--color-primary-hover);
+    --clickable-hover-icon: var(--color-neutral-50);
+
+    /* Tooltips */
+    --tooltip-text: var(--color-neutral-50);
+    --tooltip-bg: var(--color-neutral-700);
+    
+    /* Checkboxes */
+    --checkbox-accent: var(--color-primary);
+    --checkbox-error: var(--color-error);
+    --checkbox-success: var(--color-primary);
+    --checkbox-exclude: var(--color-error);
+    
+    /* Menu colors */
+    --menu-bg: var(--color-surface-primary);
+    --menu-border: var(--color-neutral-400);
+    --menu-item-border: var(--color-neutral-200);
+    --menu-item-text: var(--color-neutral-800);
+    --menu-item-hover-bg: var(--color-primary-hover);
+    --menu-item-hover-text: var( --color-neutral-50);
+    --menu-item-hover-icon: var( --color-neutral-50);
+    
+    /* Library cards */
+    --lib-card-bg: var(--color-surface-secondary);
+    --lib-card-border: var(--color-neutral-300);
+    --lib-card-title: var(--color-neutral-800);
+    --lib-new-chapter-badge: var(--color-primary);
+    
+    /* Modal colors */
+    --modal-bg: var(--color-surface-primary);
+    --modal-backdrop-bg: rgba(0, 0, 0, 0.8);
+    --modal-title-bg: var(--color-neutral-50);
+    --modal-title-text: var(--color-neutral-800);
+    --modal-border: var(--color-neutral-400);
+    --modal-close-color: var(--color-neutral-600);
+    
+    /* Library banner */
+    --library-banner-bg: var(--color-surface-tertiary);
+    --library-banner-border: var(--color-primary);
+    --library-banner-text: var(--color-primary-dark);
+    --library-banner-button-bg: var(--color-primary);
+    --library-banner-button-text: white;
+    --library-banner-button-border: var(--color-primary);
+    --library-banner-button-hover: var(--color-primary-hover);
+    --library-banner-button-hover-text: var(--color-primary-dark);
+    
+    /* Library icons */
+    --library-chapter-icon: var(--color-primary);
+    
+    /* Links - these colors match browser defaults */
+    --link-color: #0000EE;
+    --link-hover-color: #551A8B;
+
+    /* Common UI variables */
+    --header-bg: var(--color-neutral-50);
+    --row-hover-bg: var(--color-neutral-50);
+    --border-color: var(--color-neutral-400);
+    --border-light: var(--color-neutral-200);
+    --scrollbar-track: rgba(0, 0, 0, 0.1);
+    --scrollbar-thumb: var(--color-neutral-400);
+    --scrollbar-thumb-hover: #bbb;
+    --scrollbar-border: rgba(0, 0, 0, 0.1);
+}

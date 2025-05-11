@@ -19,7 +19,7 @@ QUnit.test("CanDownloadMoreThan10Megs", function (assert) {
     let zipFile = new zip.ZipWriter(ZipWriter,{useWebWorkers: false,compressionMethod: 8});
     for (let i = 0; i < 50; ++i) {
         zipFile.add("test" + i + ".txt", new zip.TextReader(testData));
-    };
+    }
     let blob = zipFile.close();
 
     // saveAs(blob, "web.epub");

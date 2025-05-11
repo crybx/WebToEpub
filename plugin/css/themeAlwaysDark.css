@@ -1,0 +1,71 @@
+/* Always dark mode - overrides base colors only */
+:root {
+    /* WARNING: Keep these colors in sync with autoDark.css */
+    /* Both files must have identical values for consistent dark mode */
+    
+    /* Override base color palette for dark theme */
+    
+    /* Primary colors */
+    --color-primary: #285959;
+    --color-primary-hover: #269898;
+    --color-primary-light: #28fefe;
+    --color-primary-dark: #285959;
+    
+    /* Secondary colors */
+    --color-secondary: #87ceeb;
+    --color-secondary-hover: #87ceeb;
+    --color-secondary-light: #87ceeb;
+    
+    /* Neutral colors */
+    --color-neutral-50: #3a3a3a;
+    --color-neutral-100: #2b2b2b;
+    --color-neutral-200: #444;
+    --color-neutral-300: #555;
+    --color-neutral-400: #666;
+    --color-neutral-500: #777;
+    --color-neutral-600: #eee;
+    --color-neutral-700: #bbb;
+    --color-neutral-800: #eee;
+    --color-neutral-900: #fff;
+    
+    /* Surface colors */
+    --color-surface-primary: #2f2f2f;
+    --color-surface-secondary: #3a3a3a;
+    --color-surface-tertiary: rgba(40, 254, 254, 0.30);
+    
+    /* Status colors */
+    --color-success: #90ee90;
+    --color-success-light: #90ee90;
+    --color-warning: #ffff99;
+    --color-warning-light: #ffff99;
+    --color-error: #f27070;
+    --color-error-light: #f27070;
+    --color-info: #87ceeb;
+    --color-info-light: #d4a574;
+
+    /* Other overrides */
+    --checkbox-accent: var(--color-secondary);
+    --checkbox-success: var(--color-primary-hover);
+
+    --clickable-hover-bg: var(--color-primary-light);
+    --clickable-hover-icon: var(--color-primary-dark);
+
+    --icon-primary: var(--color-neutral-600);
+    --icon-secondary: var(--color-neutral-400);
+    --icon-accent: var(--color-success);
+    --icon-hover: var(--color-secondary-hover);
+
+    --library-banner-border: var(--color-primary-hover);
+    --library-banner-text: var(--color-neutral-800);
+    --lib-new-chapter-badge: var(--color-secondary-light);
+
+    --menu-item-hover-bg: var(--color-primary-light);
+    --menu-item-hover-text: var(--color-primary-dark);
+    --menu-item-hover-icon: var(--color-primary-dark);
+
+    --tooltip-text: var(--color-neutral-800);
+    --tooltip-bg: var(--color-neutral-200);
+
+    --link-color: var(--color-secondary);
+    --link-hover-color: var(--color-primary-light);
+}

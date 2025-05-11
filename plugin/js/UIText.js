@@ -7,10 +7,15 @@
 class UIText { // eslint-disable-line no-unused-vars
     // Chapter-related text
     static Chapter = {
+        menuRefreshChapter: chrome.i18n.getMessage("__MSG_menu_Refresh_Chapter__"),
+        menuOpenChapterURL: chrome.i18n.getMessage("__MSG_menu_Open_Chapter_URL__"),
+        menuDeleteChapter: chrome.i18n.getMessage("__MSG_menu_Delete_Chapter__"),
+        menuDownloadChapter: chrome.i18n.getMessage("__MSG_menu_Download_Chapter__"),
+        tooltipDeleteAllCached: chrome.i18n.getMessage("__MSG_tooltip_Delete_All_Cached__"),
+        tooltipDownloadChapter: chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
         tooltipChapterDownloading: chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloading__"),
-        tooltipChapterDownloaded: chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloaded__"),
+        tooltipViewChapter: chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
         tooltipChapterSleeping: chrome.i18n.getMessage("__MSG_Tooltip_chapter_sleeping__"),
-        tooltipChapterPreviouslyDownloaded: chrome.i18n.getMessage("__MSG_Tooltip_chapter_previously_downloaded__"),
         maxChaptersSelected: (selectedCount, maxChapters) => chrome.i18n.getMessage("__MSG_More_than_max_chapters_selected__", [selectedCount, maxChapters]),
         shiftClickMessage: chrome.i18n.getMessage("__MSG_Shift_Click__")
     };
@@ -21,6 +26,8 @@ class UIText { // eslint-disable-line no-unused-vars
         searchNewChapter: chrome.i18n.getMessage("__MSG_button_Lib_Template_Search_new_Chapters__"),
         updateNewChapter: chrome.i18n.getMessage("__MSG_button_Lib_Template_Update_new_Chapters__"),
         download: chrome.i18n.getMessage("__MSG_button_Lib_Template_Download_EPUB__"),
+        selectBook: chrome.i18n.getMessage("__MSG_button_Lib_Template_Select_Book__"),
+        loadBook: chrome.i18n.getMessage("__MSG_button_Lib_Template_Load_Book__"),
         newChapter: chrome.i18n.getMessage("__MSG_label_Lib_Template_New_Chapter__"),
         storyURL: chrome.i18n.getMessage("__MSG_label_Lib_Template_Story_URL__"),
         filename: chrome.i18n.getMessage("__MSG_label_Lib_Template_Filename__"),
@@ -33,6 +40,11 @@ class UIText { // eslint-disable-line no-unused-vars
         editMetadata: chrome.i18n.getMessage("__MSG_button_Lib_Template_Edit_Metadata__"),
         warningURLChange: chrome.i18n.getMessage("__MSG_label_Lib_Template_Warning_URL_Change__"),
         warningInProgress: chrome.i18n.getMessage("__MSG_label_Lib_Warning_In_Progress___"),
+        viewListMode: chrome.i18n.getMessage("__MSG_button_View_Library_List__"),
+        viewCompactMode: chrome.i18n.getMessage("__MSG_button_View_Compact_Library__"),
+        noBooksMessage: chrome.i18n.getMessage("__MSG_label_library_no_books__"),
+        openStoryURL: chrome.i18n.getMessage("__MSG_menu_Open_Story_URL__"),
+        clearNewChaptersAlert: chrome.i18n.getMessage("__MSG_menu_Clear_New_Chapters_Alert__"),
         confirmClearLibrary: chrome.i18n.getMessage("__MSG_confirm_Clear_Library__")
     };
     
@@ -51,13 +63,31 @@ class UIText { // eslint-disable-line no-unused-vars
         ok: chrome.i18n.getMessage("__MSG_button_error_OK__"),
         cancel: chrome.i18n.getMessage("__MSG_button_error_Cancel__"),
         retry: chrome.i18n.getMessage("__MSG_button_error_Retry__"),
+        close: chrome.i18n.getMessage("__MSG_button_Close__"),
+        save: chrome.i18n.getMessage("__MSG_button_Save__"),
+        download: chrome.i18n.getMessage("__MSG_button_Download__"),
         help: chrome.i18n.getMessage("__MSG_button_Help__"),
         remove: chrome.i18n.getMessage("__MSG_button_Remove__"),
         skip: chrome.i18n.getMessage("__MSG_button_error_Skip__"),
-        addToLibrary: chrome.i18n.getMessage("__MSG_button_Add_to_Library__")
+        stopDownload: chrome.i18n.getMessage("__MSG_button_Stop_Download__"),
+        addToLibrary: chrome.i18n.getMessage("__MSG_button_Add_to_Library__"),
+        updateLibraryBook: chrome.i18n.getMessage("__MSG_button_Update_Library_Book__")
     };
     
-    
+    // Cache-related text
+    static Cache = {
+        buttonEnabled: chrome.i18n.getMessage("__MSG_button_cache_status_Enabled__"),
+        buttonDisabled: chrome.i18n.getMessage("__MSG_button_cache_status_Disabled__"),
+        toggleOn: chrome.i18n.getMessage("__MSG_toggle_state_On__"),
+        toggleOff: chrome.i18n.getMessage("__MSG_toggle_state_Off__"),
+        statusError: chrome.i18n.getMessage("__MSG_status_Error__"),
+        confirmClearAll: chrome.i18n.getMessage("__MSG_confirm_Clear_All_Cache__"),
+        downloadSuccess: chrome.i18n.getMessage("__MSG_download_Success__"),
+        downloadError: chrome.i18n.getMessage("__MSG_download_Error__"),
+        errorClearCache: chrome.i18n.getMessage("__MSG_error_Failed_Clear_Cache__"),
+        errorSaveSettings: chrome.i18n.getMessage("__MSG_error_Failed_Save_Cache_Settings__")
+    };
+
     // Error messages
     static Error = {
         noParserFound: chrome.i18n.getMessage("noParserFound"),
@@ -102,6 +132,17 @@ class UIText { // eslint-disable-line no-unused-vars
     static CoverImage = {
         noImagesFoundLabel: chrome.i18n.getMessage("noImagesFoundLabel"),
         setCover: chrome.i18n.getMessage("setCover")
+    };
+
+    // Library/Chapter toggle text
+    static Toggle = {
+        showLibraryChapters: chrome.i18n.getMessage("__MSG_menu_Show_Library_Chapters__"),
+        hideLibraryChapters: chrome.i18n.getMessage("__MSG_menu_Hide_Library_Chapters__")
+    };
+
+    // Confirmation messages
+    static Confirm = {
+        deleteLibraryBook: chrome.i18n.getMessage("__MSG_confirm_delete_library_book__")
     };
 
     // HTTP Client specific messages

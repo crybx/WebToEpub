@@ -1,0 +1,543 @@
+/* Shared Modal Styles */
+
+/* Prevent body scrolling when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-backdrop-bg);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+.modal-container {
+    position: relative;
+    background-color: var(--modal-bg, white);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-title-bar {
+    position: relative;
+    background-color: var(--modal-title-bg, #f8f9fa);
+    border-bottom: 1px solid var(--modal-border, #dee2e6);
+    padding: 5px 10px;
+    border-radius: 4px 4px 0 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 16px;
+    color: var(--modal-title-text, #333);
+    flex-grow: 1;
+    padding-right: 20px;
+    word-wrap: break-word;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: var(--modal-close-color, #666);
+    box-shadow: none;
+}
+
+.modal-close:hover {
+    color: dodgerblue !important;
+    background: rgba(30, 144, 255, 0.1) !important;
+}
+
+.modal-close:active {
+    color: dodgerblue !important;
+    background: rgba(30, 144, 255, 0.2) !important;
+}
+
+/* Specific Modal Implementations */
+
+/* Chapter Viewer specific sizing */
+#chapterViewer .modal-container {
+    width: 90%;
+    max-width: 810px;
+    height: 90%;
+}
+
+/* Responsive modal adjustments */
+@media (max-width: 480px) {
+    #chapterViewer .modal-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+    
+    #cacheOptionsModal .modal-container {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+    }
+    
+    .options-modal-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+    }
+    
+    .options-modal-label {
+        flex: none;
+        text-align: left;
+        padding-right: 0;
+        font-weight: bold;
+    }
+    
+    .options-modal-value {
+        flex: none;
+        justify-content: flex-start;
+    }
+}
+
+#chapterViewerContent {
+    padding: 20px 25px;
+    overflow: auto;
+    flex: 1;
+    font-size: 18px;
+    scrollbar-width: thin; /* Firefox - thin scrollbar */
+    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, transparent); /* Firefox colors */
+}
+
+/* Webkit scrollbar styling (Chrome, Safari, Opera) */
+#chapterViewerContent::-webkit-scrollbar {
+    width: 8px; /* Narrow width to save space */
+}
+
+#chapterViewerContent::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, transparent);
+    border-radius: 4px;
+}
+
+#chapterViewerContent::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #c1c1c1);
+    border-radius: 4px;
+    border: 1px solid var(--scrollbar-border, transparent);
+}
+
+#chapterViewerContent::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #a8a8a8);
+}
+
+/* Reorder chapter list scrollbar styling (matches theme, normal width) */
+.reorder-chapter-list {
+    scrollbar-width: auto; /* Firefox - normal width scrollbar */
+    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, transparent); /* Firefox colors */
+}
+
+/* Webkit scrollbar styling (Chrome, Safari, Opera) */
+.reorder-chapter-list::-webkit-scrollbar {
+    width: 16px; /* Normal width */
+}
+
+.reorder-chapter-list::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, transparent);
+    border-radius: 4px;
+}
+
+.reorder-chapter-list::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #c1c1c1);
+    border-radius: 4px;
+    border: 1px solid var(--scrollbar-border, transparent);
+}
+
+.reorder-chapter-list::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #a8a8a8);
+}
+
+#scrollPercentage {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+/* Cache Options specific sizing */
+#cacheOptionsModal .modal-container {
+    width: 500px;
+    max-width: 90%;
+}
+
+#cacheOptionsContent {
+    padding: 20px 25px;
+    overflow: auto;
+}
+
+#cacheOptionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.options-modal-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.options-modal-label {
+    flex: 0 0 50%;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.options-modal-value {
+    flex: 0 0 50%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.options-modal-value textarea {
+    min-height: 60px;
+    width: auto;
+    min-width: 200px;
+    resize: vertical;
+}
+
+/* Library Options Modal specific styling */
+#libraryOptionsModal .modal-container {
+    width: 600px;
+    max-width: 90%;
+    max-height: 80vh;
+}
+
+#libraryOptionsContent {
+    padding: 20px;
+}
+
+#libraryOptionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Special styling for Add novels to Library textarea row */
+.textarea-full-width-row .options-modal-value {
+    flex: 1;
+    width: 100%;
+}
+
+#LibAddListToLibraryInput {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Style the enable caching checkbox as a toggle switch */
+#enableChapterCachingCheckbox {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--color-neutral-500);
+    border-radius: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-right: 8px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+#enableChapterCachingCheckbox:checked {
+    background-color: var(--color-primary-hover);
+}
+
+#enableChapterCachingCheckbox::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.2s;
+}
+
+#enableChapterCachingCheckbox:checked::before {
+    transform: translateX(26px);
+}
+
+#toggleStateText {
+    margin-left: 8px;
+    font-size: 14px;
+    color: var(--color-neutral-600);
+    font-weight: 500;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 24px;
+}
+
+/* Other checkboxes keep normal styling */
+#cacheOptionsContainer input[type="checkbox"]:not(#enableChapterCachingCheckbox) {
+    margin-right: 8px;
+}
+
+#cacheRetentionDays {
+    width: 80px;
+    height: 26px;
+    padding: 0 8px;
+    vertical-align: middle;
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Hide spinner arrows in WebKit browsers */
+#cacheRetentionDays::-webkit-outer-spin-button,
+#cacheRetentionDays::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* Cover Image Modal specific sizing */
+#coverImageModal .modal-container {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    min-height: 200px;
+    border-radius: 0;
+}
+
+#coverImageModal .modal-title-bar {
+    padding: 5px 15px;
+    height: 20px;
+    border-bottom: none;
+}
+
+#coverImageModal .modal-title {
+    font-size: 12px;
+}
+
+
+#coverImageModal .modal-close {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+}
+
+.cover-modal-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.cover-modal-content img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Ensure all spans in the cache options are properly aligned */
+#cacheOptionsContainer span {
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 24px;
+}
+
+/* Chapter Error Display */
+.chapter-error {
+    padding: 20px;
+    text-align: center;
+    color: var(--color-error);
+    border: 2px solid var(--color-error);
+    border-radius: 8px;
+    background-color: var(--color-error-bg);
+    margin: 20px;
+}
+
+.chapter-error h3 {
+    margin: 0 0 15px 0;
+    color: var(--color-error);
+}
+
+.chapter-error p {
+    margin: 10px 0;
+}
+
+.chapter-error .error-details {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: var(--color-error);
+}
+
+/* Chapter Reordering Modal */
+.reorder-modal {
+    width: 600px;
+    max-width: 90vw;
+    max-height: 95vh;
+}
+
+.reorder-modal-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 400px;
+}
+
+.reorder-instructions {
+    margin-bottom: 16px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.reorder-chapter-list {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background-color: var(--color-surface-primary);
+    margin-bottom: 16px;
+    min-height: 50px;
+}
+
+.reorder-chapter-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-light);
+    background-color: var(--color-surface-primary);
+    transition: background-color 0.2s ease;
+}
+
+.reorder-chapter-item:hover {
+    background-color: var(--row-hover-bg);
+}
+
+.reorder-chapter-item.flash {
+    animation: reorder-flash 0.6s ease-out;
+}
+
+@keyframes reorder-flash {
+    0% { background-color: var(--color-surface-primary); }
+    30% { background-color: var(--row-hover-bg); }
+    100% { background-color: var(--color-surface-primary); }
+}
+
+.reorder-chapter-item:last-child {
+    border-bottom: none;
+}
+
+.reorder-chapter-number {
+    min-width: 40px;
+    font-weight: bold;
+    color: var(--color-neutral-700);
+    margin-right: 12px;
+}
+
+.reorder-chapter-title {
+    flex: 1;
+    color: var(--body-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reorder-move-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    margin-left: 12px;
+}
+
+.reorder-move-up,
+.reorder-move-down {
+    background: none;
+    border: 1px solid var(--border-light);
+    border-radius: 2px;
+    width: 32px;
+    height: 28px;
+    cursor: pointer;
+    color: var(--color-neutral-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1px 0;
+    padding: 0;
+}
+
+.reorder-move-up svg,
+.reorder-move-down svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.reorder-move-up:hover,
+.reorder-move-down:hover {
+    background-color: var(--button-hover-bg);
+    color: var(--color-neutral-700);
+}
+
+.reorder-move-up:disabled,
+.reorder-move-down:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.reorder-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.reorder-modal-buttons button {
+    min-width: 100px;
+}
+
+/* Library-only menu items - hidden by default */
+.menu-item.library-only {
+    display: none;
+}
+
+/* Show library-only items when in library mode */
+.library-mode .menu-item.library-only {
+    display: flex;
+}
+
+/* Non-library menu items - visible by default, hidden in library mode */
+.library-mode .menu-item.non-library-only {
+    display: none;
+}

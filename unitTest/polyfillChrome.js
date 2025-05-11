@@ -22,3 +22,8 @@ Chrome.prototype.downloads = {
 };
 
 var chrome = new Chrome();
+
+// Mock main object for EpubStructure.js dependency
+var main = {
+    getUserPreferences: () => null // Return null so EpubStructure.get() uses explicit parameters
+};

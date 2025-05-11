@@ -1,0 +1,315 @@
+/*  Cyberpunk theme - overrides base colors for neon aesthetic */
+:root {
+    /* Primary colors - purple/magenta */
+    --color-primary: #8b00ff;
+    --color-primary-hover: #a000ff;
+    --color-primary-light: #b565ff;
+    --color-primary-dark: #6a00cc;
+
+    /* Secondary colors - cyan */
+    --color-secondary: #00ffff;
+    --color-secondary-hover: #20ffff;
+    --color-secondary-light: #33baff;
+
+    /* Neutral colors - dark blues and grays */
+    --color-neutral-50: #1a1a2e;
+    --color-neutral-100: #16213e;
+    --color-neutral-200: #6a00cc;
+    --color-neutral-300: var(--color-primary);
+    --color-neutral-400: #b565ff;
+    --color-neutral-500: #777;
+    --color-neutral-600: var(--color-secondary);
+    --color-neutral-700: #bbb;
+    --color-neutral-800: var(--color-secondary);
+    --color-neutral-900: #fff;
+
+    /* Surface colors - dark with transparency */
+    --color-surface-primary: #1a1a2e;
+    --color-surface-secondary: #1a1a2e;
+    --color-surface-tertiary: rgba(26, 26, 46, 0.8);
+
+    /* Status colors - neon variants */
+    --color-success: #00ff41;
+    --color-success-light: #61f161;
+    --color-warning: #B8860B;
+    --color-warning-light: #ffff99;
+    --color-error: #ff0040;
+    --color-error-light: #be1922;
+
+    /* Override some semantic variables that need special cyberpunk treatment */
+    --button-hover-text: var(--color-secondary);
+    --button-hover-bg: linear-gradient(45deg, #8b00ffaa, #00ffff77);
+
+    --checkbox-accent: #ef50fb;
+    --checkbox-success: var(--color-secondary);
+
+    --icon-primary: var(--color-secondary) !important;
+    --icon-secondary: var(--color-warning-light) !important;
+
+    --clickable-hover-icon: var(--color-neutral-900);
+    --clickable-hover-bg: var(--color-primary-light);
+
+    /* Cyberpunk Library Banner */
+    --library-banner-bg: linear-gradient(135deg, rgba(139, 0, 255, 0.2), rgba(0, 255, 255, 0.1));
+    --library-banner-border: var(--color-primary);
+    --library-banner-text: var(--color-secondary);
+    --library-banner-button-bg: linear-gradient(45deg, #8b00ffaa, #00ffff77);
+    --library-banner-button-text: white;
+    --library-banner-button-hover: linear-gradient(45deg, #8b00ffcc, #00ffff88);
+    --library-banner-button-hover-text: var(--color-secondary);
+
+    --menu-item-hover-bg: linear-gradient(90deg, rgba(139, 0, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%);
+    --menu-item-hover-text: #b565ff;
+    --menu-item-hover-icon: #b565ff;
+
+    --sidebar-bg: rgba(26, 26, 46, 0.95);
+
+    --link-color: var(--color-secondary);
+    --link-hover-color: var(--color-primary-light);
+}
+
+#page-container {
+    border-radius: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a2a 100%) fixed;
+    background-size: 100% 100vh;
+    min-height: 100vh;
+    color: var(--color-secondary);
+    font-family: 'Courier New', monospace;
+}
+
+a:hover {
+    text-shadow: 0 0 3px rgba(139, 0, 255, 0.7);
+}
+
+/* Input and form elements */
+input, select, progress, textarea {
+    background: var(--color-neutral-50);
+    color: var(--color-secondary);
+    border: 1px solid var(--color-primary);
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(45deg, #16213e 0%, var(--color-neutral-50) 50%, #16213e 100%) !important;
+    color: var(--color-secondary) !important;
+    border: 1px solid var(--color-primary) !important;
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
+    text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+}
+
+button:hover {
+    background: var(--button-hover-bg) !important;
+    color: var(--button-hover-text) !important;
+    border-color: var(--color-secondary) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    text-shadow: 0 0 5px rgba(139, 0, 255, 0.8);
+}
+
+/* Container and borders */
+#page-container {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 20px rgba(139, 0, 255, 0.3);
+}
+
+/* Progress bars */
+progress {
+    background: var(--color-neutral-50);
+    border: 1px solid var(--color-primary);
+}
+
+progress::-webkit-progress-bar {
+    background: var(--color-neutral-50);
+    border: 1px solid var(--color-primary);
+}
+
+progress::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+/* Chapter list styling */
+.chapter-list {
+    border-color: var(--border-color);
+    background: rgba(26, 26, 46, 0.8);
+}
+
+.chapter-list-header {
+    background: var(--header-bg);
+    border-color: var(--border-color);
+    color: var(--color-secondary);
+    text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+}
+
+.chapter-row:hover {
+    background-color: var(--row-hover-bg);
+    box-shadow: 0 0 5px rgba(255, 0, 255, 0.2);
+}
+
+/* Sidebar cyberpunk styling */
+.sidebar {
+    background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%) !important;
+    color: var(--color-secondary) !important;
+    border-left: 2px solid var(--color-primary) !important;
+    box-shadow: -8px 0 20px rgba(139, 0, 255, 0.4) !important;
+}
+
+.sidebar tr label:hover {
+    background: linear-gradient(90deg, rgba(139, 0, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%) !important;
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+.error-state input[type=checkbox] {
+    accent-color: var(--color-error-light) !important;
+}
+
+/* More actions menu cyberpunk styling */
+.more-actions-menu,
+.header-more-actions-menu {
+
+    border: 1px solid var(--color-primary) !important;
+    box-shadow: 0 8px 25px rgba(139, 0, 255, 0.4) !important;
+}
+
+.more-actions-menu .menu-item,
+.header-more-actions-menu .menu-item {
+    border-bottom: 1px solid var(--border-light) !important;
+    transition: all 0.2s ease;
+}
+
+.more-actions-menu .menu-item:hover,
+.header-more-actions-menu .menu-item:hover {
+    background: linear-gradient(90deg, rgba(139, 0, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%) !important;
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.3);
+}
+
+.more-actions-menu .menu-item:hover span,
+.header-more-actions-menu .menu-item:hover span {
+    text-shadow: 0 0 3px rgba(139, 0, 255, 0.8);
+}
+
+.error-state .clickable-icon:hover,
+.error-state .more-actions-menu .menu-item:hover,
+.error-state .header-more-actions-menu .menu-item:hover {
+    background: linear-gradient(90deg, rgba(255, 0, 64, 0.1) 0%, rgba(139, 0, 255, 0.1) 100%) !important;
+}
+
+.error-state .more-actions-menu .menu-item:hover span,
+.error-state .header-more-actions-menu .menu-item:hover span {
+    color: #ff0040 !important;
+}
+
+/* Library Chapter Highlighting - Cyberpunk */
+.chapter-in-library {
+    background: rgba(86, 170, 155, 0.35) !important;
+    border-left: 2px solid #00ff7f;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
+}
+
+.chapter-in-library .chapter-title {
+    color: var(--color-secondary) !important;
+    text-shadow: 0 0 2px rgba(0, 255, 255, 0.5);
+}
+
+.chapter-new-on-website {
+    background: #f727c738 !important;
+    border-left: 2px solid #f727c7 !important;
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.2);
+}
+
+/* Tooltip cyberpunk styling */
+.tooltip-wrapper .tooltipText {
+    background: linear-gradient(135deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
+    color: var(--color-secondary);
+    border: 1px solid var(--color-primary);
+    box-shadow: 0 0 10px rgba(139, 0, 255, 0.4);
+    text-shadow: 0 0 2px rgba(0, 255, 255, 0.7);
+}
+
+/* Chapter Viewer Scrollbar - Cyberpunk */
+#chapterViewer {
+    --scrollbar-track: rgba(26, 26, 46, 0.3);
+    --scrollbar-thumb: var(--color-primary-dark);
+    --scrollbar-thumb-hover: var(--color-secondary);
+    --scrollbar-border: rgba(102, 0, 204, 0.3);
+}
+
+/* Reorder Chapter List Scrollbar - Cyberpunk */
+.reorder-chapter-list {
+    --scrollbar-track: rgba(26, 26, 46, 0.3);
+    --scrollbar-thumb: var(--color-primary-dark);
+    --scrollbar-thumb-hover: var(--color-secondary);
+    --scrollbar-border: rgba(102, 0, 204, 0.3);
+}
+
+/* Modal cyberpunk styling */
+
+.modal-container {
+    background: linear-gradient(135deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 0 30px rgba(139, 0, 255, 0.5);
+}
+
+.modal-title-bar {
+    background: var(--modal-title-bg);
+    border-bottom: 1px solid var(--color-primary);
+}
+
+.modal-title {
+    color: var(--color-secondary);
+    text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+}
+
+.modal-close {
+    color: var(--color-secondary);
+    border: 1px solid var(--color-primary);
+    background: transparent;
+}
+
+.modal-close:hover {
+    color: var(--color-primary) !important;
+    background: rgba(139, 0, 255, 0.1) !important;
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.4);
+}
+
+.warning-text {
+    color: var(--color-warning-light) !important;
+    text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
+}
+
+.chapter-new-on-website .chapter-title {
+    color: var(--color-primary) !important;
+    text-shadow: 0 0 2px rgba(139, 0, 255, 0.5);
+}
+
+.file-upload-label:hover {
+    background: rgba(139, 0, 255, 0.1);
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
+}
+
+.library-book-banner {
+    border-radius: 0;
+    box-shadow: 0 0 10px rgba(139, 0, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+    border-image: linear-gradient(45deg, var(--color-primary), var(--color-secondary)) 1;
+}
+
+.library-banner-button {
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.6);
+}
+
+.library-banner-button:hover {
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.8), 0 0 15px rgba(0, 255, 255, 0.4);
+    color: var(--library-banner-button-hover-text) !important;
+}

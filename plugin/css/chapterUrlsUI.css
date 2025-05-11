@@ -1,0 +1,428 @@
+#page-container #chapterListSection {
+    padding: 0;
+    width: 100%;
+}
+
+#selectAllUrlsCheckbox {
+    width: 12px;
+    height: 12px;
+    margin: 0 0 0 4px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+input#selectAllUrlsCheckbox {
+    margin-left: 0;
+}
+
+#selectAllUrlsCheckbox + span {
+    margin-left: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+}
+
+/* Make indeterminate state look unchecked */
+#selectAllUrlsCheckbox:indeterminate {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 2.5px;
+    background-color: white;
+    position: relative;
+    cursor: pointer;
+}
+
+#selectAllUrlsCheckbox:indeterminate:focus,
+#selectAllUrlsCheckbox:indeterminate:hover {
+    border-color: var(--border-color);
+}
+
+#page-container #chapterSelectionOptionsSection {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 5px;
+}
+
+#chapterSelectControlsDiv {
+    display: block;
+    padding: 0 10px;
+}
+
+#rangeSelectTable {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.range-select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 32px;
+}
+
+.range-label {
+    flex: 0 0 auto;
+    min-width: 100px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.range-control {
+    flex: 1;
+}
+
+.range-control select {
+    width: 100%;
+}
+
+.range-checkbox-group {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.range-checkbox-label {
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.range-filters {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content:flex-end;
+    align-items: center;
+    margin: 6px 0;
+    gap: 8px;
+}
+
+#viewFiltersButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+#viewFiltersButton span:first-child {
+    display: flex;
+    align-items: center;
+}
+
+#viewFiltersButton span:first-child svg {
+    width: 14px;
+    height: 14px;
+}
+
+#showChapterUrlsCheckbox {
+    cursor: pointer;
+    margin-right: 0;
+}
+
+#showChapterUrlsCheckbox + label {
+    cursor: pointer;
+    padding-left: 4px;
+}
+
+.range-stats {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.range-stats-item {
+    flex: 1;
+    font-size: 12px;
+    text-align: center;
+}
+
+.range-stats-count {
+    flex: 0 0 auto;
+    min-width: 60px;
+    text-align: left;
+}
+
+.range-stats-parser {
+    flex: 2;
+    text-align: center;
+}
+
+.range-stats-delay {
+    flex: 0 0 auto;
+    min-width: 60px;
+    text-align: right;
+}
+
+/* Responsive behavior for range select */
+@media (max-width: 480px) {
+    .range-select-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    .range-label {
+        min-width: auto;
+        font-weight: bold;
+    }
+
+    #rangeEndChapterRow .range-label {
+        padding-top: 8px;
+    }
+    
+    .range-control {
+        max-width: none;
+    }
+}
+
+#chapterSelectControlButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 4px;
+    width: 100%;
+}
+
+#selectAllControl {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    order: 1;
+}
+
+#chapterActionButtons {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    gap: 4px;
+    flex: 2;
+    justify-content: flex-end;
+    order: 2;
+}
+
+#chapterActionButtons button {
+    flex: 1;
+    min-width: 130px;
+    height: auto !important;
+    max-height: none !important;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.2;
+}
+
+#reverseChapterUrlsOrderButton {
+    flex: 1 1 250px;
+}
+
+.chapter-section-padding {
+    padding: 0 10px;
+}
+
+.chapter-list {
+    width: 100%;
+    border-top: 1px solid var(--border-color, #ccc);
+}
+
+.chapter-list-header {
+    display: flex;
+    background-color: var(--header-bg, #f8f9fa);
+    border-bottom: 1px solid var(--border-color, #ccc);
+    font-weight: bold;
+    text-align: center;
+    padding: 5px 0;
+}
+
+.chapter-list-header .chapter-title-column {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chapter-list-header .chapter-url-column {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chapter-list-header .chapter-status-column {
+    flex: 0 0 52px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 0 4px 0 0;
+}
+
+.chapter-row {
+    display: flex;
+    border-bottom: 1px solid var(--border-light, #eee);
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+    transition: background-color 0.1s ease;
+}
+
+.chapter-row:hover {
+    background-color: var(--row-hover-bg, #f8f9fa);
+}
+
+.chapter-row:last-child {
+    border-bottom: none;
+}
+
+.chapter-checkbox-column {
+    flex: 0 0 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.chapter-title-column {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+}
+
+.chapter-url-column {
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 0 8px;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--color-neutral-600);
+    white-space: nowrap;
+}
+
+.chapter-url-column:not([hidden]) {
+    display: flex;
+}
+
+.chapter-status-column {
+    flex: 0 0 52px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 0 0 0 4px;
+}
+
+.chapter-list input[type=text],
+.chapter-list input[type=url] {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    border: 1px solid var(--input-border, #ddd);
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.chapter-list input[type=text]:focus,
+.chapter-list input[type=url]:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.chapter-list input[type=text]:disabled,
+.chapter-list input[type=url]:disabled {
+    background-color: var(--input-disabled-bg, #f5f5f5);
+    color: var(--input-disabled-text, #666);
+    border-color: var(--input-disabled-border, #ddd);
+}
+
+.chapter-list input[type=checkbox] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Red checkbox styling for error state rows */
+.error-state input[type=checkbox] {
+    accent-color: var(--color-error);
+}
+
+.successBox {
+    accent-color: green;
+}
+
+/* Disabled state for chapters during TOC loading */
+.disabled {
+    opacity: 0.5;
+}
+
+.chapter-in-library {
+    background-color: var(--color-surface-tertiary);
+    border-left: 2px solid var(--color-primary);
+}
+
+.chapter-in-library:hover {
+    background-color: var(--color-surface-tertiary);
+}
+
+.chapter-row.error-state {
+    background-color: var(--color-error-bg);
+    border-left: 2px solid var(--color-error);
+}
+
+.chapter-row.error-state:hover {
+    background-color: var(--color-error-bg);
+}
+
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.tooltip-wrapper .tooltipText {
+    visibility: hidden;
+    background-color: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 1;
+    min-width: 120px;
+    max-width: 200px;
+    font-weight: normal;
+    margin: 2px;
+}
+
+.tooltip-wrapper:hover .tooltipText {
+    visibility: visible;
+}
+
+/* Chapter status tooltips appear to the left to avoid covering menu */
+.chapter-status-column .tooltip-wrapper .tooltipText {
+    top: -5px;
+    right: 105%;
+    left: auto;
+}
+
+/* Tooltip positioning for filter button */
+#viewFiltersButton .tooltipText {
+    bottom: 100%;
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    margin-bottom: 4px;
+    white-space: normal;
+}

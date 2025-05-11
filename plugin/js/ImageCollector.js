@@ -45,7 +45,7 @@ class ImageCollector {
     }
 
     addImageInfo(wrappingUrl, sourceUrl, dataOrigFileUrl, fetchFirst) {
-        let imageInfo = null;
+        let imageInfo;
         let index = this.urlIndex.get(sourceUrl);
         if (index === undefined) {
             index = this.urlIndex.get(wrappingUrl);
@@ -64,7 +64,7 @@ class ImageCollector {
             } else {
                 this.imagesToFetch.push(imageInfo);
             }
-        }           
+        }
         this.urlIndex.set(wrappingUrl, index);
         this.urlIndex.set(sourceUrl, index);
         if (dataOrigFileUrl != null) {
@@ -146,7 +146,6 @@ class ImageCollector {
         return ImageCollector.toHex(byteArray.length) + ImageCollector.toHex(hash);
     }
 
-    
     /** Convert integer to 8 character Hex value
     * @private
     */
@@ -245,7 +244,7 @@ class ImageCollector {
         let url = null;
         let pairs = srcset.split(",")
             .map(o => o.trim().split(" "))
-            .filter(o => (o.length == 2) && o[0].startsWith("http"));
+            .filter(o => (o.length === 2) && o[0].startsWith("http"));
         for (let pair of pairs) {
             let size = parseInt(pair[1]);
             if (max < size) {
@@ -322,11 +321,11 @@ class ImageCollector {
 
     runCompression(imageInfo, img) {
         return new Promise((resolve, reject) => {
-            if (this.userPreferences.compressImages.value) 
+            if (this.userPreferences.compressImages.value)
             {
                 let c = document.createElement("canvas");
                 let ctx = c.getContext("2d");
-                let maxResolution = this.userPreferences.compressImagesMaxResolution.value;            
+                let maxResolution = this.userPreferences.compressImagesMaxResolution.value;
                 if (imageInfo.height > maxResolution || imageInfo.width > maxResolution)
                 {
                     if (imageInfo.height > imageInfo.width)
@@ -610,7 +609,7 @@ class ImageTagReplacer {
             parent = parent.parentNode;
         }
         return this.isParagraph(parent) &&
-            !util.isNullOrEmpty(parent.textContent) &&
+            !util.isNullOrEmpty(parent?.textContent) &&
             (imageInfo.height <= MAX_INLINE_IMAGE_HEIGHT);
     }
 
