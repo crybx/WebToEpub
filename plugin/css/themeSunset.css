@@ -1,0 +1,284 @@
+/* Sunset Theme for WebToEpub - Warm palette that minimizes blue light */
+
+:root {
+    --color-primary: #9C1A42;
+    --color-primary-hover: #e55a2b;
+    --color-primary-light: #ff8c69;
+    --color-primary-dark: #cc5429;
+
+    --color-secondary: #f57c00;
+    --color-secondary-hover: #ef6c00;
+    --color-secondary-light: #ffb74d;
+    
+    /* Neutral colors - warm grays with amber undertones */
+    --color-neutral-50: #faf8f3;
+    --color-neutral-100: #f5f1e8;
+    --color-neutral-200: #ede4d3;
+    --color-neutral-300: #d7c7a8;
+    --color-neutral-400: #c4a57b;
+    --color-neutral-500: #a68b5b;
+    --color-neutral-600: #8b6914;
+    --color-neutral-700: #6d4c07;
+    --color-neutral-800: #4a2c20;
+    --color-neutral-900: #2d1810;
+    
+    /* Surface colors - warm cream and beige */
+    --color-surface-primary: #fef9f0;
+    --color-surface-secondary: #faf5e4;
+    --color-surface-tertiary: #fff3e0;
+    
+    /* Status colors - warm variants */
+    --color-success: #a34d96;      /* Warm not green */
+    --color-success-light: #aed581;
+    --color-warning: #ff8f00;      /* Warm amber */
+    --color-warning-light: #ffcc02;
+    --color-error: #d84315;        /* Warm red-orange */
+    --color-error-light: #ff8a65;
+    --color-info: #f57c00;         /* Warm amber instead of blue */
+    --color-info-light: #ffb74d;
+
+    --library-banner-bg: linear-gradient(135deg, rgba(255, 243, 224, 0.9), rgba(255, 236, 179, 0.9));
+    --library-banner-border: var(--color-primary);
+    --library-banner-text: var(--color-neutral-800);
+    --library-banner-button-bg: var(--color-primary);
+    --library-banner-button-text: white;
+    --library-banner-button-border: var(--color-primary);
+    --library-banner-button-hover: var(--color-primary-hover);
+    --library-chapter-icon: var(--color-primary);
+
+    --menu-item-text: var(--color-neutral-700);
+    --menu-item-hover-icon: var(--color-primary);
+    --menu-item-hover-text: var(--color-primary);
+    --menu-item-hover-bg: linear-gradient(90deg, rgba(245, 124, 0, 0.1) 0%, rgba(255, 140, 105, 0.1) 100%) !important;
+
+    --modal-backdrop-bg: rgba(14, 6, 3, 0.85);
+
+    --link-color: var(--color-primary);
+    --link-hover-color: var(--color-primary-dark);
+}
+
+/* Body styling for sunset warmth */
+body {
+    background: linear-gradient(135deg, #fef9f0 0%, #fff3e0 50%, #ffecb3 100%) fixed;
+    color: var(--color-neutral-800);
+}
+
+/* Input and form elements with warm styling */
+input, select, progress, textarea {
+    background: var(--color-surface-primary);
+    color: var(--color-neutral-800);
+    border: 1px solid var(--color-neutral-300);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
+    outline: none;
+}
+
+/* Buttons with sunset gradient */
+button {
+    background: linear-gradient(135deg, var(--color-surface-primary) 0%, var(--color-neutral-100) 100%) !important;
+    color: var(--color-neutral-700) !important;
+    border: 1px solid var(--color-neutral-300) !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 4px rgba(212, 142, 84, 0.2);
+}
+
+button:hover {
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%) !important;
+    color: white !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Container styling */
+#page-container {
+    border-color: var(--color-neutral-300) !important;
+    box-shadow: 0 4px 12px rgba(212, 142, 84, 0.15);
+    background: var(--color-surface-primary);
+}
+
+/* Progress bars with sunset colors */
+progress {
+    background: var(--color-neutral-200);
+    border: 1px solid var(--color-neutral-300);
+}
+
+progress::-webkit-progress-bar {
+    background: var(--color-neutral-200);
+}
+
+progress::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--color-warning) 0%, var(--color-primary) 100%);
+}
+
+progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--color-warning) 0%, var(--color-primary) 100%);
+}
+
+/* Chapter list styling */
+.chapter-list {
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-neutral-300);
+}
+
+.chapter-list-header {
+    background: linear-gradient(135deg, var(--color-neutral-100) 0%, var(--color-neutral-200) 100%);
+    border-bottom: 1px solid var(--color-neutral-300);
+    color: var(--color-neutral-700);
+    font-weight: 600;
+}
+
+.chapter-row:hover {
+    background: linear-gradient(90deg, var(--color-surface-tertiary) 0%, var(--color-neutral-100) 100%);
+    box-shadow: 0 2px 4px rgba(212, 142, 84, 0.1);
+}
+
+/* Icons with warm sunset colors */
+.bi-eye-fill,
+.bi-three-dots-vertical,
+.bi-download {
+    color: var(--color-secondary) !important;
+}
+
+.clickable-icon:hover {
+    background: rgba(245, 124, 0, 0.1) !important;
+
+}
+
+.clickable-icon:hover > svg,
+.clickable-icon:hover > span > svg {
+    fill: var(--color-primary) !important;
+}
+
+/* Sidebar warm styling */
+.sidebar {
+    background: linear-gradient(180deg, var(--color-surface-secondary) 0%, var(--color-neutral-100) 100%) !important;
+    color: var(--color-neutral-800) !important;
+    border-left: 3px solid var(--color-primary) !important;
+    box-shadow: -6px 0 12px rgba(212, 142, 84, 0.2) !important;
+}
+
+.sidebar tr label:hover {
+    background: linear-gradient(90deg, rgba(245, 124, 0, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%) !important;
+}
+
+/* Checkboxes with sunset accent */
+input[type=checkbox] {
+    accent-color: var(--color-primary) !important;
+}
+
+input[type=checkbox].successBox {
+    accent-color: var(--color-success) !important;
+}
+
+/* More actions menu */
+.more-actions-menu,
+.header-more-actions-menu {
+    background: var(--color-surface-primary) !important;
+    border: 1px solid var(--color-neutral-300) !important;
+    box-shadow: 0 6px 16px rgba(212, 142, 84, 0.2) !important;
+}
+
+.more-actions-menu .menu-item,
+.header-more-actions-menu .menu-item {
+    border-bottom: 1px solid var(--color-neutral-200) !important;
+}
+
+/* Library chapter highlighting - sunset colors */
+.chapter-in-library {
+    background: linear-gradient(90deg, rgb(156 26 66 / 52%) 0%, rgb(247 219 245 / 49%) 100%) !important;
+    border-left: 2px solid #be2525 !important;
+}
+
+.chapter-in-library:hover {
+    background: linear-gradient(90deg, #f57c00 0%, #fff3e0 100%) !important;
+}
+
+.chapter-new-on-website {
+    background: linear-gradient(90deg, rgba(255, 143, 0, 0.15) 0%, rgba(255, 204, 2, 0.1) 100%) !important;
+    border-left: 2px solid var(--color-warning) !important;
+}
+
+.chapter-new-on-website:hover {
+    background: linear-gradient(90deg, rgba(255, 143, 0, 0.25) 0%, rgba(255, 204, 2, 0.2) 100%) !important;
+}
+
+.modal-container {
+    background: var(--color-surface-primary);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 8px 24px rgba(212, 142, 84, 0.3);
+}
+
+.modal-title-bar {
+    background: linear-gradient(135deg, var(--color-neutral-100) 0%, var(--color-neutral-200) 100%);
+    border-bottom: 1px solid var(--color-neutral-300);
+}
+
+.modal-title {
+    color: var(--color-neutral-800);
+}
+
+.modal-close {
+    color: var(--color-neutral-600);
+    background: transparent;
+    border: 1px solid var(--color-neutral-400);
+}
+
+.modal-close:hover {
+    color: var(--color-primary) !important;
+    background: rgba(255, 107, 53, 0.1) !important;
+    border-color: var(--color-primary);
+}
+
+/* Library UI sunset styling */
+.new-chapter-badge {
+    color: var(--color-success) !important;
+    font-weight: 600;
+}
+
+.warning-text {
+    color: var(--color-warning) !important;
+    font-weight: 600;
+}
+
+.library-banner-button {
+    box-shadow: 0 2px 4px rgba(212, 142, 84, 0.3);
+}
+
+.library-banner-button:hover {
+    box-shadow: 0 4px 8px rgba(212, 142, 84, 0.4);
+}
+
+/* Tooltip sunset styling */
+.tooltip-wrapper .tooltipText {
+    background: var(--color-neutral-800);
+    color: var(--color-surface-primary);
+    border: 1px solid var(--color-neutral-600);
+    box-shadow: 0 4px 8px rgba(212, 142, 84, 0.3);
+}
+
+/* Chapter Viewer sunset scrollbar */
+#chapterViewer {
+    --scrollbar-track: rgba(212, 142, 84, 0.1);
+    --scrollbar-thumb: var(--color-neutral-400);
+    --scrollbar-thumb-hover: var(--color-primary);
+    --scrollbar-border: rgba(212, 142, 84, 0.2);
+}
+
+/* Error state warm styling */
+.error-state .chapter-status-icon,
+.error-state:hover .chapter-status-icon,
+.error-state:hover .menu-icon {
+    fill: var(--color-error) !important;
+}
+
+.error-state .clickable-icon:hover {
+    background: rgba(216, 67, 21, 0.1) !important;
+}
+
+.error-state input[type=checkbox] {
+    accent-color: var(--color-error) !important;
+}

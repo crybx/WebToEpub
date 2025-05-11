@@ -102,11 +102,14 @@ class Parser {
 
     isWebPagePackable(webPage) {
         return ((webPage.isIncludeable)
-         && ((webPage.rawDom != null) || (webPage.error != null)));
+         && ((webPage.rawDom != null) || (webPage.error != null) || (webPage.isInBook === true)));
     }
 
     convertRawDomToContent(webPage) {
         let content = this.findContent(webPage.rawDom);
+        if (content == null) {
+            return null;
+        }
         this.customRawDomToContentStep(webPage, content);
         util.decodeCloudflareProtectedEmails(content);
         if (this.userPreferences.removeNextAndPreviousChapterHyperlinks.value) {
@@ -115,7 +118,6 @@ class Parser {
         this.removeUnwantedElementsFromContentElement(content);
         this.addTitleToContent(webPage, content);
         util.fixBlockTagsNestedInInlineTags(content);
-        this.imageCollector.replaceImageTags(content);
         util.removeUnusedHeadingLevels(content);
         util.makeHyperlinksRelative(webPage.rawDom.baseURI, content);
         util.setStyleToDefault(content);
@@ -128,10 +130,51 @@ class Parser {
             let errorMsg = UIText.Warning.warningNoVisibleContent(webPage.sourceUrl);
             ErrorLog.showErrorMessage(errorMsg);
         }
+
+        // Cache the processed content (uses session only, persistent or library book storage based on settings)
+        if (webPage.sourceUrl) {
+            // Fire and forget - don't wait for cache write
+            ChapterCache.set(webPage.sourceUrl, content).then(async () => {
+                // Update UI with the visual changes to the chapter's status
+                if (webPage.row) {
+                    ChapterUrlsUI.setChapterStatusVisuals(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
+                }
+            }).catch(e =>
+                console.error("Failed to cache chapter:", e)
+            );
+        }
+
+        return content;
+    }
+
+    processImagesAndLinks(webPage, content) {
+        if (content == null) {
+            return null;
+        }
+
+        // Important: Fix any protocol-relative URLs (//domain.com) to absolute URLs
+        // so ImageCollector can process them properly
+        for (let img of content.querySelectorAll("img")) {
+            let srcAttr = img.getAttribute("src");
+            if (srcAttr && srcAttr.startsWith("//")) {
+                let newSrc = "https:" + srcAttr;
+                img.setAttribute("src", newSrc);
+            }
+        }
+
+        this.imageCollector.findImagesUsedInDocument(content);
+        this.imageCollector.replaceImageTags(content);
+        util.makeHyperlinksRelative(webPage.rawDom ? webPage.rawDom.baseURI : webPage.sourceUrl, content);
+
         return content;
     }
 
     addTitleToContent(webPage, content) {
+        // Skip title extraction for cached content - title is already processed and embedded
+        if (webPage.isCachedContent) {
+            return;
+        }
+
         let title = this.findChapterTitle(webPage.rawDom, webPage);
         if (title != null) {
             if (title instanceof HTMLElement) {
@@ -213,7 +256,7 @@ class Parser {
             : (element) => element;
 
         let chapterLinks = [...element.querySelectorAll("a")]
-            .filter(link => webPage.nextPrevChapters.has(util.normalizeUrlForCompare(link.href)))
+            .filter(link => webPage.nextPrevChapters && webPage.nextPrevChapters.has(util.normalizeUrlForCompare(link.href)))
             .map(link => elementToRemove(link));
         util.removeElements(chapterLinks);
     }
@@ -221,8 +264,25 @@ class Parser {
     /**
     * default implementation turns each webPage into single epub item
     */
-    webPageToEpubItems(webPage, epubItemIndex) {
-        let content = this.convertRawDomToContent(webPage);
+    async webPageToEpubItems(webPage, epubItemIndex) {
+        // Check if we have cached, pre-processed content
+        let cachedContent = null;
+        try {
+            cachedContent = await ChapterCache.get(webPage.sourceUrl);
+        } catch (e) {
+            // Ignore cache read errors, fall back to normal processing
+        }
+
+        let content;
+        if (cachedContent) {
+            content = cachedContent;
+            // Process cached content for image URLs and relative linking
+            content = this.processImagesAndLinks(webPage, content);
+        } else {
+            content = this.convertRawDomToContent(webPage);
+            content = this.processImagesAndLinks(webPage, content);
+        }
+
         let items = [];
         if (content != null) {
             items.push(new ChapterEpubItem(webPage, content, epubItemIndex));
@@ -264,7 +324,8 @@ class Parser {
     * default implementation
     */
     extractAuthor(dom) {  // eslint-disable-line no-unused-vars
-        return "<unknown>";
+        // Use user preference for default author name
+        return this.userPreferences ? this.userPreferences.defaultAuthorName.value : "<unknown>";
     }
 
     /**
@@ -310,45 +371,28 @@ class Parser {
         return;
     }
 
+    safeExtract = (extractFn, defaultValue = "") => {
+        try {
+            return extractFn();
+        } catch (err) {
+            return defaultValue;
+        }
+    };
+
     getEpubMetaInfo(dom, useFullTitle) {
         let metaInfo = new EpubMetaInfo();
         metaInfo.uuid = dom.baseURI;
-        try {
-            metaInfo.title = this.extractTitle(dom);
-        }
-        catch (err) {
-            metaInfo.title = "";
-        }
-        try {
-            metaInfo.author = this.extractAuthor(dom).trim();
-        }
-        catch (err) {
-            metaInfo.author = "";
-        }
-        try {
-            metaInfo.language = this.extractLanguage(dom);
-        }
-        catch (err) {
-            metaInfo.language = "";
-        }
-        try {
-            metaInfo.fileName = this.makeSaveAsFileNameWithoutExtension(metaInfo.title, useFullTitle);
-        }
-        catch (err) {
-            metaInfo.fileName = "web.epub";
-        }
-        try {
-            metaInfo.subject = this.extractSubject(dom);
-        }
-        catch (err) {
-            metaInfo.subject = "";
-        }
-        try {
-            metaInfo.description = this.extractDescription(dom);
-        }
-        catch (err) {
-            metaInfo.description = "";
-        }
+
+        metaInfo.title = this.safeExtract(() => this.extractTitle(dom));
+        metaInfo.author = this.safeExtract(() => this.extractAuthor(dom).trim());
+        metaInfo.language = this.safeExtract(() => this.extractLanguage(dom));
+        metaInfo.fileName = this.safeExtract(
+            () => this.makeSaveAsFileNameWithoutExtension(metaInfo.title, useFullTitle),
+            "web.epub"
+        );
+        metaInfo.subject = this.safeExtract(() => this.extractSubject(dom));
+        metaInfo.description = this.safeExtract(() => this.extractDescription(dom));
+
         this.extractSeriesInfo(dom, metaInfo);
         return metaInfo;
     }
@@ -374,25 +418,41 @@ class Parser {
         return fileName;
     }
 
-    epubItemSupplier() {
-        let epubItems = this.webPagesToEpubItems([...this.state.webPages.values()]);
+    async epubItemSupplier() {
+        let epubItems = await this.webPagesToEpubItems([...this.state.webPages.values()]);
         this.fixupHyperlinksInEpubItems(epubItems);
         return new EpubItemSupplier(this, epubItems, this.imageCollector);
     }
 
-    webPagesToEpubItems(webPages) {
+    async webPagesToEpubItems(webPages) {
         let epubItems = [];
         let index = 0;
 
+        // Skip Information page generation when UPDATING an existing library book
+        // (but allow it when adding a new book to library if user preference is enabled)
+        let isLibraryBookUpdate = false;
+        try {
+            // Check if this is an update to an existing library book by looking for library chapters
+            // that already exist in a book (have isInBook === true)
+            let hasExistingLibraryChapters = [...this.state.webPages.values()].some(chapter =>
+                chapter.isInBook === true || chapter.source === "library-only"
+            );
+            isLibraryBookUpdate = hasExistingLibraryChapters;
+        } catch (e) {
+            // Fallback: assume not a library update if detection fails
+            isLibraryBookUpdate = false;
+        }
+
         if (this.userPreferences.addInformationPage.value &&
-            this.getInformationEpubItemChildNodes !== undefined) {
+            this.getInformationEpubItemChildNodes !== undefined &&
+            !isLibraryBookUpdate) {
             epubItems.push(this.makeInformationEpubItem(this.state.firstPageDom));
             ++index;
         }
 
         for (let webPage of webPages.filter(c => this.isWebPagePackable(c))) {
             let newItems = (webPage.error == null)
-                ? webPage.parser.webPageToEpubItems(webPage, index)
+                ? await webPage.parser.webPageToEpubItems(webPage, index)
                 : this.makePlaceholderEpubItem(webPage, index);
             epubItems = epubItems.concat(newItems);
             index += newItems.length;
@@ -540,7 +600,14 @@ class Parser {
         {
             let group = this.groupPagesToFetch(pagesToFetch, index);
             while (0 < group.length) {
-                await Promise.all(group.map(async (webPage) => this.fetchWebPageContent(webPage)));
+                await Promise.all(group.map(async (webPage) => {
+                    await this.fetchWebPageContent(webPage);
+                    // Process and cache content immediately after download (like Download Chapters does)
+                    // Skip processing for cached content to avoid breaking parsers
+                    if (webPage.rawDom && !webPage.error && !webPage.isCachedContent) {
+                        this.convertRawDomToContent(webPage);
+                    }
+                }));
                 index += group.length;
                 group = this.groupPagesToFetch(pagesToFetch, index);
                 if (util.sleepController.signal.aborted) {
@@ -563,10 +630,46 @@ class Parser {
     }
 
     async fetchWebPageContent(webPage) {
-        ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_SLEEPING);
-        await this.rateLimitDelay();
-        ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_DOWNLOADING);
         let pageParser = webPage.parser;
+
+        // Check cache first (checks persistent or session storage based on settings)
+        {
+            try {
+                let cachedContent = await ChapterCache.get(webPage.sourceUrl);
+                let cachedError = await ChapterCache.getChapterError(webPage.sourceUrl);
+
+                if (cachedContent) {
+                    // Skip the delay for cached content
+                    ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
+
+                    // Create a mock DOM with cached content
+                    let cachedDom = Parser.makeEmptyDocForContent(webPage.sourceUrl);
+                    cachedDom.content.parentNode.replaceChild(cachedContent, cachedDom.content);
+
+                    webPage.rawDom = cachedDom.dom;
+                    webPage.isCachedContent = true; // Mark as cached to skip title processing
+                    delete webPage.error;
+
+                    // The content is already processed, so we just need to handle images
+                    return pageParser.fetchImagesUsedInDocument(cachedContent, webPage);
+                } else if (cachedError) {
+                    // Chapter has cached error - set error and skip download
+                    ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
+                    webPage.error = cachedError;
+                    webPage.rawDom = null;
+                    return Promise.resolve();
+                }
+            } catch (e) {
+                console.error("Error reading from cache:", e);
+                // Continue with normal fetch if cache read fails
+            }
+        }
+
+        // Only apply rate limit delay for actual web fetches
+        ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_SLEEPING, webPage.sourceUrl, webPage.title);
+        await this.rateLimitDelay();
+        ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
+
         try {
             let webPageDom = await pageParser.fetchChapter(webPage.sourceUrl);
             delete webPage.error;
@@ -580,18 +683,52 @@ class Parser {
             }
             return pageParser.fetchImagesUsedInDocument(content, webPage);
         } catch (error) {
+            // Always cache the error and update UI regardless of skipChaptersThatFailFetch setting
+            webPage.error = error;
+
+            try {
+                await ChapterCache.storeChapterError(webPage.sourceUrl, error.message);
+                // Update UI to show error state
+                let row = ChapterUrlsUI.findRowBySourceUrl(webPage.sourceUrl);
+                if (row) {
+                    ChapterUrlsUI.setChapterStatusVisuals(
+                        row,
+                        ChapterUrlsUI.CHAPTER_STATUS_ERROR,
+                        webPage.sourceUrl,
+                        webPage.title
+                    );
+                }
+            } catch (cacheError) {
+                console.log("Failed to cache error:", cacheError);
+            }
+
+            // The preference only controls whether to continue or halt the operation
             if (this.userPreferences.skipChaptersThatFailFetch.value) {
+                // Log error and continue with other chapters
                 ErrorLog.log(error);
-                webPage.error = error;
             } else {
                 webPage.isIncludeable = false;
-                throw error;
+                throw error; // Halt collecting chapters (error is logged by higher level handler)
             }
         }
     }
 
     async fetchImagesUsedInDocument(content, webPage) {
-        let revisedContent = await this.imageCollector.preprocessImageTags(content, webPage.sourceUrl);
+        let contentForImageCollection;
+
+        // For cached content, don't apply cleanup again - it was already processed
+        if (webPage.isCachedContent) {
+            contentForImageCollection = content;
+        } else {
+            // For fresh content, clone and apply cleanup to ensure we only collect
+            // images that will actually be in the final content.
+            // Working on a clone because some parsers break if processed multiple times.
+            contentForImageCollection = content.cloneNode(true);
+            this.customRawDomToContentStep(webPage, contentForImageCollection);
+            this.removeUnwantedElementsFromContentElement(contentForImageCollection);
+        }
+
+        let revisedContent = await this.imageCollector.preprocessImageTags(contentForImageCollection, webPage.sourceUrl);
         this.imageCollector.findImagesUsedInDocument(revisedContent);
         await this.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
         this.updateLoadState(webPage);
@@ -622,7 +759,7 @@ class Parser {
     }
 
     updateLoadState(webPage) {
-        ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_LOADED);
+        ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
         ProgressBar.updateValue(1);
     }
 
@@ -661,7 +798,7 @@ class Parser {
             return false;
         }
         return !href.startsWith("#") &&
-            !href.startsWith("../Text/");
+            !href.startsWith(EpubStructure.get().relativeTextPath);
     }
 
     hyperlinkToEpubItemUrl(link, targets) {

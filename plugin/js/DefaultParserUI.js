@@ -70,8 +70,16 @@ class DefaultParserSiteSettings {
             if (!util.isNullOrEmpty(config.removeCss))
             {
                 logic.removeUnwanted = (element) => {
-                    for (let e of element.querySelectorAll(config.removeCss)) {
-                        e.remove();
+                    // There's a "not a valid selector" coming from this line
+                    // when removeCss appears to be url.
+                    // Wrap this in a try catch so things don't fail.
+                    try {
+                        let elems = element.querySelectorAll(config.removeCss);
+                        for (let e of elems) {
+                            e.remove();
+                        }
+                    } catch (e) {
+                        console.log("Invalid selector: " + config.removeCss);
                     }
                 };
             }
@@ -127,14 +135,15 @@ class DefaultParserUI { // eslint-disable-line no-unused-vars
     }
 
     static setDefaultParserUiVisibility(isVisible) {
-        // toggle mode
-        ChapterUrlsUI.setVisibleUI(!isVisible);
         if (isVisible) {
-            ChapterUrlsUI.getEditChaptersUrlsInput().hidden = true;
-            ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = true);
-            document.getElementById("editURLsHint").hidden = true;
+            DefaultParserUI.restoreSections = main.hideAllSectionsExcept("defaultParserSection");
+        } else {
+            // Restore previous section visibility state
+            if (DefaultParserUI.restoreSections) {
+                DefaultParserUI.restoreSections();
+                DefaultParserUI.restoreSections = null;
+            }
         }
-        document.getElementById("defaultParserSection").hidden = !isVisible;
     }
 
     static async testDefaultParser(parser) {

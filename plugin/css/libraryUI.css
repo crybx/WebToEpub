@@ -1,0 +1,438 @@
+
+#libraryCloseSection {
+    border-bottom: 1px solid var(--border-color, #ccc);
+    text-align: center;
+    padding: 8px 12px;
+}
+
+.file-upload-label {
+    cursor: pointer;
+}
+
+.disabled-button {
+    pointer-events: none;
+}
+
+.library-header {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: var(--header-bg, #f8f9fa);
+    border-top: 1px solid var(--border-color, #ccc);
+    border-bottom: 1px solid var(--border-color, #ccc);
+    font-weight: bold;
+    text-align: center;
+    padding: 5px 12px;
+    align-items: center;
+}
+
+.library-title-column {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: 600;
+    min-width: 100px;
+    padding: 4px 0;
+}
+
+.library-controls-column {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.no-border-spacing {
+    border-spacing: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+.chapter-indicator-cell {
+    height: 1.2em;
+}
+
+.cover-image-cell {
+    height: 115.5px;
+    width: 106.5px;
+}
+
+.new-chapter-badge {
+    font-size: 1.1em;
+    color: var(--lib-new-chapter-badge);
+}
+
+.new-chapter-compact {
+    padding: 0;
+}
+
+.new-chapter-normal {
+    flex: 1;
+    text-align: right;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.cover-compact-clickable {
+    cursor: pointer;
+    /* Dynamic max-height and max-width will be set via JavaScript */
+}
+
+#page-container #libraryExpandableSection {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    padding: 0;
+    clear: both;
+}
+
+.lib-compact-view-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    box-sizing: border-box;
+    position: relative;
+    min-height: fit-content;
+}
+
+.lib-list-view-container {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 0 10px;
+}
+
+/* Individual library item in list view - two column layout */
+.lib-list-item {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid var(--lib-card-border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 12px;
+    background: var(--lib-card-bg);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.lib-list-cover {
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.lib-list-cover .LibCover {
+    max-width: 106px;
+    max-height: 150px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.lib-list-content,
+.lib-metadata-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    gap: 4px;
+    overflow: visible;
+}
+
+.lib-list-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.lib-list-controls button {
+    margin-bottom: 2px;
+}
+
+.lib-title-row {
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.lib-title-display {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--lib-card-title);
+    flex: 1 1 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    min-width: 0;
+    max-width: calc(100% - 40px);
+    white-space: normal;
+    width: 0;
+}
+
+/* Field rows (URL and Filename) */
+.lib-list-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lib-list-label {
+    font-weight: 500;
+    margin-right: 4px;
+    margin-bottom: 0;
+    font-size: 12px;
+    flex-shrink: 0;
+    min-width: 70px;
+}
+
+.lib-description-field {
+    flex-direction: column !important;
+    align-items: stretch !important;
+}
+
+.lib-description-field .lib-list-label {
+    margin-right: 0 !important;
+    margin-bottom: 4px !important;
+    min-width: auto !important;
+}
+
+@media (max-width: 480px) {
+    .lib-list-field {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .lib-list-label {
+        margin-right: 0;
+        margin-bottom: 4px;
+        min-width: auto;
+    }
+}
+
+.lib-list-input-container {
+    position: relative;
+    flex: 1;
+}
+
+.lib-list-input-container input,
+.lib-list-input-container textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border: 1px solid var(--lib-card-border);
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.lib-url-warning {
+    font-size: 12px;
+    color: var(--color-warning);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.lib-metadata-save {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Compact Spacer - Maintains Height Space for Absolutely Positioned Library */
+.lib-compact-spacer {
+    width: 100%;
+    height: 0;
+    position: relative;
+}
+
+/* Compact Grid Wrapper - Positioned to Not Affect Container Width */
+.lib-compact-wrapper {
+    /* Position absolutely within the container to remove from width calculation */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: visible;
+    box-sizing: border-box;
+    padding: 8px 0;
+    /* Subtle background to indicate scroll area */
+    background-color: rgba(0,0,0,0.02);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+/* Responsive Compact Grid Layout - Flexible Wrapping */
+.lib-compact-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+}
+
+/* Ensure elements after library don't overlap */
+#libraryExpandableSection + section,
+#libraryExpandableSection ~ section {
+    clear: both;
+    position: relative;
+    z-index: auto;
+}
+
+.lib-compact-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 0 0 auto;
+    width: 140px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .lib-compact-item {
+        width: 120px;
+    }
+}
+
+.lib-compact-badge-container {
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.lib-compact-cover-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.lib-compact-item .LibCoverCompact {
+    max-width: 100%;
+    max-height: 150px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.lib-compact-item .LibCoverCompact:hover {
+    transform: scale(1.05);
+}
+
+.warning-text {
+    color: var(--color-warning);
+}
+
+.library-url-table {
+    padding: 0;
+}
+
+.library-url-input-cell {
+    padding: 0;
+}
+
+.library-book-banner {
+    background-color: var(--library-banner-bg, #e8f5e8);
+    border: 1px solid var(--library-banner-border, #4caf50);
+    border-radius: 4px 4px 0 0;
+    margin: 0;
+    padding: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Library banner spans full width of container */
+#page-container .library-book-banner {
+    align-self: stretch;
+}
+
+.library-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.library-banner-icon {
+    height: 16px;
+    width: 16px;
+    flex-shrink: 0;
+    color: var(--library-banner-text, #2e7d32);
+}
+
+.library-banner-text {
+    color: var(--library-banner-text, #2e7d32);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.library-banner-button {
+    color: var(--library-banner-button-text, white) !important;
+    border: 1px solid var(--library-banner-button-border, #4caf50);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+    background: var(--library-banner-button-bg, #4caf50) !important;
+    text-shadow: none;
+    /* Override default button styles for better readability */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.library-banner-button:hover {
+    background: var(--library-banner-button-hover, #45a049) !important;
+    border-color: var(--library-banner-button-hover, #45a049);
+}
+
+.lib-empty-message {
+    text-align: center;
+    color: var(--color-neutral-600);
+    font-style: italic;
+    padding: 20px;
+}
+

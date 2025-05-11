@@ -12,12 +12,24 @@
 		"description": "Label for checkbox to Show Advanced Library Options"
 	},
 	"__MSG_label_Lib_Compact_View__": {
-		"message": "Show Library in Compact Layout",
-		"description": "Label for checkbox to Show Advanced Library Options"
+		"message": "Compact Library View",
+		"description": "Label for checkbox to enable compact library view"
 	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
-		"message": "Download Epubs after new Chapter got added automatically.",
-		"description": "Label for checkbox to Download Epubs after update"
+		"message": "Automatically Download EPUBs After Adding New Chapters",
+		"description": "Label for checkbox to Download EPUBs after update"
+	},
+	"__MSG_button_View_Library_List__": {
+		"message": "View Library List",
+		"description": "Label on button to switch to library list view"
+	},
+	"__MSG_button_View_Compact_Library__": {
+		"message": "View Compact Library",
+		"description": "Label on button to switch to compact library view"
+	},
+	"__MSG_menu_Clear_New_Chapters_Alert__": {
+		"message": "Clear New Chapters Alert",
+		"description": "Menu option to clear new chapters notification for a book"
 	},
 	"__MSG_label_Lib_Warning_In_Progress___": {
 		"message": "In Progress....",
@@ -26,6 +38,14 @@
 	"__MSG_button_Lib_Template_Clear_Library__": {
 		"message": "Clear Library",
 		"description": "Label on button to clear Local Storage"
+	},
+	"__MSG_confirm_Clear_Library__": {
+		"message": "Are you sure you want to clear the entire library? This will delete all saved books and cannot be undone.",
+		"description": "Confirmation dialog when clearing the entire library"
+	},
+	"__MSG_confirm_delete_library_book__": {
+		"message": "Are you sure you want to delete this library book? This action cannot be undone.",
+		"description": "Confirmation dialog when deleting a single library book"
 	},
 	"__MSG_button_Lib_Template_Export_Library__": {
 		"message": "Export Library",
@@ -48,8 +68,8 @@
 		"description": "Label on button to Update all Epubs"
 	},
 	"__MSG_button_Lib_Template_Delete_EPUB__": {
-		"message": "Delete EPUB",
-		"description": "Label on button to Delete EPUB"
+		"message": "Delete Library Book",
+		"description": "Label on button to Delete Library Book"
 	},
 	"__MSG_button_Lib_Template_Search_new_Chapters__": {
 		"message": "Search new Chapters",
@@ -62,6 +82,10 @@
 	"__MSG_button_Lib_Template_Download_EPUB__": {
 		"message": "Download EPUB",
 		"description": "Label on button to Download EPUB"
+	},
+	"__MSG_button_Lib_Template_Select_Book__": {
+		"message": "Select",
+		"description": "Label on button to Select book for editing in main UI"
 	},
 	"__MSG_button_Lib_Template_Add_Chapter_from_different_EPUB__": {
 		"message": "Add Chapter from different EPUB",
@@ -76,7 +100,7 @@
 		"description": "Label in front of the Bytes used in local Storage"
 	},
 	"__MSG_label_Lib_Template_New_Chapter__": {
-		"message": " new chapter",
+		"message": " new chapter(s)",
 		"description": "Label of x new chapter"
 	},
 	"__MSG_label_Lib_Template_Story_URL__": {
@@ -92,7 +116,7 @@
 		"description": "Label for Warning if user changes URL in Library"
 	},
 	"__MSG_label_Lib_Template_Upload_Epub_File_Label__": {
-		"message": "Upload an Epub File to the Library.",
+		"message": "Upload an EPUB to the Library",
 		"description": "Label for Upload Epub file in Library"
 	},
 	"__MSG_button_Lib_Template_": {
@@ -104,8 +128,8 @@
 		"description": "Label on button to end manually editing list of URLs to fetch"
 	},
 	"__MSG_button_Clear_Url__": {
-		"message": "Clear URL",
-		"description": "Label on button to erase the Cover Image URL text"
+		"message": "Clear Cover",
+		"description": "Label on button to erase the Cover URL text"
 	},
 	"__MSG_button_Close_ReadingList__": {
 		"message": "Close",
@@ -116,8 +140,8 @@
 		"description": "Label on button that copies selected chapter URLs to clipboard"
 	},
 	"__MSG_button_Edit_Chapter_Urls__": {
-		"message": "Edit Chapter URLs",
-		"description": "Label on button to allow manually editing list of URLs to fetch"
+		"message": "Bulk Edit Chapter URLs",
+		"description": "Label on button to allow manually editing in bulk the list of URLs to fetch"
 	},
 	"__MSG_button_error_Cancel__": {
 		"message": "Cancel",
@@ -163,13 +187,21 @@
 		"message": "Pack EPUB",
 		"description": "Label on button to create the EPUB"
 	},
+	"__MSG_button_Download_Chapters__": {
+		"message": "Download Chapters",
+		"description": "Label on button to download chapters without packing into EPUB"
+	},
 	"__MSG_button_Add_to_Library__": {
 		"message": "Add to Library",
 		"description": "Label on button to create the EPUB and Add it to the Library"
 	},
-	"__MSG_button_Pause_to_Library__": {
-		"message": "Pause to Library",
-		"description": "Label on button to Pause the download"
+	"__MSG_button_Update_Library_Book__": {
+		"message": "Update Library Book",
+		"description": "Label on button to add chapters to the currently selected library book"
+	},
+	"__MSG_button_Stop_Download__": {
+		"message": "Stop",
+		"description": "Label on button to stop/cancel the download"
 	},
 	"__MSG_button_Reset__": {
 		"message": "Reset",
@@ -188,7 +220,7 @@
 		"description": "Label on button to remove all changes to stylesheet and set to default value"
 	},
 	"__MSG_button_Reverse_Chapter_Urls_Order__": {
-		"message": "Reverse Chapter URLs Order",
+		"message": "Reverse Chapter Order",
 		"description": "Label on button to change order of chapters from last to first"
 	},
 	"__MSG_button_Select_All__": {
@@ -228,8 +260,8 @@
 		"description": "The 'URL to get chapter from' column in the table of chapters."
 	},
 	"__MSG_label_Add_Information_Page_To_Epub__": {
-		"message": "Add Information page to Epub",
-		"description": "Label for checkbox to add 'Information' page at beginning of Epub"
+		"message": "Add Information page to EPUB",
+		"description": "Label for checkbox to add 'Information' page at beginning of EPUB"
 	},
 	"__MSG_label_Advanced_Options_Visible_By_Default__": {
 		"message": "Advanced Options Visible by Default",
@@ -264,12 +296,16 @@
 		"description": "Label for checkbox to toggle between picking cover image from list or with a URL"
 	},
 	"__MSG_label_Cover_Image_URL__": {
-		"message": "Cover Image URL:",
+		"message": "Cover URL",
 		"description": "Label for input to give cover image as URL"
 	},
 	"__MSG_label_Create_Epub_3__": {
 		"message": "Create EPUB 3",
 		"description": "Label for checkbox to choose between EPUB 2 and 3"
+	},
+	"__MSG_label_EPUB_Internal_Structure__": {
+		"message": "EPUB File Structure",
+		"description": "Label for dropdown to choose EPUB internal folder structure"
 	},
 	"__MSG_label_File_Author_as__": {
 		"message": "File Author as",
@@ -308,7 +344,7 @@
 		"description": "Label in front input for file to save EPUB as"
 	},
 	"__MSG_label_Developer_Stuff__": {
-		"message": "Developer Stuff:",
+		"message": "Developer stuff",
 		"description": "Label for checkbox to show/hide buttons for developer testing (in Advanced settings)."
 	},
 	"__MSG_label_Fetch_Highest_Resolution_Images__": {
@@ -328,12 +364,12 @@
 		"description": "Label in front input for language EPUB will be in"
 	},
 	"__MSG_label_no_additional_metadata__": {
-		"message": "no Additional Metadata",
+		"message": "no additional metadata",
 		"description": "No tags and description in metadata"
 	},
 	"__MSG_label_auto_search_metadata__": {
-		"message": "auto search Metadata on novelupdates (long loading time)",
-		"description": "auto search Metadata on novelupdates"
+		"message": "auto search metadata on novelupdates.com (long load time)",
+		"description": "auto search metadata on novelupdates.com"
 	},
 	"__MSG_label_less_tags__": {
 		"message": "less tags",
@@ -360,12 +396,16 @@
 		"description": "Label for drop down for maximum number of web pages to request at same time"
 	},
 	"__MSG_label_Metadata_description__": {
-		"message": "Epub description",
+		"message": "EPUB Description",
 		"description": "Preview description from the epub in Calibre"
 	},
 	"__MSG_label_Custom_Filename__": {
 		"message": "Custom Filename",
 		"description": "Custom Filename input"
+	},
+	"__MSG_label_Default_Author_Name__": {
+		"message": "Default Author Name",
+		"description": "Fallback author name when none is found"
 	},
 	"__MSG_label_Metadata_subject__": {
 		"message": "Tags",
@@ -436,7 +476,7 @@
 		"description": "Label in front input for series Novel is part of"
 	},
 	"__MSG_label_Show_Chapter_Urls__": {
-		"message": "Show URLs of Chapters",
+		"message": "Show Chapter URLs",
 		"description": "Label for checkbox to toggle First and Last Chapter selectors between URLs and Titles"
 	},
 	"__MSG_label_Skip_Images__": {
@@ -488,7 +528,7 @@
 		"description": "Label in front of input for novel's position in series."
 	},
 	"__MSG_label_No_Download_Popup__": {
-		"message": "Don't popup 'SaveAs' dialog when save Epub",
+		"message": "Don't show 'Save As' dialog when saving EPUB",
 		"description": "Label for checkbox to download the final epub without a popup"
 	},
     "__MSG_label_Disable_Shift_Click_Alert__": {
@@ -556,11 +596,11 @@
 		"description": "Message shown while looking for list of Chapter URLs."
 	},
 	"__MSG_Shift_Click__": {
-		"message": "You can select or unselect a range of chapters by clicking on the checkbox for the first chapter, then  hold down the shift key and click the last chapter in the range.",
+		"message": "You can select or unselect a range of chapters by clicking on the checkbox for the first chapter, then holding down the shift key and clicking the last chapter in the range.\n\nThis alert can be disabled in Advanced Options.",
 		"description": "Tell user how to shift-click to multiselect."
 	},
 	"__MSG_Tooltip_chapter_downloading__": {
-		"message": "Downloading chapter",
+		"message": "Downloading Chapter",
 		"description": "Tooltip for chapter download status icon: chapter is currently downloading"
 	},
 	"__MSG_Tooltip_chapter_downloaded__": {
@@ -568,11 +608,11 @@
 		"description": "Tooltip for chapter download status icon: chapter download succeeded"
 	},
 	"__MSG_Tooltip_chapter_sleeping__": {
-		"message": "Waiting for chapter delay time to elapse",
+		"message": "Waiting For Chapter Delay Time To Elapse",
 		"description": "Tooltip for chapter download status icon: waiting for chapter delay time to elapse"
 	},
 	"__MSG_Tooltip_chapter_previously_downloaded__": {
-		"message": "Chapter previously downloaded",
+		"message": "Chapter Previously Downloaded",
 		"description": "Tooltip for chapter download status icon: chapter has been downloaded before."
 	},
 	"chapterPlaceholderMessage": {
@@ -615,7 +655,7 @@
 		"description": "Default UUID value to use when one is not supplied"
 	},
 	"errorEditMetadata": {
-		"message": "An error occurred during the editing of the Metadata. Couldn't find the string to replace in  OEBPS/content.opf",
+		"message": "An error occurred during the editing of the Metadata. Couldn't find the string to replace in OEBPS/content.opf",
 		"description": "Error message when regex can't find the string to replace in OEBPS/content.opf"
 	},
 	"errorAddToLibraryLibraryAddPageWithChapters": {
@@ -781,5 +821,159 @@
 			    "content": "$1"
 			}
 		}
+	},
+	"__MSG_button_Cache_Options__": {
+		"message": "Cache",
+		"description": "Label on button to open Cache Options modal"
+	},
+	"__MSG_modal_title_Cache_Options__": {
+		"message": "Cache Options",
+		"description": "Title of the Cache Options modal"
+	},
+	"__MSG_label_Enable_Chapter_Caching__": {
+		"message": "Enable Persistent Chapter Caching",
+		"description": "Label for checkbox to enable/disable persistent chapter caching"
+	},
+	"__MSG_label_Cache_Retention_Days__": {
+		"message": "Cache Retention (days)",
+		"description": "Label for input field to set cache retention period in days"
+	},
+	"__MSG_label_Cached_Chapter_Count__": {
+		"message": "Cached Chapter Count",
+		"description": "Label for display of number of cached chapters"
+	},
+	"__MSG_button_Delete_All_Cached_Chapters__": {
+		"message": "Delete All Cached Chapters",
+		"description": "Label on button to delete all cached chapters"
+	},
+	"__MSG_button_Cleanup_Expired_Entries__": {
+		"message": "Cleanup Expired Entries",
+		"description": "Label on button to clean up expired cache entries based on retention days"
+	},
+	"__MSG_label_Chapter_Cache_Size__": {
+		"message": "Chapter Cache Size",
+		"description": "Label for display of total cache storage size"
+	},
+	"__MSG_status_Loading__": {
+		"message": "Loading...",
+		"description": "Status text shown while loading cache statistics"
+	},
+	"__MSG_status_Error__": {
+		"message": "Error",
+		"description": "Status text shown when there is an error loading cache statistics"
+	},
+	"__MSG_toggle_state_On__": {
+		"message": "On",
+		"description": "Toggle state text when caching is enabled"
+	},
+	"__MSG_toggle_state_Off__": {
+		"message": "Off",
+		"description": "Toggle state text when caching is disabled"
+	},
+	"__MSG_button_cache_status_Enabled__": {
+		"message": "Cache (Persistent)",
+		"description": "Cache button text when caching is enabled"
+	},
+	"__MSG_button_cache_status_Disabled__": {
+		"message": "Cache (Session Only)",
+		"description": "Cache button text when caching is disabled"
+	},
+	"__MSG_tooltip_View_Chapter__": {
+		"message": "View Chapter",
+		"description": "Tooltip text for the view cached chapter icon"
+	},
+	"__MSG_tooltip_Delete_All_Cached__": {
+		"message": "Delete All Cached Chapters On Page",
+		"description": "Tooltip text for the delete all cached chapters icon"
+	},
+	"__MSG_tooltip_Download_Chapter__": {
+		"message": "Download Chapter",
+		"description": "Tooltip text for the download chapter icon"
+	},
+	"__MSG_tooltip_Chapter_Selection__": {
+		"message": "Selected chapters will be included for actions: Pack EPUB, Download Chapters, or Add to Library",
+		"description": "Tooltip text explaining what selected chapters are used for"
+	},
+	"__MSG_menu_Refresh_Chapter__": {
+		"message": "Refresh Chapter",
+		"description": "Menu option to delete and redownload a cached chapter"
+	},
+	"__MSG_menu_Open_Chapter_URL__": {
+		"message": "Open Chapter URL",
+		"description": "Menu option to open the chapter URL in a new tab"
+	},
+	"__MSG_menu_Open_Story_URL__": {
+		"message": "Open Story URL",
+		"description": "Menu option to open the main story URL in a new tab"
+	},
+	"__MSG_menu_Delete_Chapter__": {
+		"message": "Delete Chapter",
+		"description": "Menu option to delete a single cached chapter"
+	},
+	"__MSG_menu_Download_Chapter__": {
+		"message": "Download HTML File",
+		"description": "Menu option to download a single chapter as HTML file"
+	},
+	"__MSG_menu_Reorder_Chapters__": {
+		"message": "Reorder Chapters",
+		"description": "Menu option to reorder chapters in a library book"
+	},
+	"__MSG_menu_Hide_Library_Chapters__": {
+		"message": "Hide Chapters in Library Book",
+		"description": "Menu option to hide chapters that are already in the library book"
+	},
+	"__MSG_menu_Show_Library_Chapters__": {
+		"message": "Show Chapters in Library Book",
+		"description": "Menu option to show chapters that are already in the library book"
+	},
+	"__MSG_menu_Export_Story_Details_JSON__": {
+		"message": "Export Story Details as JSON",
+		"description": "Menu option to export story metadata and details as JSON file"
+	},
+	"__MSG_modal_title_Reorder_Chapters__": {
+		"message": "Reorder Chapters",
+		"description": "Title for the chapter reordering modal"
+	},
+	"__MSG_label_Reorder_Instructions__": {
+		"message": "Use the arrow buttons to reorder chapters. Changes will be saved to your library book.",
+		"description": "Instructions text in the chapter reordering modal"
+	},
+	"__MSG_button_Save_Order__": {
+		"message": "Save Order",
+		"description": "Button to save the new chapter order"
+	},
+	"__MSG_confirm_Clear_All_Cache__": {
+		"message": "Are you sure you want to clear all cached chapters? This action cannot be undone.",
+		"description": "Confirmation dialog when clearing all cached chapters"
+	},
+	"__MSG_error_Failed_Clear_Cache__": {
+		"message": "Failed to clear cache: $error$",
+		"description": "Error message when clearing cache fails",
+		"placeholders": {
+			"error": {
+			    "content": "$1"
+			}
+		}
+	},
+	"__MSG_error_Failed_Save_Cache_Settings__": {
+		"message": "Failed to save cache settings: $error$",
+		"description": "Error message when saving cache settings fails",
+		"placeholders": {
+			"error": {
+			    "content": "$1"
+			}
+		}
+	},
+	"__MSG_label_library_mode__": {
+		"message": "You are viewing a book in your Library",
+		"description": "Label indicating the user is viewing a library book"
+	},
+	"__MSG_button_exit_library_mode__": {
+		"message": "Exit Library View",
+		"description": "Button to exit library view and load chapters from the website"
+	},
+	"__MSG_label_library_no_books__": {
+		"message": "You have no books in your library.",
+		"description": "Message shown when the library is empty"
 	}
 }

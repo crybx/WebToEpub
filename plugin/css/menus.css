@@ -1,0 +1,192 @@
+.more-actions-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.more-actions-menu {
+    visibility: hidden;
+    position: absolute;
+    min-width: 180px;
+    z-index: 1000;
+    top: 100%;
+    right: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.header-more-actions-menu {
+    visibility: hidden;
+    position: absolute;
+    min-width: 270px;
+    z-index: 1000;
+    top: 100%;
+    right: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.lib-more-actions-wrapper {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-block;
+    z-index: 10;
+}
+
+.lib-more-actions-wrapper.active {
+    z-index: 3000;
+}
+
+.lib-more-actions-menu {
+    visibility: hidden;
+    position: absolute;
+    min-width: 180px;
+    z-index: 3001;
+    top: 100%;
+    right: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.lib-more-actions-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    margin-right: 2px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    max-height: 30px;
+    vertical-align: middle;
+}
+
+.lib-more-actions-icon:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.lib-more-actions-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--color-neutral-600);
+}
+
+
+.more-actions-menu,
+.header-more-actions-menu,
+.lib-more-actions-menu {
+    background-color: var(--menu-bg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border: 1px solid var(--menu-border);
+    border-radius: 4px;
+}
+
+.more-actions-menu .menu-item,
+.header-more-actions-menu .menu-item,
+.lib-more-actions-menu .menu-item {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--menu-item-border);
+    transition: background-color 0.2s ease;
+}
+
+.more-actions-menu .menu-item svg,
+.header-more-actions-menu .menu-item svg,
+.lib-more-actions-menu .menu-item svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    fill: var(--menu-item-text);
+}
+
+.more-actions-menu .menu-item span,
+.header-more-actions-menu .menu-item span,
+.lib-more-actions-menu .menu-item span {
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--menu-item-text);
+}
+
+.more-actions-menu .menu-item:hover,
+.header-more-actions-menu .menu-item:hover,
+.lib-more-actions-menu .menu-item:hover {
+    background-color: var(--menu-item-hover-bg);
+}
+
+.more-actions-menu .menu-item:hover span,
+.header-more-actions-menu .menu-item:hover span,
+.lib-more-actions-menu .menu-item:hover span {
+    color: var(--menu-item-hover-text);
+}
+
+.more-actions-menu .menu-item:hover svg,
+.header-more-actions-menu .menu-item:hover svg,
+.lib-more-actions-menu .menu-item:hover svg {
+    fill: var(--menu-item-hover-icon);
+    filter: brightness(1.2);
+}
+
+.more-actions-menu .menu-item:last-child,
+.header-more-actions-menu .menu-item:last-child,
+.lib-more-actions-menu .menu-item:last-child {
+    border-bottom: none;
+}
+
+
+.more-actions-menu.show,
+.header-more-actions-menu.show,
+.lib-more-actions-menu.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.lib-more-actions-wrapper .lib-more-actions-menu.show {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+
+.menu-item.library-only {
+    display: none;
+}
+
+.library-mode .menu-item.library-only {
+    display: flex;
+}
+
+.library-mode .menu-item.non-library-only {
+    display: none;
+}
+
+.header-more-actions-menu.cache-items-hidden .menu-item.cache-dependent {
+    display: none;
+}
+
+
+.error-state .more-actions-menu .menu-item:hover,
+.error-state .header-more-actions-menu .menu-item:hover,
+.error-state .lib-more-actions-menu .menu-item:hover {
+    background-color: var(--color-error-bg);
+}
+
+.error-state .more-actions-menu .menu-item:hover span,
+.error-state .header-more-actions-menu .menu-item:hover span,
+.error-state .lib-more-actions-menu .menu-item:hover span {
+    color: var(--color-error);
+}
+
+.error-state .more-actions-menu .menu-item:hover svg,
+.error-state .header-more-actions-menu .menu-item:hover svg,
+.error-state .lib-more-actions-menu .menu-item:hover svg {
+    fill: var(--color-error);
+}

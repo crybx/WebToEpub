@@ -8,7 +8,7 @@
 "use strict";
 
 const util = (function() {
-    var sleepController = new AbortController;
+    let sleepController = new AbortController;
 
     function sleep(ms) {
         return new Promise(resolve => {
@@ -52,7 +52,7 @@ const util = (function() {
     function populateHead(doc, head) {
         let style = doc.createElementNS(XMLNS, "link");
         head.appendChild(style);
-        style.setAttribute("href", makeRelative(styleSheetFileName()));
+        style.setAttribute("href", makeRelative(EpubStructure.get().stylesheet));
         style.setAttribute("type", "text/css");
         style.setAttribute("rel", "stylesheet");
     }
@@ -100,9 +100,11 @@ const util = (function() {
         return (content && content.startsWith("data:")) ? "" : content;
     }
 
-    // assumes we're making link from file in OEBPS\Text to OEBPS\Images
+    // assumes we're making link from file in text directory to images/styles
     function makeRelative(href) {
-        return ".." + href.substring(5);
+        let paths = EpubStructure.get();
+        let contentDirLength = paths.contentDir.length;
+        return ".." + href.substring(contentDirLength);
     }
 
     function resolveRelativeUrl(baseUrl, relativeUrl) {
@@ -148,6 +150,9 @@ const util = (function() {
 
     // refer https://usamaejaz.com/cloudflare-email-decoding/
     function decodeCloudflareProtectedEmails(content) {
+        if (!content) {
+            return;
+        }
         for (let link of [...content.querySelectorAll(".__cf_email__")]) {
             replaceCloudflareProtectedLink(link);
         }
@@ -846,10 +851,6 @@ const util = (function() {
         return dom;
     }
 
-    function styleSheetFileName() {
-        return "OEBPS/Styles/stylesheet.css";
-    }
-
     function extractUrlFromBackgroundImage(element) {
         const background = element?.style?.backgroundImage;
         return background?.substring(5, background.length - 2) ?? null;
@@ -1144,6 +1145,7 @@ const util = (function() {
         INLINE_ELEMENTS: INLINE_ELEMENTS,
         BLOCK_ELEMENTS: BLOCK_ELEMENTS,
         HEADER_TAGS: HEADER_TAGS,
+
         sleep: sleep,
         sleepController: sleepController,
         randomInteger: randomInteger,
@@ -1220,7 +1222,6 @@ const util = (function() {
         getElements: getElements,
         moveIfParent: moveIfParent,
         safeForFileName: safeForFileName,
-        styleSheetFileName: styleSheetFileName,
         isStringWhiteSpace: isStringWhiteSpace,
         isElementWhiteSpace: isElementWhiteSpace,
         isHeaderTag: isHeaderTag,

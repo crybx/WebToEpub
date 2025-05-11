@@ -34,15 +34,24 @@ class BoolUserPreference extends UserPreference {
     }
 
     readFromUi() {
-        this.value = this.getUiElement().checked;
+        let element = this.getUiElement();
+        if (element) {
+            this.value = element.checked;
+        }
     }
 
     writeToUi() {
-        this.getUiElement().checked = this.value;
+        let element = this.getUiElement();
+        if (element) {
+            element.checked = this.value;
+        }
     }
 
     hookupUi(readFromUi) {
-        this.getUiElement().onclick = readFromUi;
+        let element = this.getUiElement();
+        if (element) {
+            element.onclick = readFromUi;
+        }
     }
 }
 
@@ -59,19 +68,27 @@ class StringUserPreference extends UserPreference {
     }
 
     readFromUi() {
-        this.value = this.getUiElement().value;
+        let element = this.getUiElement();
+        if (element) {
+            this.value = element.value;
+        }
     }
 
     writeToUi() {
-        this.getUiElement().value = this.value;
+        let element = this.getUiElement();
+        if (element) {
+            element.value = this.value;
+        }
     }
 
     hookupUi(readFromUi) {
         let uiElement = this.getUiElement();
-        if (uiElement.tagName === "SELECT") {
-            uiElement.onchange = readFromUi;
-        } else {
-            uiElement.addEventListener("blur", readFromUi, true);
+        if (uiElement) {
+            if (uiElement.tagName === "SELECT") {
+                uiElement.onchange = readFromUi;
+            } else {
+                uiElement.addEventListener("blur", readFromUi, true);
+            }
         }
     }
 }
@@ -97,6 +114,7 @@ class UserPreferences { // eslint-disable-line no-unused-vars
         this.noDownloadPopup = this.addPreference("noDownloadPopup", "noDownloadPopupCheckbox", false);
         this.writeErrorHistoryToFile = this.addPreference("writeErrorHistoryToFile", "writeErrorHistoryToFileCheckbox", false);
         this.createEpub3 = this.addPreference("createEpub3", "createEpub3Checkbox", false);
+        this.epubInternalStructure = this.addPreference("epubInternalStructure", "epubInternalStructureSelect", "OEBPS");
         this.chaptersPageInChapterList = this.addPreference("chaptersPageInChapterList", "chaptersPageInChapterListCheckbox", false);
         this.autoSelectBTSeriesPage = this.addPreference("autoSelectBTSeriesPage", "autoParserSelectIncludesBTSeriesPageCheckbox", false);
         this.removeAuthorNotes = this.addPreference("removeAuthorNotes", "removeAuthorNotesCheckbox", false);
@@ -125,8 +143,44 @@ class UserPreferences { // eslint-disable-line no-unused-vars
         this.disableShiftClickAlert = this.addPreference("disableShiftClickAlert", "disableShiftClickAlertCheckbox", false);
         this.disableImageResError = this.addPreference("disableImageResError", "disableImageResErrorCheckbox", false);
         this.disableWebpImageFormatError = this.addPreference("disableWebpImageFormatError", "disableWebpImageFormatErrorCheckbox", false);
+        this.defaultAuthorName = this.addPreference("defaultAuthorName", "defaultAuthorNameInput", "<unknown>");
+        this.sitePasswords = this.addPreference("sitePasswords", "", "{}");
 
         document.getElementById("themeColorTag").addEventListener("change", UserPreferences.SetTheme);
+    }
+
+    /**
+     * Get the stored password for a specific site
+     * @param {string} hostname - The hostname (e.g., "chrysanthemumgarden.com")
+     * @returns {string} The stored password or empty string if none
+     */
+    getSitePassword(hostname) {
+        try {
+            let passwords = JSON.parse(this.sitePasswords.value);
+            return passwords[hostname] || "";
+        } catch (e) {
+            return "";
+        }
+    }
+
+    /**
+     * Set the password for a specific site
+     * @param {string} hostname - The hostname (e.g., "chrysanthemumgarden.com")
+     * @param {string} password - The password to store
+     */
+    setSitePassword(hostname, password) {
+        try {
+            let passwords = JSON.parse(this.sitePasswords.value);
+            passwords[hostname] = password;
+            this.sitePasswords.value = JSON.stringify(passwords);
+            this.sitePasswords.writeToLocalStorage();
+        } catch (e) {
+            // If JSON is corrupted, start fresh
+            let passwords = {};
+            passwords[hostname] = password;
+            this.sitePasswords.value = JSON.stringify(passwords);
+            this.sitePasswords.writeToLocalStorage();
+        }
     }
 
     /** @private */
@@ -186,10 +240,94 @@ class UserPreferences { // eslint-disable-line no-unused-vars
         UserPreferences.SetTheme();
     }
 
+    async handleEpubStructureChange(event) {
+        let newStructure = event.target.value;
+        let currentStructure = this.epubInternalStructure.value;
+
+        if (newStructure === currentStructure) {
+            return; // No change
+        }
+
+        try {
+            // Check if user has library books
+            let bookCount = await LibraryStorage.getLibraryBookCount();
+
+            if (bookCount === 0) {
+                // No library books, just update the preference
+                this.epubInternalStructure.value = newStructure;
+                this.writeToLocalStorage();
+                this.notifyObserversOfChange();
+                return;
+            }
+
+            // Show confirmation dialog
+            let confirmMessage = `You have ${bookCount} book${bookCount > 1 ? "s" : ""} in your library that need${bookCount === 1 ? "s" : ""} to be converted to the new EPUB structure.\n\nThis conversion will update all your library books to use the new internal file structure. This process may take a few moments.\n\nDo you want to proceed with the conversion?`;
+
+            if (!confirm(confirmMessage)) {
+                // User cancelled, revert the dropdown
+                event.target.value = currentStructure;
+                return;
+            }
+
+            // Show progress indication
+            let statusElement = document.createElement("span");
+            statusElement.textContent = " (Converting library books...)";
+            statusElement.style.color = "orange";
+            event.target.parentElement.appendChild(statusElement);
+
+            // Disable the dropdown during conversion
+            event.target.disabled = true;
+
+            // Perform the conversion
+            let result = await EpubStructure.convertAllLibraryBooks(newStructure);
+
+            // Remove status indication
+            statusElement.remove();
+            event.target.disabled = false;
+
+            if (result.success) {
+                // Update the preference
+                this.epubInternalStructure.value = newStructure;
+                this.writeToLocalStorage();
+                this.notifyObserversOfChange();
+
+                alert(`Successfully converted ${result.converted} library book${result.converted > 1 ? "s" : ""} to the new EPUB structure.`);
+            } else {
+                // Conversion failed, revert dropdown
+                event.target.value = currentStructure;
+                let errorMsg = `Failed to convert library books. ${result.converted} succeeded, ${result.failed} failed.`;
+                if (result.error) {
+                    errorMsg += `\n\nError: ${result.error}`;
+                }
+                alert(errorMsg);
+            }
+
+        } catch (error) {
+            // Error during conversion, revert dropdown
+            event.target.value = currentStructure;
+            event.target.disabled = false;
+
+            // Remove any status elements
+            let statusElements = event.target.parentElement.querySelectorAll("span[style*='color: orange']");
+            statusElements.forEach(el => el.remove());
+
+            console.error("Error handling EPUB structure change:", error);
+            alert(`Error during conversion: ${error.message}\n\nYour EPUB structure setting has been reverted.`);
+        }
+    }
+
     hookupUi() {
         let readFromUi = this.readFromUi.bind(this);
         for (let p of this.preferences) {
-            p.hookupUi(readFromUi);
+            if (p.storageName === "epubInternalStructure") {
+                // Special handling for EPUB structure changes
+                let element = p.getUiElement();
+                if (element) {
+                    element.onchange = this.handleEpubStructureChange.bind(this);
+                }
+            } else {
+                p.hookupUi(readFromUi);
+            }
         }
 
         this.notifyObserversOfChange();
@@ -278,12 +416,20 @@ class UserPreferences { // eslint-disable-line no-unused-vars
         let theme = document.querySelector("#themeColorTag").value;
         let autodark = document.querySelector("link#autoDark");
         let alwaysDark = document.querySelector("link#alwaysDark");
+        let cyberpunk = document.querySelector("link#cyberpunk");
+        let sunset = document.querySelector("link#sunset");
         autodark.disabled = true;
         alwaysDark.disabled = true;
-        if (theme == "") {
+        cyberpunk.disabled = true;
+        sunset.disabled = true;
+        if (theme === "") {
             autodark.disabled = false;
-        } else if (theme == "DarkMode") {
+        } else if (theme === "DarkMode") {
             alwaysDark.disabled = false;
+        } else if (theme === "CyberpunkMode") {
+            cyberpunk.disabled = false;
+        } else if (theme === "SunsetMode") {
+            sunset.disabled = false;
         }
     }
 }

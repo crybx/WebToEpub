@@ -148,7 +148,8 @@ class BakaTsukiParser extends Parser {
         document.getElementById("highestResolutionImagesRow").hidden = false;
         document.getElementById("unSuperScriptAlternateTranslations").hidden = false; 
         document.getElementById("imageSection").hidden = false;
-        document.getElementById("outputSection").hidden = true;
+        document.getElementById("chapterSelectionOptionsSection").hidden = true;
+        document.getElementById("chapterListSection").hidden = true;
         document.getElementById("translatorRow").hidden = false;
         document.getElementById("fileAuthorAsRow").hidden = false;
         document.getElementById("coverFromUrlCheckboxInput").onclick = this.populateImageTable.bind(this);

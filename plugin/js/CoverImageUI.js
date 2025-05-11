@@ -155,13 +155,38 @@ class CoverImageUI { // eslint-disable-line no-unused-vars
             inputUrl.onchange = CoverImageUI.showSampleImg;
         }
         inputUrl.value = url;
-        CoverImageUI.getSampleCoverImg().src = url;
+        CoverImageUI.showCoverImage(url);
     }
 
     /** @private */
     static showSampleImg() {
         let url = CoverImageUI.getCoverImageUrlInput().value;
+        CoverImageUI.showCoverImage(url);
+    }
+
+    /** @private */
+    static showCoverImage(url) {
         let sampleImg = CoverImageUI.getSampleCoverImg();
-        sampleImg.src = url;
+        let container = sampleImg.parentElement;
+        
+        // Remove any existing placeholder
+        let existingPlaceholder = container.querySelector(".cover-image-placeholder");
+        if (existingPlaceholder) {
+            existingPlaceholder.remove();
+        }
+        
+        if (!url || url === "null" || url.trim() === "") {
+            // Hide the image and show placeholder
+            sampleImg.style.display = "none";
+            let placeholder = document.createElement("div");
+            placeholder.className = "cover-image-placeholder";
+            placeholder.textContent = "No Cover";
+            placeholder.onclick = () => document.getElementById("coverImageUrlInput").focus();
+            container.insertBefore(placeholder, sampleImg);
+        } else {
+            // Show the image and hide placeholder
+            sampleImg.style.display = "";
+            sampleImg.src = url;
+        }
     }
 }

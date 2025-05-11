@@ -348,7 +348,7 @@ QUnit.test("hasNoVisibleContent", function (assert) {
     let elements = new Array();
     for(let child of dom.body.childNodes) {
         elements.push(child);
-    };
+    }
 
     assert.equal(BakaTsukiParser.prototype.hasVisibleContent(elements), true);
 
@@ -420,10 +420,10 @@ function fetchHrefForId(epubItems, id) {
                 let node = walker.currentNode;
                 if (node.id === id) {
                     return node.getElementsByTagName("a")[0].getAttribute("href");
-                };
+                }
             } while(walker.nextNode());
-        };
-    };
+        }
+    }
 }
 
 test("fixupInternalHyperLinks", function (assert) {

@@ -16,14 +16,6 @@ class FetchErrorHandler {
             UIText.Warning.httpFetchCanRetry;
     }
 
-    getCancelButtonText() {
-        return UIText.Common.cancel;
-    }
-
-    static cancelButtonText() {
-        return UIText.Common.cancel;
-    }
-
     onFetchError(url, error) {
         return Promise.reject(new Error(this.makeFailMessage(url, error.message)));
     }
@@ -63,7 +55,6 @@ class FetchErrorHandler {
         } else {
             msg = new Error(new Error(this.makeFailCanRetryMessage(url, response.status)));
         }
-        let cancelLabel = this.getCancelButtonText();
         return new Promise((resolve, reject) => {
             if (wrapOptions.retry.HTTP === 403) {
                 msg.openurl = response.url;
@@ -71,7 +62,7 @@ class FetchErrorHandler {
             }
             msg.retryAction = () => resolve(HttpClient.wrapFetchImpl(url, wrapOptions));
             msg.cancelAction = () => reject(failError);
-            msg.cancelLabel = cancelLabel;
+            msg.cancelLabel = UIText.Common.cancel;
             ErrorLog.showErrorMessage(msg);
         });
     }
@@ -100,15 +91,15 @@ class FetchErrorHandler {
             case 500:
             // is fault at server, retry might clear
                 return {retryDelay: retryDelay, promptUser: false};
-            case 502: 
-            case 503: 
+            case 502:
+            case 503:
             case 504:
             case 520:
             case 522:
-            // intermittant fault
+            // intermittent fault
                 return {retryDelay: retryDelay, promptUser: true};
             case 524:
-            // claudflare random error
+            // cloudflare random error
                 return {retryDelay: [1], promptUser: true};
             case 999:
             // custom WebToEpub error (some api's fail and a few seconds later it is a success)
@@ -281,7 +272,7 @@ class HttpClient {
         } catch {
             // Probably running browser that doesn't support partitionKey, e.g. Kiwi
             console.log("failed to set cookie");
-        } 
+        }
     }
 }
 

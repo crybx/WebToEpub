@@ -1,11 +1,47 @@
-.expandedButton {
-    padding: 5px 10px;
+#page-container {
+    border: 1px var(--border-color, #CCC) solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    border-radius: 4px;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 320px;
+    box-sizing: border-box;
+}
+
+#page-container section {
+    padding: 10px;
+}
+
+#page-container #libraryBookIndicator {
+    padding: 8px 10px;
+}
+
+input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
+    padding: 4px;
+    border: 1px var(--border-color, #CCC) solid;
+    border-radius: 3px;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .warning {
-    color: #ff0000;
+    color: var(--color-error);
     font-size: 2em;
     font-weight: bold;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: underline;
+}
+
+a:hover {
+    color: var(--link-hover-color);
 }
 
 .scrollingtable {
@@ -13,62 +49,109 @@
     height: 300px;
 }
 
+#errorSectionTable {
+    padding: 0 10px;
+}
+
 #progressString {
     width: 36px;
     display: inline-block;
     position: absolute;
-    left: 46%;
+    left: 50%;
+    transform: translateX(-50%);
     color: white;
     z-index: 1000;
     font-weight: bolder;
-    margin-top: 7px;
 }
 
-#advancedOptionsSection {
-    margin-top: 3px;
+#page-container #advancedOptionsSection {
     margin-bottom: 20px;
-    border-bottom: 1px #CCC solid;
-}
-
-
-progress {
-    width: 56%;
-    height: 31px;
-    margin: 0;
+    border-bottom: 1px var(--border-color, #CCC) solid;
     padding: 0;
-    border-radius: 5px;
-    margin-left: 4px;
-    margin-right: 4px;
-}
-
-    progress::-webkit-progress-bar {
-        border: 0;
-        height: 31px;
-        border-radius: 5px;
-    }
-
-    progress::-webkit-progress-value {
-        border: 0;
-        height: 31px;
-        border-radius: 8px;
-    }
-
-    progress::-moz-progress-bar {
-        border: 0;
-        height: 31px;
-        border-radius: 5px;
-    }
-
-[hidden] {
-    display: none;
-}
-
-table.chapterList {
     width: 100%;
 }
 
+.advanced-options-header {
+    display: flex;
+    background-color: var(--header-bg, #f8f9fa);
+    border-top: 1px solid var(--border-color, #ccc);
+    border-bottom: 1px solid var(--border-color, #ccc);
+    font-weight: bold;
+    text-align: center;
+    padding: 5px 12px;
+    align-items: center;
+}
+
+.advanced-options-title-column {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: 600;
+    min-width: 100px;
+    padding: 4px 0;
+}
+
+#AdditionalMetadatatable,
+#advancedOptionsTable {
+    padding: 10px;
+}
+
+#AdditionalMetadatatable td:first-child,
+#advancedOptionsTable td:first-child {
+    text-align: right;
+}
+
+#metadataUrlInput,
+#CustomFilenameInput {
+    margin-bottom: 4px;
+}
+
+#maxChaptersPerEpubTag,
+#manualDelayPerChapterTag {
+    width: 100px;
+}
+
+#advancedOptionsCloseSection {
+    border-bottom: 1px solid var(--border-color, #ccc);
+    text-align: center;
+    padding: 8px 12px;
+}
+
+progress {
+    width: 100%;
+    height: 31px;
+    padding: 0;
+    border-radius: 4px;
+}
+
+progress::-webkit-progress-bar {
+    border: 0;
+    height: 31px;
+    border-radius: 4px;
+}
+
+progress::-webkit-progress-value {
+    background-color: var(--color-primary-hover);
+    border: 0;
+    height: 31px;
+    border-radius: 4px;
+}
+
+progress::-moz-progress-bar {
+    background-color: var(--color-primary-hover);
+    border: 0;
+    height: 31px;
+    border-radius: 4px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
 section.minWidth {
-    min-width: 600px;
+    min-width: 300px;
+    width: 100%;
 }
 
 .withBorder {
@@ -87,28 +170,20 @@ button:disabled {
     opacity: 0.5;
 }
 
-/*----------------------------------------------------*/
-
-.container {
-    border: 1px #CCC solid;
-    display: table;
-    padding: 10px;
-    margin: auto;
-    border-radius: 5px;
-    position:relative;
-}
-
-
-input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
-    padding: 4px;
-    border: 1px #CCC solid;
-    border-radius: 3px;
-    max-width: 400px;
-    min-width: 356px;
-}
-
 #advancedOptionsSection textarea, #advancedOptionsSection select, #manualDelayPerChapterTag {
     min-width: inherit !important;
+}
+
+#advancedOptionsSection textarea {
+    resize: vertical;
+}
+
+#findingChapterUrlsMessageRow {
+    text-align: center;
+    word-wrap: break-word;
+    max-width: 100%;
+    white-space: normal;
+    padding-bottom: 15px;
 }
 
 textarea.allSpace {
@@ -118,113 +193,175 @@ textarea.allSpace {
     max-width: none;
 }
 
-#inputSection input {
-    width: 69%;
+#inputSection {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-#inputSection table, #chapterUrlsTable {
+#inputSection .form-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 4.5px;
+    order: 1;
+}
+
+#inputSection .form-field {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+}
+
+#inputSection .form-field.checkbox-field {
+    gap: 8px;
+}
+
+#inputSection .field-label {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 12px;
+    text-align: left;
+    min-width: 80px;
+}
+
+#inputSection .field-input {
+    flex: 1;
+    margin-right: 8px;
+}
+
+#inputSection .field-action {
+    flex-shrink: 0;
+}
+
+#inputSection .field-checkbox {
+    width: 20px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#inputSection .checkbox-label {
+    flex: 1;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#inputSection .cover-image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    max-height: 170px;
+    min-width: 100px;
+    order: 2;
+}
+
+#inputSection .cover-image-container button {
     width: 100%;
 }
 
-    #chapterUrlsTable input[type=checkbox],
-    #chapterUrlsTable img,
-    #chapterUrlsTable .tooltip {
-        float: left;
-    }
-
-    img.downloadState {
-        height: 1em;
-        margin-top: 3px;
-    }
-
-    .downloadStateDiv {
-        position: relative;
-        display: inline-block;
-    }
-
-    .downloadStateDiv .tooltipText {
-        visibility: hidden;
-        width: 120px;
-        background-color: #808080;
-        color: white;
-        text-align: center;
-        padding: 5px;
-        border-radius: 5px;
-        position: absolute;
-        z-index: 1;
-        top: -5px;
-        left: 105%;
-    }
-
-    .downloadStateDiv:hover .tooltipText {
-        visibility: visible;
-    }
-
-    #chapterUrlsTable input[type=text] {
-        width: 101.5%;
-        position: relative;
-        left: -16px;
-        max-width: 580px;
-    }
-
-    #chapterUrlsTable tbody > tr > th {
-        text-align: center;
-        border-bottom: 1px #CCC solid;
-        padding: 0;
-    }
-
-#inputSection tbody > tr > td:first-child {
-    width: 75px;
+#inputSection .cover-image-container img {
+    max-width: 100%;
+    max-height: 140px;
+    cursor: pointer;
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
 }
 
-#chapterUrlsTable > tr > td:first-child, #chapterUrlsTable > tbody > tr > td:nth-child(2) {
-    width: 3px;
+#inputSection .cover-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 140px;
+    border: 2px dashed var(--border-color, #CCC);
+    border-radius: 4px;
+    color: var(--body-text);
+    font-size: 14px;
+    cursor: pointer;
+    background-color: var(--input-bg);
+}
+
+#inputSection .field-input input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#inputSection .field-checkbox input {
+    margin: 0;
 }
 
 button {
-    box-shadow: inset 0px 1px 0px 0px #ffffff;
-    background: linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
-    background-color: #ffffff;
-    border-radius: 6px;
-    border: 1px solid #dcdcdc;
+    background: var(--button-bg) var(--button-bg-gradient);
+    border-radius: 4px;
+    border: 1px solid var(--button-border);
     display: inline-block;
     cursor: pointer;
-    color: #666666;
-    font-family: Arial;
+    color: var(--button-text);
+    font-family: Arial, sans-serif;
     font-size: 12px;
-    padding: 4px 8px;
+    padding: 6px 10px;
+    margin-right: 2px;
     text-decoration: none;
-    max-height: 30px;
+    /* Flexible height and word wrap for buttons to make
+    sure various translations can fit longer text */
+    height: auto;
+    max-height: none;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
-    button:hover {
-        background: linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
-        background-color: #f6f6f6;
-    }
+button:hover {
+    background: var(--button-hover-bg) var(--button-hover-gradient);
+    color: var(--button-hover-text);
+}
 
-    button:active {
-        position: relative;
-        top: 1px;
-    }
+button:active {
+    position: relative;
+    top: 1px;
+}
 
 .progressSection {
-    width: 94%;
-    position: relative;
+    min-width: 300px;
+}
+
+.progress-section-wrap {
+    border: 1px var(--border-color, #CCC) solid;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.progressBarRow {
     display: flex;
-    height: 60px;
-    border: 1px #CCC solid;
-    padding-top: 30px;
-    padding-left: 39px;
-    border-radius: 8px;
-    max-width: 648px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.progressButtonRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.progressButtonRow .expandedButton {
+    flex: 1;
+    min-width: 132px;
 }
 
 #coverUrlSection img {
     max-height: 142px;
     max-width: 106.5px;
-    position: absolute;
-    top: 14px;
-    right: 7%;
+    position: static;
 }
 
 .LibCover {
@@ -244,16 +381,24 @@ button {
 .HiddenButtonSection {
     position: relative;
     display: flex;
-  justify-content: center;
-    border-radius: 8px;
+    justify-content: center;
+    border-radius: 4px;
+    padding-top: 2px;
+    gap: 3px;
+}
+
+.HiddenButtonSection button {
+    min-width: 120px;
 }
 
 .sidebar {
-    background-color:rgba(40, 40, 40, 0.85);
-    float:left;
-    margin-right:5px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    border-left: 1px solid var(--border-color);
+    box-shadow: var(--sidebar-shadow);
+    float: left;
     height: 100%;
-    width: 0px;
+    width: 0;
     position: fixed;
     z-index: 1;
     top: 0;
@@ -262,55 +407,321 @@ button {
     box-sizing: border-box;
     margin: 0 auto;
     transition: 0.25s;
-  }
+}
 
-    .sidebar.sidebarOpen {
-        width: 30%;
-        min-width: 300px;
+.sidebar.sidebarOpen {
+    width: 320px;
+}
+
+/* Top right controls positioning - outside container */
+.top-right-controls {
+    position: absolute;
+    top: 8px;
+    right: 0;
+    z-index: 1000;
+}
+
+#openSidebarButton,
+#sbClose {
+    padding: 6px;
+    border-radius: 4px;
+}
+
+#openSidebarIcon svg,
+#sbCloseIcon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Flip the sidebar icon horizontally */
+#openSidebarIcon svg {
+    transform: scaleX(-1);
+}
+
+.sidebar-close-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px 0 10px 8px;
+}
+
+.sidebar th {
+    text-align: center;
+}
+
+.sidebar input.exclude {
+    accent-color: var(--checkbox-exclude);
+}
+
+.sidebar input[type=text], .sidebar input[type=url], .sidebar textarea, .sidebar select {
+    padding: 4px;
+    border: 1px var(--border-color, #CCC) solid;
+    border-radius: 3px;
+    max-width: 100%;
+    min-width: 100px;
+}
+
+.sidebar label {
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    padding-bottom: 5px;
+    user-select: none;
+}
+
+.sidebar tr label:hover {
+    background-color: var(--sidebar-hover-bg);
+}
+
+#sbFilters {
+    max-height: calc(50% - 30px);
+    overflow-y: scroll;
+}
+
+#sbFilters input[type=text], #sbFilters input[type=url], #sbFilters textarea, #sbFilters select {
+    width: calc(100% - 15px);
+}
+
+/* Filter table responsive styles */
+.filter-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.filter-table td:first-child {
+    width: 20px;
+}
+
+.filter-table td:last-child {
+    width: calc(100% - 20px);
+}
+
+.filter-table td.filter-checkbox-col {
+    text-align: center;
+}
+
+.filter-table .filter-checkbox-col input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
+    margin: 0;
+}
+
+.filter-label {
+    width: 100%;
+    display: block;
+    word-wrap: break-word;
+}
+
+/* Responsive breakpoints */
+
+/* Mobile devices - up to 480px */
+@media (max-width: 480px) {
+    #page-container {
+        border: none;
+        border-radius: 0;
+        margin: 0;
+        padding: 0;
     }
     
-    .sidebar .closebtn {
-        width: calc(100% - 10px);
-        padding-top: 5px;
-        padding-bottom: 5px;
-        border: 2px;
-        border-color: #dcdcdc75;
-        border-style: solid;
-        border-radius: 10px;
-        text-align: center;
-    }
-    .sidebar .closebtn:hover {
-        background-color: #cccccc75;
-    }
-
-    .sidebar th {
-        text-align: center;
+    #page-container section {
+        padding: 8px;
     }
     
-    .sidebar input.exclude {
-        accent-color: #bb0000;
+    #inputSection {
+        flex-direction: column;
     }
-    .sidebar input[type=text], .sidebar input[type=url], .sidebar textarea, .sidebar select {
-        padding: 4px;
-        border: 1px #CCC solid;
-        border-radius: 3px;
-        max-width: 100%;
+    
+    #inputSection .form-container {
+        margin-bottom: 6px;
+    }
+    
+    #inputSection .cover-image-container {
+        align-self: center;
+    }
+
+    #inputSection .form-field {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    #inputSection .field-label {
+        width: 100%;
+        text-align: left;
+        font-weight: bold;
+    }
+    
+    #inputSection .field-input {
+        margin-right: 0;
+    }
+    
+    #inputSection .field-action {
+        margin-top: 4px;
+    }
+    
+    #inputSection .form-field.checkbox-field {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    #inputSection .field-checkbox {
+        width: auto;
+    }
+    
+    #inputSection .checkbox-label {
+        text-align: left;
+    }
+    
+    .progressButtonRow {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .progressButtonRow .expandedButton {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .HiddenButtonSection {
+        flex-direction: column;
+        gap: 8px;
+        min-width: 200px;
+    }
+    
+    .HiddenButtonSection button {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* Tablets - 481px to 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+    #page-container {
+        max-width: 95%;
+        margin: 8px auto;
+    }
+    
+    #inputSection .field-label {
+        width: 100px;
         min-width: 100px;
     }
-    .sidebar label {
-        display: block;
-        width: 100%;
-        font-size: 16px;
-        padding-bottom: 5px;
-        user-select: none;
+}
+
+/* Desktop - 769px and up */
+@media (min-width: 769px) {
+    #page-container {
+        max-width: fit-content;
+        min-width: 600px;
     }
-    .sidebar tr label:hover {
-        background-color:rgba(40, 40, 40);
+    
+    #inputSection .field-label {
+        width: 120px;
     }
-    #sbFilters {
-        max-height: calc(50% - 30px);
-        overflow-y: scroll;
-    }
-    #sbFilters input[type=text], #sbFilters input[type=url], #sbFilters textarea, #sbFilters select {
-        width: calc(100% - 15px);
-    }
+}
+
+/* Default light theme - uses base theme as-is */
+/* Base colors are already defined in themeBase.css */
+
+body {
+    background: var(--body-bg);
+    color: var(--body-text);
+}
+
+input, select, progress, textarea {
+    background: var(--input-bg);
+    color: var(--input-text);
+}
+
+svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+.sleeping-icon {
+    color: var(--icon-secondary);
+    fill: var(--icon-secondary);
+}
+
+.bi-eye-fill,
+.downloading-icon {
+    color: dodgerblue;
+}
+
+.chapter-status-column svg {
+    margin: 2px;
+    transition: filter 0.2s ease;
+}
+
+#chapterSelectInfo svg {
+    color: var(--icon-primary, #808080);
+}
+
+.library-chapter-view-icon {
+    color: var(--icon-primary);
+    cursor: pointer;
+    margin-right: 4px;
+    font-size: 14px;
+}
+
+.clickable-icon {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clickable-icon > svg,
+.clickable-icon > span > svg {
+    fill: var(--icon-primary);
+    color: var(--icon-primary);
+}
+
+.clickable-icon:hover {
+    background-color: var(--clickable-hover-bg);
+}
+
+.clickable-icon:hover > svg,
+.clickable-icon:hover > span > svg  {
+    fill: var(--clickable-hover-icon);
+    color: var(--clickable-hover-icon);
+}
+
+.clickable-icon:active > svg,
+.clickable-icon:active > span > svg {
+    fill: var(--clickable-hover-icon);
+    color: var(--clickable-hover-icon);
+}
+
+.error-state .chapter-status-icon,
+.error-state:hover .chapter-status-icon,
+.error-state:hover .menu-icon {
+    fill: var(--color-error);
+}
+
+.error-state .clickable-icon:hover {
+    background-color: var(--color-error-bg);
+}
+
+input[type=checkbox] {
+    accent-color: var(--checkbox-accent);
+}
+
+.error-state input[type=checkbox] {
+    accent-color: var(--checkbox-error);
+}
+
+input[type=checkbox].successBox {
+    accent-color: var(--checkbox-success);
+}
+
+.sidebar input.exclude {
+    accent-color: var(--checkbox-exclude);
+}
+
+.new-chapter-badge {
+    color: var(--lib-new-chapter-badge);
+}

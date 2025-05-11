@@ -11,6 +11,7 @@
     "copyfiles": "^2.4.1",
     "eslint": "^8.0.0",
     "http-server": "^13.0.2",
+    "jsdom": "^25.0.0",
     "web-ext": "*"
   },
   "main": "popup.html",
@@ -23,6 +24,10 @@
     "postinstall-DOMpurify": "copyfiles -V -u 1 node_modules/dompurify/dist/purify.min.js plugin",
     "postinstall": "npm run -s postinstall-zip && npm run -s postinstall-DOMpurify",
     "test": "http-server -o unitTest/Tests.html",
+    "test:node": "node test/run-all.js",
+    "test:simple": "node test/simple.test.js",
+    "test:util": "node test/util.test.js",
+    "test:structure": "node test/epub-structure.test.js",
     "lint": "cd eslint && node pack.js && eslint packed.js",
     "lint:fix": "eslint --config eslint/.eslintrc.js --fix plugin/js",
     "web-ext": "cd eslint && cp *.xpi temp.xpi && web-ext lint -w -s temp.xpi && rm temp.xpi",
