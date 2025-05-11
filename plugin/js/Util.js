@@ -9,7 +9,7 @@
 
 const util = (function() {
     var sleepControler = new AbortController;
-    
+
     function sleep(ms) {
         return new Promise(resolve => {
             function finished() {
@@ -95,9 +95,9 @@ const util = (function() {
         return div;
     }
 
-    // assumes we're making link from file in OEBPS\Text to OEBPS\Images
-    function makeRelative(href) {
-        return ".." + href.substring(5);
+    // assumes we're making link from file in EPUB\text to EPUB\images
+    var makeRelative = function(href) {
+        return ".." + href.substring(4);
     }
 
     function resolveRelativeUrl(baseUrl, relativeUrl) {
@@ -845,8 +845,8 @@ const util = (function() {
         return dom;
     }
 
-    function styleSheetFileName() {
-        return "OEBPS/Styles/stylesheet.css";
+    var styleSheetFileName = function () {
+        return "EPUB/styles/stylesheet.css";
     }
 
     function extractUrlFromBackgroundImage(element) {

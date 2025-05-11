@@ -270,7 +270,7 @@ QUnit.test("replaceImageTags", function (assert) {
            "<div>" +
              "<div class=\"svg_outer svg_inner\">"+
                 "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"99%\" width=\"100%\" version=\"1.1\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 302 301\">" +
-                    "<image xlink:href=\"../Images/0000_BTS_vol_01_000a.jpg\" width=\"302\" height=\"301\"/>"+
+                    "<image xlink:href=\"../images/0000_BTS_vol_01_000a.jpg\" width=\"302\" height=\"301\"/>"+
                     "<desc>https://www.baka-tsuki.org/project/index.php?title=File:BTS_vol_01_000a.jpg</desc>"+
                 "</svg>"+
                 "<div class=\"thumbcaption\">" +
@@ -280,28 +280,28 @@ QUnit.test("replaceImageTags", function (assert) {
            "</div>"+
            "<div class=\"svg_outer svg_inner\">"+
                 "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"99%\" width=\"100%\" version=\"1.1\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 400 600\">" +
-                    "<image xlink:href=\"../Images/0001_BTS_vol_01_000b.png\" width=\"400\" height=\"600\"/>"+
+                    "<image xlink:href=\"../images/0001_BTS_vol_01_000b.png\" width=\"400\" height=\"600\"/>"+
                     "<desc>https://www.baka-tsuki.org/project/index.php?title=File:BTS_vol_01_000b.png</desc>"+
                 "</svg>"+
             "</div>"+
            "<div class=\"thumbinner\">T1</div>" +
            "<div class=\"svg_outer svg_inner\">"+
                 "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"99%\" width=\"100%\" version=\"1.1\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 302 301\">" +
-                    "<image xlink:href=\"../Images/0000_BTS_vol_01_000a.jpg\" width=\"302\" height=\"301\"/>"+
+                    "<image xlink:href=\"../images/0000_BTS_vol_01_000a.jpg\" width=\"302\" height=\"301\"/>"+
                     "<desc>https://www.baka-tsuki.org/project/index.php?title=File:BTS_vol_01_000a.jpg</desc>"+
                 "</svg>"+
                 "<div class=\"thumbcaption\">comment</div>" + 
             "</div>"+
-            "<div><img src=\"../Images/0002_BTS_V01_Cover.jpg\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:BTS_V01_Cover.jpg\  --></div>"+
+            "<div><img src=\"../images/0002_BTS_V01_Cover.jpg\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:BTS_V01_Cover.jpg\  --></div>"+
              "<div class=\"rating-section\">" +
-             "<div><img src=\"../Images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></div>"+
+             "<div><img src=\"../images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></div>"+
              "</div>" +
-             "<div><img src=\"../Images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></div>"+
+             "<div><img src=\"../images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></div>"+
              "<p></p>"+
-             "<div><img src=\"../Images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></div>"+
+             "<div><img src=\"../images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></div>"+
            "<p><i><b></b></i></p>"+
            "<p><i><b>"+
-                "this image <span><img class=\"inline\" src=\"../Images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></span> should be inline" +
+                "this image <span><img class=\"inline\" src=\"../images/0003_star_on.gif\" alt=\"\" /><!--  https://www.baka-tsuki.org/project/index.php?title=File:star_on.gif\  --></span> should be inline" +
            "</b></i></p>"+
         "</x>");
 });
@@ -340,7 +340,7 @@ QUnit.test("hasNoVisibleContent", function (assert) {
         "<div class=\"print-no\">\n"+
         "</div>"+
          "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"100%\" width=\"100%\" version=\"1.1\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 1500 597\">"+
-         "<image xlink:href=\"../Images/[0000]Hantuki01 001.jpg\" height=\"597\" width=\"1500\" data-origin=\"http://sonako.wikia.com/wiki/File:Hantuki01 001.jpg\"/>"+
+         "<image xlink:href=\"../images/[0000]Hantuki01 001.jpg\" height=\"597\" width=\"1500\" data-origin=\"http://sonako.wikia.com/wiki/File:Hantuki01 001.jpg\"/>"+
          "</svg>"+
          "<div><div id=\"mb_video_syncad_bottom\" style=\"padding: 5px 0px 0px;\"></div></div><p><br />"+
          "</p>\n"
@@ -443,10 +443,10 @@ test("fixupInternalHyperLinks", function (assert) {
     let epubItems = parser.splitContentIntoEpubItems(content, null);
     BakaTsukiParser.fixupInternalHyperLinks(epubItems);
 
-    assert.equal(fetchHrefForId(epubItems, "cite_ref-1"), "../Text/0003_H4.xhtml#cite_note-1");
-    assert.equal(fetchHrefForId(epubItems, "cite_ref-2"), "../Text/0001_H2.xhtml#cite_note-2");
-    assert.equal(fetchHrefForId(epubItems, "cite_note-1"), "../Text/0000_H1.xhtml#cite_ref-1");
-    assert.equal(fetchHrefForId(epubItems, "cite_note-2"), "../Text/0002_H3.xhtml#cite_ref-2");
+    assert.equal(fetchHrefForId(epubItems, "cite_ref-1"), "../text/0003_H4.xhtml#cite_note-1");
+    assert.equal(fetchHrefForId(epubItems, "cite_ref-2"), "../text/0001_H2.xhtml#cite_note-2");
+    assert.equal(fetchHrefForId(epubItems, "cite_note-1"), "../text/0000_H1.xhtml#cite_ref-1");
+    assert.equal(fetchHrefForId(epubItems, "cite_note-2"), "../text/0002_H3.xhtml#cite_ref-2");
 
 });
 

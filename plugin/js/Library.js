@@ -515,7 +515,7 @@ class Library {
         let i,j, sel = /button:hover/, aProperties = [];
         for (i = 0; i < document.styleSheets.length; ++i) {
             if (document.styleSheets[i]. cssRules !== null) {
-                for (j = 0; j < document.styleSheets[i].cssRules.length; ++j) {    
+                for (j = 0; j < document.styleSheets[i].cssRules.length; ++j) {
                     if (sel.test(document.styleSheets[i].cssRules[j].selectorText)) {
                         aProperties.push(document.styleSheets[i].cssRules[j].style.cssText);
                     }

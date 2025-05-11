@@ -29,7 +29,7 @@ class EpubPacker {
     }
 
     static coverImageXhtmlHref() {
-        return "OEBPS/Text/Cover.xhtml";
+        return "EPUB/text/Cover.xhtml";
     }
 
     static coverImageXhtmlId() {
@@ -41,10 +41,10 @@ class EpubPacker {
         let zipFileWriter = new zip.BlobWriter("application/epub+zip");
         let zipWriter = new zip.ZipWriter(zipFileWriter,{useWebWorkers: false,compressionMethod: 8, extendedTimestamp: false});
         that.addRequiredFiles(zipWriter);
-        zipWriter.add("OEBPS/content.opf", new zip.TextReader(that.buildContentOpf(epubItemSupplier)));
-        zipWriter.add("OEBPS/toc.ncx", new zip.TextReader(that.buildTableOfContents(epubItemSupplier)));
+        zipWriter.add("EPUB/content.opf", new zip.TextReader(that.buildContentOpf(epubItemSupplier)));
+        zipWriter.add("EPUB/toc.ncx", new zip.TextReader(that.buildTableOfContents(epubItemSupplier)));
         if (this.version === EpubPacker.EPUB_VERSION_3) {
-            zipWriter.add("OEBPS/toc.xhtml", new zip.TextReader(that.buildNavigationDocument(epubItemSupplier)));
+            zipWriter.add("EPUB/nav.xhtml", new zip.TextReader(that.buildNavigationDocument(epubItemSupplier)));
         }
         this.packContentFiles(zipWriter, epubItemSupplier);
         zipWriter.add(util.styleSheetFileName(), new zip.TextReader(that.metaInfo.styleSheet));
@@ -63,7 +63,7 @@ class EpubPacker {
             new zip.TextReader("<?xml version=\"1.0\"?>" +
             "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">" +
                 "<rootfiles>" +
-                    "<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>" +
+                    "<rootfile full-path=\"EPUB/content.opf\" media-type=\"application/oebps-package+xml\"/>" +
                 "</rootfiles>" +
             "</container>")
         );
@@ -173,13 +173,13 @@ class EpubPacker {
         }
 
         that.addManifestItem(manifest, ns, util.styleSheetFileName(), "stylesheet", "text/css");
-        that.addManifestItem(manifest, ns, "OEBPS/toc.ncx", "ncx", "application/x-dtbncx+xml");
+        that.addManifestItem(manifest, ns, "EPUB/toc.ncx", "ncx", "application/x-dtbncx+xml");
         if (epubItemSupplier.hasCoverImageFile()) {
             let item = that.addManifestItem(manifest, ns, EpubPacker.coverImageXhtmlHref(), EpubPacker.coverImageXhtmlId(), "application/xhtml+xml");
             this.setSvgPropertyForManifestItem(item, this.doesCoverHaveSvg(epubItemSupplier));
         }
         if (this.version === EpubPacker.EPUB_VERSION_3) {
-            let item = this.addManifestItem(manifest, ns, "OEBPS/toc.xhtml", "nav", "application/xhtml+xml");
+            let item = this.addManifestItem(manifest, ns, "EPUB/nav.xhtml", "nav", "application/xhtml+xml");
             item.setAttributeNS(null, "properties", "nav");
         }
     }
@@ -374,9 +374,9 @@ class EpubPacker {
         return "body" + id;
     }
     // changes href to be relative to manifest (and toc.ncx)
-    // which are in OEBPS
+    // which are in EPUB
     makeRelative(href) {
-        return href.substr(6);
+        return href.substring(5);
     }
 
     /// hook point for unit testing (because we can't control the actual time)
