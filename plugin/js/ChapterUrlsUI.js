@@ -129,7 +129,7 @@ class ChapterUrlsUI {
 
     static limitNumOfChapterS(maxChapters) {
         let max = util.isNullOrEmpty(maxChapters) ? 10000 : parseInt(maxChapters.replace(",", ""));
-        let selectedRows = [...ChapterUrlsUI.getChapterUrlsTable().querySelectorAll("[type='checkbox'")]
+        let selectedRows = [...ChapterUrlsUI.getChapterUrlsTable().querySelectorAll("[type='checkbox']")]
             .filter(c => c.checked)
             .map(c => c.parentElement.parentElement);
         if (max< selectedRows.length ) {
@@ -395,11 +395,10 @@ class ChapterUrlsUI {
     * @private
     */
     URLsToChapters(URLs) {
-        let returnchapters = URLs.map(e => ({
+        return URLs.map(e => ({
             sourceUrl: e,
             title: "[placeholder]"
         }));
-        return returnchapters;
     }
 
     /** @private */
@@ -425,14 +424,11 @@ class ChapterUrlsUI {
     }
 
     toggleShowUrlsForChapterRange(select, chapters) {
-        
         select.onchange = null;
         let memberForTextOption = ChapterUrlsUI.textToShowInRange();
         for (let o of [...select.querySelectorAll("Option")]) {
             o.text = chapters[o.index][memberForTextOption];
         }
-        let selectedIndex = select.selectedIndex;
-        select.selectedIndex = selectedIndex;
         select.onchange = ChapterUrlsUI.onRangeChanged;
     }
 
@@ -467,7 +463,7 @@ class ChapterUrlsUI {
     static updateRange(startRowIndex, endRowIndex, state) {
         let direction = startRowIndex < endRowIndex ? 1 : -1;
         let linkTable = ChapterUrlsUI.getChapterUrlsTable();
-        for (let rowIndex = startRowIndex; rowIndex != endRowIndex; rowIndex += direction) {
+        for (let rowIndex = startRowIndex; rowIndex !== endRowIndex; rowIndex += direction) {
             let row = linkTable.rows[rowIndex];
             ChapterUrlsUI.setRowCheckboxState(row, state);
         }
@@ -505,31 +501,28 @@ class ChapterUrlsUI {
         chapterList: {},
         init() {
             let rc = new ChapterUrlsUI.RangeCalculator();
-            var filterTermsFrequency = {};
+            let filterTermsFrequency = {};
             let constantTerms = false; // To become a collection of all terms used in every link.
-            var chapterList = ChapterUrlsUI.getTableRowsWithChapters().filter(item => rc.rowInRange(item)).map(item => {
-                let filterObj = 
-                { 
-                    row: item, 
-                    values: Array.from(item.querySelectorAll("td")).map(item => item.innerText).join("/").split("/"),
-                    valueString: ""
-                };
+            const chapterList = ChapterUrlsUI.getTableRowsWithChapters().filter(item => rc.rowInRange(item)).map(item => {
+                let filterObj =
+                    {
+                        row: item,
+                        values: Array.from(item.querySelectorAll("td")).map(item => item.innerText).join("/").split("/"),
+                        valueString: ""
+                    };
                 filterObj.values.push(item.querySelector("input[type='text']").value);
                 filterObj.values = filterObj.values.filter(item => item.length > 3 && !item.startsWith("http"));
                 filterObj.valueString = filterObj.values.join(" ");
-                
+
                 let recordFilterTerms = filterObj.valueString.toLowerCase().split(" ");
                 recordFilterTerms.forEach(item => {
                     filterTermsFrequency[item] = (parseInt(filterTermsFrequency[item]) || 0) + 1;
                 });
 
-                if (!constantTerms)
-                {
+                if (!constantTerms) {
                     constantTerms = recordFilterTerms;
-                }
-                else
-                {
-                    constantTerms.filter(item => recordFilterTerms.indexOf(item) == -1).forEach(item =>{
+                } else {
+                    constantTerms.filter(item => recordFilterTerms.indexOf(item) === -1).forEach(item => {
                         constantTerms.splice(constantTerms.indexOf(item), 1);
                     });
                 }
@@ -538,7 +531,7 @@ class ChapterUrlsUI {
             });
             let minFilterTermCount = Math.min( 3, chapterList.length * 0.10 );
             filterTermsFrequency = Object.keys(filterTermsFrequency)
-                .filter(key => constantTerms.indexOf(key) == -1 && filterTermsFrequency[key] > minFilterTermCount)
+                .filter(key => constantTerms.indexOf(key) === -1 && filterTermsFrequency[key] > minFilterTermCount)
                 .map(key => ({ key: key, value: filterTermsFrequency[key] } ));
 
             var calcValue = function(filterTerm) {
@@ -556,7 +549,7 @@ class ChapterUrlsUI {
             let rc = new ChapterUrlsUI.RangeCalculator();
             let formResults = Object.fromEntries(new FormData(document.getElementById("sbFiltersForm")));
             let formKeys = Object.keys(formResults);
-            formResults = formKeys.filter(key => key.indexOf("Hidden") == -1)
+            formResults = formKeys.filter(key => key.indexOf("Hidden") === -1)
                 .map(key => {
                     return {
                         key: key,
@@ -698,7 +691,6 @@ ChapterUrlsUI.RangeCalculator = class {
         return (this.startIndex <= index) && (index <= this.endIndex);
     }
 };
-
 
 
 ChapterUrlsUI.DOWNLOAD_STATE_NONE = 0;

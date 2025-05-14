@@ -6,9 +6,9 @@
 /*
     For our purposes, an EPUB only contains two types of content file: XHTML and image.
     - The HTML files are in reading order (i.e. Appear in same order as spine and table of contents (ToC))
-    - If a HTML file entry has a "title" element, it will appear in the ToC
-    - Stand alone images (e.g. Cover) will have a XHTML entry that points to the image.
-    - First image, (if there are any) is be the cover image
+    - If an HTML file entry has a "title" element, it will appear in the ToC
+    - Stand-alone images (e.g. Cover) will have an XHTML entry that points to the image.
+    - First image, (if there are any) will be the cover image
 */
 
 /// <param name="uuid" type="string">identifier for this EPUB.  (i.e. "origin" URL story was downloaded from)</param>
@@ -121,8 +121,7 @@ class EpubPacker {
             this.addMetaProperty(metadata, identifier, "identifier-type", "BookId", "URI");
             let meta = this.createAndAppendChildNS(metadata, opf_ns, "meta");
             meta.setAttributeNS(null, "property", "dcterms:modified");
-            let dateWithoutMillisecond = this.getDateForMetaData().substring(0, 19) + "Z";
-            meta.textContent = dateWithoutMillisecond;
+            meta.textContent = this.getDateForMetaData().substring(0, 19) + "Z"; // date without milliseconds
         }
 
         let webToEpubVersion = `[https://github.com/dteviot/WebToEpub] (ver. ${util.extensionVersion()})`;

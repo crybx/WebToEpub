@@ -7,17 +7,15 @@
 </HEAD>
 <BODY LANG="en-NZ" DIR="LTR">
 <H1>Web to EPUB Extension for Chrome</H1>
-<p><br />
-</p>
+<br />
 <h2>Introduction</h2>
-<p><br />
-</p>
+<br />
 <p>If you're like me, you will have
 discovered that there are many sites on the Internet that have
 fiction that is free to read. For example,
 <a HREF="http://archiveofourown.org/">http://archiveofourown.org</a>.
 Unfortunately, most of these sites have two minor drawbacks. Firstly,
-because they're online sites, you need to be on-line to view them.
+because they're online sites, you need to be online to view them.
 Second, the individual chapters of each story (and the good stories
 almost always have multiple chapters) are on multiple web pages. So
 you need to go between the web pages to read the story.</p>
@@ -29,14 +27,12 @@ viewer.</p>
 <p>Well, it turns out that it's possible
 to write "extensions" for Google's Chrome browser, which
 allow you to add additional functionality to Chrome. So, I've used
-that to to create a "Save to EPUB" plug-in, and I'm now
+that to create a "Save to EPUB" plug-in, and I'm now
 going to show you how it's done, so you can use it, and extend it to
 handle the sites you like. 
 </p>
-<p><br />
-</p>
-<p>The topics covered are: 
-</p>
+<br />
+<p>The topics covered are:</p>
 <ul>
     <li>The basics of building a Chrome extension.</li>
     <li>How to get your extension to read the HTML of a web page in a Chrome tab.</li>
@@ -46,8 +42,7 @@ handle the sites you like.
     <li>Some notes on Unit testing.</li>
     <li>How to add a parser for a site you like.</li>
 </ul>
-<p><br />
-</p>
+<br />
 <h2>Using the Code or "How to load an Extension into Chrome"</h2>
 <p>For those of you who just want to use the code, the basic steps are: 
 </p>
@@ -60,16 +55,14 @@ handle the sites you like.
     <li>Press "Fetch Chapters" button and wait for them to load.</li>
     <li>Press "Pack EPUB" button.</li>
 </ul>
-<p><br />
-</p>
+<br />
     <h3>Steps to load an extension into Chrome are:</h3>
 <ul>
 	<li>Open Chrome and type "chrome://extensions" into the browser.</li>
     <li>Make sure "Developer Mode" at the top of the page is checked.</li>
     <li>Press the "Load unpacked extension.." button and browse to the root folder for the extensions files.</li>
 </ul>
-<p><br />
-</p>
+<br />
 <h2>Basics of Building a Chrome extension</h2>
 <p>Google's excellent documentation on building extensions can be found at
 <a HREF="http://developer.chrome.com/extensions/getstarted.htm">http://developer.chrome.com/extensions/getstarted.htm</a>.</p>
@@ -83,8 +76,7 @@ handle the sites you like.
         </ul>
     </li>
 </ul>
-<p><br />
-</p>
+<br />
 <p>The manifest for the Web To EPUB
 extension looks like this:</p>
 <pre lang="json">
@@ -101,22 +93,20 @@ extension looks like this:</p>
   },
   "minimum_chrome_version": "46"
 }</pre>
-<p><br />
-</p>
-<p>The major points of note are:
-    <ul>
-        <li>The extension puts a button on the Chrome toolbar which uses book128.png <img src="02-book128.png" /> as the image on the button.</li>
-        <li>When button is pressed, the web page "popup.html" is launched.  So, popup.html is the "main" page of this extension.</li>
-        <li>The extension needs the following permissions to work
-            <ul>
-                <li>tabs: can manipulate the contents on web page Chrome is displaying (i.e. A tab.)</li>
-                <li>all_urls: can make HTTP calls to any URL.</li>
-            </ul>
-        </li>
-    </ul>
-</p>
-<p><br />
-</p>
+<br />
+<p>The major points of note are:</p>
+<ul>
+    <li>The extension puts a button on the Chrome toolbar which uses book128.png <img src="02-book128.png" /> as the image on the button.</li>
+    <li>When button is pressed, the web page "popup.html" is launched.  So, popup.html is the "main" page of this extension.</li>
+    <li>The extension needs the following permissions to work
+        <ul>
+            <li>tabs: can manipulate the contents on web page Chrome is displaying (i.e. A tab.)</li>
+            <li>all_urls: can make HTTP calls to any URL.</li>
+        </ul>
+    </li>
+</ul>
+
+<br />
 <p>Popup.html is this:</p>
     <pre lang="html">
 &lt;html lang="en"&gt;
@@ -179,28 +169,25 @@ extension looks like this:</p>
     &lt;script src="js/main.js"&gt;&lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</pre>
-<p><br />
-</p>
+<br />
 <p>As you can see, it's an ordinary HTML
 file, with fields to show the key attributes of the story: Title,
 Author, Language and Chapters.  The only, even slightly, unusual
 aspect is that it has no embedded JavaScript.</p>
-<p><br />
-</p>
+<br />
 <h2>How to read the HTML of a web page on a Chrome tab.</h2>
-<p>When this Extension is activated, the first thing it does is find the currently active tab (web page) in Chrome and search it for story information.  Basic steps are:
-    <ul>
-        <li>Add the "tabs" permission to manifest.json.  (We did this in the previous step.)</li>
-        <li>When popup.html starts, a function attached to the onload() event is called.</li>
-        <li>This function tells Chrome to inject a "Content Script" into the active web page.</li>
-        <li>The Content Script  is a simple JavaScript file that is run within the context of the active server page, so has access to the page's Document Object Model (DOM.)</li>
-        <li>The script reads the DOM and sends a serialized copy of it back to popup.html as a message.</li>
-        <li>Popup.html listens for the message, which will return asynchronously.  When the message arrives, the DOM is de-serialized and parsed to extract the story information to populate popup.html</li>
-        <li>Note that because the message returns asynchronously, the onload() function needs to set up a listener for the message before injecting the Content Script.</li>
-    </ul>
-</p>
-<p><br /> 
-</p>
+<p>When this Extension is activated, the first thing it does is find the currently active tab (web page) in Chrome and search it for story information.  Basic steps are:</p>
+<ul>
+    <li>Add the "tabs" permission to manifest.json.  (We did this in the previous step.)</li>
+    <li>When popup.html starts, a function attached to the onload() event is called.</li>
+    <li>This function tells Chrome to inject a "Content Script" into the active web page.</li>
+    <li>The Content Script  is a simple JavaScript file that is run within the context of the active server page, so has access to the page's Document Object Model (DOM.)</li>
+    <li>The script reads the DOM and sends a serialized copy of it back to popup.html as a message.</li>
+    <li>Popup.html listens for the message, which will return asynchronously.  When the message arrives, the DOM is de-serialized and parsed to extract the story information to populate popup.html</li>
+    <li>Note that because the message returns asynchronously, the onload() function needs to set up a listener for the message before injecting the Content Script.</li>
+</ul>
+
+<br />
 <p>The contents of the Content Script looks like this:</p>
 <pre code="javascript">
 // pack the DOM of this page into a message
@@ -211,8 +198,7 @@ var parseResults = {
 
 // send message back to our extension
 chrome.runtime.sendMessage(parseResults);</pre>
-<p><br />
-</p>
+<br />
 <p>And the onload() function in popup.html
 looks like this:</p>
 <pre code="javascript">
@@ -232,36 +218,34 @@ window.onload = function () {
     // in this case, the content script is in a file called "ContentScript.js"
     chrome.tabs.executeScript({file: "js/ContentScript.js"});    
 }</pre>
-<p><br />
-</p>
+<br />
 <p>And that's all you need to do for an extension to read the current tab's contents in Chrome. 
     For more details on what's going on, check out Google's documentation on <a href="https://developer.chrome.com/extensions/content_scripts.html">Content Scripts</a>
     and <a href="http://developer.chrome.com/extensions/messaging.html">Sending Messages</a>.</p>
-<p><br />
-</p>
+<br />
 <h2>Using Chrome's &quot;Inspect Element&quot; to examine the DOM</h2>
 <p>This section assumes you know what a DOM is. If you don't, I suggest you read <a href="http://eloquentjavascript.net/13_dom.html">Chapter 13 of Eloquent Javascript</a>.  Go ahead, I'll wait.</p>
 <p>Welcome back. Now that you know what a DOM is and we got the DOM for the web page in the previous section,
- the next step is to extract the information we need from the DOM. The things that we want are:
-    <ul>
-        <li>Title of the story</li>
-        <li>Author of the story</li>
-        <li>Title of each chapter</li>
-        <li>URL to each chapter</li>
-        <li>Language the story is in.  (Note, if you're only interested in American stories, you could skip extracting this and just hard code it to "en-us". If you're only interested in other languages, you could hard code their language code instead.)</li>
-    </ul>
-</p>
+ the next step is to extract the information we need from the DOM. The things that we want are:</p>
+<ul>
+    <li>Title of the story</li>
+    <li>Author of the story</li>
+    <li>Title of each chapter</li>
+    <li>URL to each chapter</li>
+    <li>Language the story is in.  (Note, if you're only interested in American stories, you could skip extracting this and just hard code it to "en-us". If you're only interested in other languages, you could hard code their language code instead.)</li>
+</ul>
+
 <p>The first step to extracting the information is to figure out how to find it in the DOM. 
-Fortunately, Chrome has the tools built in to make doing this easy. All you need to do is:
-    <ul>
-        <li>Open the web page in Chrome</li>
-        <li>Place your mouse over the item you're interested in.</li>
-        <li>Click the right mouse button</li>
-        <li>Select "Inspect Element".</li>
-        <li>Chrome will open a window showing the DOM for the web page, with the cursor set to the element you clicked on.</li>
-        <li>Examine the DOM to to see how the element can be identified.</li>
-    </ul>
-</p>
+  Fortunately, Chrome has the tools built in to make doing this easy. All you need to do is:</p>
+<ul>
+    <li>Open the web page in Chrome</li>
+    <li>Place your mouse over the item you're interested in.</li>
+    <li>Click the right mouse button</li>
+    <li>Select "Inspect Element".</li>
+    <li>Chrome will open a window showing the DOM for the web page, with the cursor set to the element you clicked on.</li>
+    <li>Examine the DOM to to see how the element can be identified.</li>
+</ul>
+
 <p>I'll walk you through an example.  Start by loading the page <a href="http://archiveofourown.org/works/685590/chapters/1258295">http://archiveofourown.org/works/685590/chapters/1258295</a> 
     and scroll through it until you see the story's Title and Author.  It will look something like this.</p>
 <img src="03-WebPage.png" />
@@ -296,8 +280,7 @@ Fortunately, Chrome has the tools built in to make doing this easy. All you need
 &lt;meta name="subject" content="fandom"&gt;
 </pre>
 <p>So the language is the "content" attribute of "meta" tag, with a "name" attribute "language".</p>
-<p><br />
-</p>
+<br />
 <p>Now that we know where the information we want is in the DOM, the next step is to extract it.  Let's start with the title. 
     As previously mentioned, the title is in a &lt;h2&gt; tag, with a class of "title heading".  
     So, given the DOM object returned by the ContentScript, the following function will extract the title.</p>
@@ -315,8 +298,7 @@ Fortunately, Chrome has the tools built in to make doing this easy. All you need
     // if the list has an element, then we've found the element we're looking for, so return its innerText.
     return (elements.length != 0) ? elements[0].innerText() : null;
 }</pre>
-<p><br />
-</p>
+<br />
     <p>The two interesting parts are the functions <b>getElementsByTagName()</b> and <b>filter()</b>.</p>
     <p><b>getElementsByTagName()</b> does just what it's name suggests, it returns all elements in the DOM with the specified tag.
     Actually, it's more powerful that that. As well as searching an entire DOM, if you give it an element of the DOM, it will search the child nodes of that element.
@@ -366,8 +348,7 @@ optionToChapterInfo: function(optionElement) {
 <p>What the <b>map()</b> function does: if you have a function that converts one type of object into a new type
     (which we do, it's optionToChapterInfo we wrote previously) and an array of objects you want converted, 
     it will create an array of the new types from the old ones. Functional Programming is awesome.</p>
-<p><br />
-</p>
+<br />
 <h2>Fetching Web Pages programatically</h2>
 <p>Now that we have a list of URLs for the chapters, the next step is to fetch the them. 
     This can be done using <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest">XMLHttpRequest</a>.
@@ -388,8 +369,7 @@ optionToChapterInfo: function(optionElement) {
 <p>
     <sup>Note 1</sup>You can use XMLHttpRequest synchronously under some conditions, but it's not a good idea.  Read the XMLHttpRequest docs for details.
 </p>
-<p><br />
-</p>
+<br />
 <h2>Creating an EPUB</h2>
 <p>At this point, you have the web pages making up the story and the story's metadata (Title, Author, source URL and language).
     This is everything you need to create an EPUB for the story. 
@@ -444,8 +424,7 @@ saveAs: function (blob, fileName) {
     a.download = fileName;
     a.click();
 }</pre>
-<p><br />
-</p>
+<br />
 <h2>Unit testing notes</h2>
 <p>This is the third JavaScript program I've attempted to write. 
     One of the things I quickly learned was that providing unit tests to exercise the code as it was being written was vital.

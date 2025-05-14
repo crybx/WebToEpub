@@ -1,9 +1,9 @@
 /*
-  Libraryclass to save Epubs from Storys which are ongoing
+  Library class to save epubs from stories which are ongoing
 */
 "use strict";
 
-var LibFileReader = new FileReader();
+const LibFileReader = new FileReader();
 
 class Library {
     constructor() {
@@ -15,8 +15,8 @@ class Library {
     
     async LibAddToLibrary(AddEpub, fileName, startingUrlInput, overwriteExisting, backgroundDownload) {
         Library.LibShowLoadingText();
-        if (document.getElementById("includeInReadingListCheckbox").checked != true) {
-            document.getElementById("includeInReadingListCheckbox").click();
+        if (!document.getElementById("includeInReadingListCheckbox")?.checked) {
+            document.getElementById("includeInReadingListCheckbox")?.click();
         }
         let CurrentLibStoryURLKeys = await Library.LibGetAllLibStorageKeys("LibStoryURL");
         let CurrentLibStoryURLs = await Library.LibGetFromStorageArray(CurrentLibStoryURLKeys);
@@ -74,7 +74,7 @@ class Library {
         let MergedEpubZip = new zip.ZipWriter(MergedEpubWriter,{useWebWorkers: false,compressionMethod: 8, extendedTimestamp: false});
         //Copy PreviousEpub in MergedEpub
         for (let element of PreviousEpubContent.filter(a => a.filename != "OEBPS/content.opf" && a.filename != "OEBPS/toc.ncx" && a.filename != "OEBPS/toc.xhtml")) {
-            if (element.filename == "mimetype") {
+            if (element.filename === "mimetype") {
                 MergedEpubZip.add(element.filename, new zip.TextReader(await element.getData(new zip.TextWriter())), {compressionMethod: 0});
                 continue;
             }
@@ -90,16 +90,16 @@ class Library {
         let ImagenumberAddEpubIndex = 1;
         let TextnumberAddEpub = 0;
         let NewChapter = 0;
-        if (AddEpubTextFolder.filter( a => a.filename == "OEBPS/Text/0000_Information.xhtml").length != 0) {
+        if (AddEpubTextFolder.filter( a => a.filename === "OEBPS/Text/0000_Information.xhtml").length != 0) {
             TextnumberAddEpub++;
         }
         let AddEpubTextFile;
         let AddEpubImageFile;
-        let PreviousEpubContentText = await PreviousEpubContent.filter( a => a.filename == "OEBPS/content.opf")[0].getData(new zip.TextWriter());
-        let PreviousEpubTocText = await PreviousEpubContent.filter( a => a.filename == "OEBPS/toc.ncx")[0].getData(new zip.TextWriter());
-        let PreviousEpubTocEpub3Text =  await (PreviousEpubContent.filter( a => a.filename == "OEBPS/toc.xhtml"))?.[0]?.getData(new zip.TextWriter());
-        let AddEpubContentText = await AddEpubContent.filter( a => a.filename == "OEBPS/content.opf")[0].getData(new zip.TextWriter());
-        let AddEpubTocText = await AddEpubContent.filter( a => a.filename == "OEBPS/toc.ncx")[0].getData(new zip.TextWriter());
+        let PreviousEpubContentText = await PreviousEpubContent.filter( a => a.filename === "OEBPS/content.opf")[0].getData(new zip.TextWriter());
+        let PreviousEpubTocText = await PreviousEpubContent.filter( a => a.filename === "OEBPS/toc.ncx")[0].getData(new zip.TextWriter());
+        let PreviousEpubTocEpub3Text =  await (PreviousEpubContent.filter( a => a.filename === "OEBPS/toc.xhtml"))?.[0]?.getData(new zip.TextWriter());
+        let AddEpubContentText = await AddEpubContent.filter( a => a.filename === "OEBPS/content.opf")[0].getData(new zip.TextWriter());
+        let AddEpubTocText = await AddEpubContent.filter( a => a.filename === "OEBPS/toc.ncx")[0].getData(new zip.TextWriter());
 
         let regex1, regex2, regex3, regex4, string1, string2, string3, string4;
         // eslint-disable-next-line
@@ -950,13 +950,13 @@ class Library {
     static async LibHandelImport(objbtn) {
         Library.LibShowLoadingText();
         Library.LibFileReaderAddListenersImport();
-        let Blobdata = objbtn.files[0];
+        let blobData = objbtn.files[0];
         LibFileReader.name = objbtn.files[0].name;
         let regex = new RegExp("zip$");
         if (!regex.test(LibFileReader.name)) {
-            LibFileReader.readAsText(Blobdata);
+            LibFileReader.readAsText(blobData);
         } else {
-            LibFileReader.readAsArrayBuffer(Blobdata);
+            LibFileReader.readAsArrayBuffer(blobData);
         }
     }
 
@@ -1002,30 +1002,30 @@ class Library {
                     HighestLibEpub = parseInt(element)+1; 
                 }
             });
-            let blobfile = new Blob([LibFileReader.result]);
-            let zipFileReader = new zip.BlobReader(blobfile);
+            let blobFile = new Blob([LibFileReader.result]);
+            let zipFileReader = new zip.BlobReader(blobFile);
             let zipReader = new zip.ZipReader(zipFileReader, {useWebWorkers: false});
             let entries = await zipReader.getEntries();
             //check export logic version
-            let LibraryVersion = await (await entries.filter((a) => a.filename == "LibraryVersion.txt")[0]).getData(new zip.TextWriter());
+            let LibraryVersion = await (await entries.filter((a) => a.filename === "LibraryVersion.txt")[0]).getData(new zip.TextWriter());
             
             if (LibraryVersion == null) {
                 ErrorLog.showErrorMessage("Wrong export version");
                 return;
             }
-            let LibCountEntries = await (await entries.filter((a) => a.filename == "LibraryCountEntries.txt")[0])?.getData(new zip.TextWriter());
+            let LibCountEntries = await (await entries.filter((a) => a.filename === "LibraryCountEntries.txt")[0])?.getData(new zip.TextWriter());
             for (let i = 0; i < LibCountEntries; i++) {
                 chrome.storage.local.set({
-                    ["LibCover" + HighestLibEpub]: await (await entries.filter((a) => a.filename == "Library/"+i+"/LibCover")[0]).getData(new zip.TextWriter()),
-                    ["LibEpub" + HighestLibEpub]: await (await entries.filter((a) => a.filename == "Library/"+i+"/LibEpub")[0]).getData(new zip.TextWriter()),
-                    ["LibFilename" + HighestLibEpub]: await (await entries.filter((a) => a.filename == "Library/"+i+"/LibFilename")[0]).getData(new zip.TextWriter()),
-                    ["LibStoryURL" + HighestLibEpub]: await (await entries.filter((a) => a.filename == "Library/"+i+"/LibStoryURL")[0]).getData(new zip.TextWriter()),
-                    ["LibNewChapterCount" + HighestLibEpub]: await (await entries.filter((a) => a.filename == "Library/"+i+"/LibNewChapterCount")[0])?.getData(new zip.TextWriter())??"0"
+                    ["LibCover" + HighestLibEpub]: await (await entries.filter((a) => a.filename === "Library/"+i+"/LibCover")[0]).getData(new zip.TextWriter()),
+                    ["LibEpub" + HighestLibEpub]: await (await entries.filter((a) => a.filename === "Library/"+i+"/LibEpub")[0]).getData(new zip.TextWriter()),
+                    ["LibFilename" + HighestLibEpub]: await (await entries.filter((a) => a.filename === "Library/"+i+"/LibFilename")[0]).getData(new zip.TextWriter()),
+                    ["LibStoryURL" + HighestLibEpub]: await (await entries.filter((a) => a.filename === "Library/"+i+"/LibStoryURL")[0]).getData(new zip.TextWriter()),
+                    ["LibNewChapterCount" + HighestLibEpub]: await (await entries.filter((a) => a.filename === "Library/"+i+"/LibNewChapterCount")[0])?.getData(new zip.TextWriter())??"0"
                 });
                 await Library.LibCreateStorageIDs(HighestLibEpub);
                 HighestLibEpub++;
             }
-            Library.userPreferences.loadReadingListFromJson(JSON.parse( await (await entries.filter((a) => a.filename == "ReadingList.json")[0]).getData(new zip.TextWriter())));
+            Library.userPreferences.loadReadingListFromJson(JSON.parse( await (await entries.filter((a) => a.filename === "ReadingList.json")[0]).getData(new zip.TextWriter())));
             Library.LibRenderSavedEpubs();
         }
     }

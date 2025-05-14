@@ -45,7 +45,7 @@ class ImageCollector {
     }
 
     addImageInfo(wrappingUrl, sourceUrl, dataOrigFileUrl, fetchFirst) {
-        let imageInfo = null;
+        let imageInfo;
         let index = this.urlIndex.get(sourceUrl);
         if (index === undefined) {
             index = this.urlIndex.get(wrappingUrl);
@@ -64,7 +64,7 @@ class ImageCollector {
             } else {
                 this.imagesToFetch.push(imageInfo);
             }
-        }           
+        }
         this.urlIndex.set(wrappingUrl, index);
         this.urlIndex.set(sourceUrl, index);
         if (dataOrigFileUrl != null) {
@@ -148,7 +148,6 @@ class ImageCollector {
         return ImageCollector.toHex(byteArray.length) + ImageCollector.toHex(hash);
     }
 
-    
     /** Convert integer to 8 character Hex value
     * @private
     */
@@ -160,6 +159,7 @@ class ImageCollector {
     /*
     *  Hook point for Baka-Tsuki to select image to fetch
     */
+    // noinspection JSUnusedGlobalSymbols
     selectImageUrlFromHtmlImagesPage(html) {  // eslint-disable-line no-unused-vars
         return null;
     }
@@ -250,7 +250,7 @@ class ImageCollector {
         let url = null;
         let pairs = srcset.split(",")
             .map(o => o.trim().split(" "))
-            .filter(o => (o.length == 2) && o[0].startsWith("http"));
+            .filter(o => (o.length === 2) && o[0].startsWith("http"));
         for (let pair of pairs) {
             let size = parseInt(pair[1]);
             if (max < size) {
@@ -329,11 +329,11 @@ class ImageCollector {
     runCompression(imageInfo, img) {
         var that = this;
         return new Promise(function(resolve, reject) {
-            if (that.userPreferences.compressImages.value) 
+            if (that.userPreferences.compressImages.value)
             {
                 let c = document.createElement("canvas");
                 let ctx = c.getContext("2d");
-                let maxResolution = that.userPreferences.compressImagesMaxResolution.value;            
+                let maxResolution = that.userPreferences.compressImagesMaxResolution.value;
                 if (imageInfo.height > maxResolution || imageInfo.width > maxResolution)
                 {
                     if (imageInfo.height > imageInfo.width)
@@ -493,11 +493,11 @@ class ImageCollector {
     }
 
     /**
-    *  Derived classess will override
+    *  Derived classes will override
     *  Base version tells user there's a problem
     */
     selectImageUrlFromImagePage(dom) {
-        // try mediawkiki format
+        // try mediawiki format
         let div = dom.querySelector("div.fullMedia");
         if (div !== null) {
             let link = div.querySelector("a");
@@ -618,7 +618,7 @@ class ImageTagReplacer {
             parent = parent.parentNode;
         }
         return this.isParagraph(parent) &&
-            !util.isNullOrEmpty(parent.textContent) &&
+            !util.isNullOrEmpty(parent?.textContent) &&
             (imageInfo.height <= MAX_INLINE_IMAGE_HEIGHT);
     }
 

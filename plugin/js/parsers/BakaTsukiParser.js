@@ -44,7 +44,7 @@ class BakaTsukiParser extends Parser {
 
     static register() {
         parserFactory.reregister("baka-tsuki.org", function() { 
-            return new BakaTsukiParser(new BakaTsukiImageCollector()); 
+            return new BakaTsukiParser(new BakaTsukiImageCollector());
         });      
     }
 
@@ -130,7 +130,7 @@ class BakaTsukiParser extends Parser {
             if (("0" <= ch) && (ch <= "9")) {
                 volumeIndex += ch;
             }
-        }    
+        }
         return volumeIndex;
     }
 
@@ -150,7 +150,7 @@ class BakaTsukiParser extends Parser {
     }
 
     populateUIImpl() {
-        document.getElementById("higestResolutionImagesRow").hidden = false; 
+        document.getElementById("highestResolutionImagesRow").hidden = false;
         document.getElementById("unSuperScriptAlternateTranslations").hidden = false; 
         document.getElementById("imageSection").hidden = false;
         document.getElementById("outputSection").hidden = true;
@@ -401,7 +401,7 @@ class BakaTsukiParser extends Parser {
 
     onFetchImagesClicked() {
         let that = this;
-        if (0 == that.imageCollector.imageInfoList.length) {
+        if (0 === that.imageCollector.imageInfoList.length) {
             ErrorLog.showErrorMessage(chrome.i18n.getMessage("noImagesFound"));
         } else {
             that.fetchContent();
