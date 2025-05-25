@@ -412,8 +412,163 @@ class ChapterUrlsUI {
             wrapper.appendChild(tooltip);
             col.appendChild(wrapper);
             
+            // Create more actions menu
+            ChapterUrlsUI.addMoreActionsMenu(col, sourceUrl, title);
+            
             // Update delete button visibility
             ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        }
+    }
+
+    /**
+    * @private
+    * Add more actions menu (three dots) next to cache icon
+    */
+    static addMoreActionsMenu(col, sourceUrl, title) {
+        // Create more actions wrapper
+        let moreWrapper = document.createElement("div");
+        moreWrapper.className = "more-actions-wrapper";
+        
+        // Create three dots icon
+        let moreIcon = document.createElement("img");
+        moreIcon.src = "images/ThreeDotsVertical.svg";
+        moreIcon.className = "more-actions-icon";
+        
+        // Create dropdown menu
+        let menu = document.createElement("div");
+        menu.className = "more-actions-menu";
+        
+        // Refresh menu item
+        let refreshItem = document.createElement("div");
+        refreshItem.className = "menu-item";
+        
+        let refreshIcon = document.createElement("img");
+        refreshIcon.src = "images/ArrowClockwise.svg";
+        
+        let refreshText = document.createElement("span");
+        refreshText.textContent = ChapterCache.CacheText.menuRefreshChapter;
+        
+        refreshItem.appendChild(refreshIcon);
+        refreshItem.appendChild(refreshText);
+        refreshItem.onclick = (e) => {
+            e.stopPropagation();
+            ChapterUrlsUI.refreshChapter(sourceUrl, title);
+            ChapterUrlsUI.hideMoreActionsMenu(menu);
+        };
+        
+        // Delete menu item
+        let deleteItem = document.createElement("div");
+        deleteItem.className = "menu-item";
+        
+        let deleteIcon = document.createElement("img");
+        deleteIcon.src = "images/Trash3Fill.svg";
+        
+        let deleteText = document.createElement("span");
+        deleteText.textContent = ChapterCache.CacheText.menuDeleteChapter;
+        
+        deleteItem.appendChild(deleteIcon);
+        deleteItem.appendChild(deleteText);
+        deleteItem.onclick = (e) => {
+            e.stopPropagation();
+            ChapterUrlsUI.deleteChapter(sourceUrl);
+            ChapterUrlsUI.hideMoreActionsMenu(menu);
+        };
+        
+        // Add items to menu
+        menu.appendChild(refreshItem);
+        menu.appendChild(deleteItem);
+        
+        // Add click handler to show/hide menu
+        moreWrapper.onclick = (e) => {
+            e.stopPropagation();
+            ChapterUrlsUI.toggleMoreActionsMenu(menu);
+        };
+        
+        // Assemble more actions
+        moreWrapper.appendChild(moreIcon);
+        moreWrapper.appendChild(menu);
+        col.appendChild(moreWrapper);
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', () => ChapterUrlsUI.hideMoreActionsMenu(menu));
+    }
+
+    /**
+    * @private
+    * Toggle more actions menu visibility
+    */
+    static toggleMoreActionsMenu(menu) {
+        // Hide all other open menus first
+        document.querySelectorAll('.more-actions-menu.show').forEach(m => {
+            if (m !== menu) m.classList.remove('show');
+        });
+        
+        menu.classList.toggle('show');
+    }
+
+    /**
+    * @private
+    * Hide more actions menu
+    */
+    static hideMoreActionsMenu(menu) {
+        menu.classList.remove('show');
+    }
+
+    /**
+    * @private
+    * Refresh a cached chapter (delete and redownload)
+    */
+    static async refreshChapter(sourceUrl, title) {
+        try {
+            // Delete the cached chapter
+            await ChapterCache.deleteChapter(sourceUrl);
+            
+            // TODO: Trigger redownload - this would need integration with the download system
+            console.log(`Refreshing chapter: ${title} from ${sourceUrl}`);
+            
+            // For now, just remove the cache icon from the row
+            let rows = document.querySelectorAll('#chapterUrlsTable tbody tr');
+            for (let row of rows) {
+                let urlCell = row.querySelector('td:nth-child(3)');
+                if (urlCell && urlCell.textContent.trim() === sourceUrl) {
+                    let cacheCol = row.querySelector('.cacheViewColumn');
+                    if (cacheCol) {
+                        cacheCol.innerHTML = ''; // Remove cache icons
+                    }
+                    break;
+                }
+            }
+            
+            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        } catch (error) {
+            console.error('Failed to refresh chapter:', error);
+        }
+    }
+
+    /**
+    * @private
+    * Delete a single cached chapter
+    */
+    static async deleteChapter(sourceUrl) {
+        try {
+            await ChapterCache.deleteChapter(sourceUrl);
+            
+            // Remove the cache icon from the row
+            let rows = document.querySelectorAll('#chapterUrlsTable tbody tr');
+            for (let row of rows) {
+                let urlCell = row.querySelector('td:nth-child(3)');
+                if (urlCell && urlCell.textContent.trim() === sourceUrl) {
+                    let cacheCol = row.querySelector('.cacheViewColumn');
+                    if (cacheCol) {
+                        cacheCol.innerHTML = ''; // Remove cache icons
+                    }
+                    break;
+                }
+            }
+            
+            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        } catch (error) {
+            console.error('Failed to delete chapter:', error);
         }
     }
 

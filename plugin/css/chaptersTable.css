@@ -9,6 +9,12 @@ table.chapterList {
     float: left;
 }
 
+/* Remove float from cache column items since we're using flexbox */
+.cacheViewColumn .tooltip-wrapper,
+.cacheViewColumn .more-actions-wrapper {
+    float: none;
+}
+
 img.downloadState {
     height: 1em;
     margin-top: 3px;
@@ -51,6 +57,13 @@ img.downloadState {
     margin-bottom: 5px;
 }
 
+/* Eye icon tooltip should appear to the left to avoid covering menu */
+.cacheViewColumn .tooltip-wrapper .tooltipText {
+    top: -5px;
+    right: 105%;
+    left: auto;
+}
+
 .downloadStateDiv .tooltipText {
     top: -5px;
     left: 105%;
@@ -74,8 +87,10 @@ img.downloadState {
 }
 
 .cacheViewColumn {
-    text-align: center;
-    width: 20px;
+    text-align: left;
+    width: 36px;
+    display: flex;
+    align-items: center;
 }
 
 .cacheViewColumn img {
@@ -110,3 +125,75 @@ img.downloadState {
     display: none;
     transition: filter 0.2s ease;
 }
+
+/* More actions dropdown menu */
+.more-actions-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.more-actions-icon {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.more-actions-icon:hover {
+    filter: brightness(0) saturate(100%) invert(40%) sepia(96%) saturate(1815%) hue-rotate(197deg) brightness(95%) contrast(101%);
+}
+
+.more-actions-icon:active {
+    filter: brightness(0) saturate(100%) invert(35%) sepia(100%) saturate(2000%) hue-rotate(197deg) brightness(85%) contrast(110%);
+}
+
+.more-actions-menu {
+    visibility: hidden;
+    position: absolute;
+    background-color: white;
+    min-width: 140px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 1000;
+    top: 100%;
+    right: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.more-actions-menu.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.more-actions-menu .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.more-actions-menu .menu-item:last-child {
+    border-bottom: none;
+}
+
+.more-actions-menu .menu-item:hover {
+    background-color: #f5f5f5;
+}
+
+.more-actions-menu .menu-item img {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+}
+
+.more-actions-menu .menu-item span {
+    font-size: 14px;
+    color: #333;
+}
+

@@ -815,11 +815,11 @@
 		"description": "Toggle state text when caching is disabled"
 	},
 	"__MSG_button_cache_status_Enabled__": {
-		"message": "Caching Enabled",
+		"message": "Caching (Enabled)",
 		"description": "Cache button text when caching is enabled"
 	},
 	"__MSG_button_cache_status_Disabled__": {
-		"message": "Caching Disabled",
+		"message": "Caching (Disabled)",
 		"description": "Cache button text when caching is disabled"
 	},
 	"__MSG_tooltip_View_Chapter__": {
@@ -829,6 +829,14 @@
 	"__MSG_tooltip_Delete_All_Cached__": {
 		"message": "Delete All Cached Chapters On Page",
 		"description": "Tooltip text for the delete all cached chapters icon"
+	},
+	"__MSG_menu_Refresh_Chapter__": {
+		"message": "Refresh Chapter",
+		"description": "Menu option to delete and redownload a cached chapter"
+	},
+	"__MSG_menu_Delete_Chapter__": {
+		"message": "Delete Chapter",
+		"description": "Menu option to delete a single cached chapter"
 	},
 	"__MSG_confirm_Clear_All_Cache__": {
 		"message": "Are you sure you want to clear all cached chapters? This action cannot be undone.",

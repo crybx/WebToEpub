@@ -19,6 +19,8 @@ class ChapterCache {
         statusError: chrome.i18n.getMessage("__MSG_status_Error__"),
         tooltipViewChapter: chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
         tooltipDeleteAllCached: chrome.i18n.getMessage("__MSG_tooltip_Delete_All_Cached__"),
+        menuRefreshChapter: chrome.i18n.getMessage("__MSG_menu_Refresh_Chapter__"),
+        menuDeleteChapter: chrome.i18n.getMessage("__MSG_menu_Delete_Chapter__"),
         confirmClearAll: chrome.i18n.getMessage("__MSG_confirm_Clear_All_Cache__"),
         errorClearCache: chrome.i18n.getMessage("__MSG_error_Failed_Clear_Cache__"),
         errorSaveSettings: chrome.i18n.getMessage("__MSG_error_Failed_Save_Cache_Settings__")
