@@ -135,7 +135,8 @@ class Parser {
             ChapterCache.set(webPage.sourceUrl, content).then(async () => {
                 // Update UI to show cache icon
                 if (webPage.row) {
-                    await ChaptersUI.addCacheIconToRow(webPage.row, webPage.sourceUrl, webPage.title);
+                    let col = webPage.row.querySelector(".chapterStatusColumn");
+                    ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
                 }
             }).catch(e => 
                 console.error("Failed to cache chapter:", e)
@@ -592,7 +593,7 @@ class Parser {
                 let cachedContent = await ChapterCache.get(webPage.sourceUrl);
                 if (cachedContent) {
                     // Skip the delay for cached content
-                    ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_DOWNLOADING);
+                    ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
                     
                     // Create a mock DOM with cached content
                     let cachedDom = Parser.makeEmptyDocForContent(webPage.sourceUrl);
@@ -611,9 +612,9 @@ class Parser {
         }
         
         // Only apply rate limit delay for actual web fetches
-        ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_SLEEPING);
+        ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_SLEEPING, webPage.sourceUrl, webPage.title);
         await this.rateLimitDelay();
-        ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_DOWNLOADING);
+        ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
         
         return pageParser.fetchChapter(webPage.sourceUrl).then(function(webPageDom) {
             delete webPage.error;
@@ -673,7 +674,7 @@ class Parser {
     }
 
     updateLoadState(webPage) {
-        ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_LOADED);
+        ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
         ProgressBar.updateValue(1);
     }
 

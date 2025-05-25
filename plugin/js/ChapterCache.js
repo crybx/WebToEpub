@@ -560,8 +560,7 @@ class ChapterCache {
                     
                     // Add cache icon to the row if cacheCol is provided
                     if (cacheCol) {
-                        let row = cacheCol.parentElement;
-                        await ChaptersUI.addCacheIconToRow(row, sourceUrl, title);
+                        ChaptersUI.setChapterStatusIcon(cacheCol, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
                     }
                 }
             }
@@ -606,8 +605,7 @@ class ChapterCache {
                 cacheCol.innerHTML = "";
                 
                 // Add download icon since chapter is no longer cached
-                let row = cacheCol.parentElement;
-                ChaptersUI.addDownloadIconToRow(row, sourceUrl, title);
+                ChaptersUI.setChapterStatusIcon(cacheCol, ChaptersUI.CHAPTER_STATUS_NONE, sourceUrl, title);
             }
             
             // Update UI elements
@@ -643,11 +641,11 @@ class ChapterCache {
             // Update UI - remove all cache icons and add download icons
             chapters.forEach(chapter => {
                 if (chapter.row) {
-                    let cacheCol = chapter.row.querySelector(".cacheViewColumn");
+                    let cacheCol = chapter.row.querySelector(".chapterStatusColumn");
                     if (cacheCol) {
                         cacheCol.innerHTML = "";
                         // Add download icon since chapter is no longer cached
-                        ChaptersUI.addDownloadIconToRow(chapter.row, chapter.sourceUrl, chapter.title);
+                        ChaptersUI.setChapterStatusIcon(cacheCol, ChaptersUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                     }
                 }
             });
@@ -684,14 +682,12 @@ class ChapterCache {
             while (0 < group.length) {
                 await Promise.all(group.map(async (webPage) => {
                     await parser.fetchWebPageContent(webPage);
-                    
-                    // After fetching, process and cache the content
+
                     if (webPage.rawDom && !webPage.error) {
                         // convertRawDomToContent handles both processing and caching automatically
                         parser.convertRawDomToContent(webPage);
                         console.log(`Downloaded and cached chapter: ${webPage.title}`);
                     }
-                    // Note: Progress bar is updated automatically by Parser.updateLoadState()
                 }));
                 index += group.length;
                 group = parser.groupPagesToFetch(webPages, index);

@@ -78,54 +78,20 @@ class ChaptersUI {
         });
     }
 
-    static showDownloadState(row, state) {
+    static showChapterStatus(row, state, sourceUrl = "", title = "") {
         if (row != null) {
-            let downloadStateDiv = row.querySelector(".downloadStateDiv");
-            ChaptersUI.updateDownloadStateImage(downloadStateDiv, state);
+            let chapterStatusColumn = row.querySelector(".chapterStatusColumn");
+            ChaptersUI.setChapterStatusIcon(chapterStatusColumn, state, sourceUrl, title);
         }
     }
 
-    static updateDownloadStateImage(downloadStateDiv, state) {
-        let img = downloadStateDiv.querySelector("img");
-        if (img) {
-            img.src = ChaptersUI.ImageForState[state];
 
-            // Update tooltip
-            let tooltipText = ChaptersUI.TooltipForSate[state];
-            let tooltipTextSpan = downloadStateDiv.querySelector(".tooltipText");
-
-            if (tooltipText && !tooltipTextSpan) {
-                tooltipTextSpan = document.createElement("span");
-                tooltipTextSpan.className = "tooltipText";
-                tooltipTextSpan.textContent = tooltipText;
-                downloadStateDiv.appendChild(tooltipTextSpan);
-            } else if (tooltipText) {
-                tooltipTextSpan.textContent = tooltipText;
-            } else if (tooltipTextSpan) {
-                // Remove tooltip text if there is no text to display
-                downloadStateDiv.removeChild(tooltipTextSpan);
-            }
-        }
-    }
-
-    static resetDownloadStateImages() {
+    static resetChapterStatusIcons() {
         let linksTable = ChaptersUI.getChapterUrlsTable();
-        let prevDownload = ChaptersUI.ImageForState[ChaptersUI.DOWNLOAD_STATE_PREVIOUS];
-        let downloaded = ChaptersUI.ImageForState[ChaptersUI.DOWNLOAD_STATE_LOADED];
-
-        for (let downloadStateDiv of linksTable.querySelectorAll(".downloadStateDiv")) {
-            let state = ChaptersUI.DOWNLOAD_STATE_NONE;
-            let imgSrc = downloadStateDiv.querySelector("img")?.src;
-            if (imgSrc) {
-                const imagesIndex = imgSrc.indexOf("images/");
-                if (imagesIndex !== -1) {
-                    imgSrc = imgSrc.substring(imagesIndex);
-                }
-            }
-            if (imgSrc === prevDownload || imgSrc === downloaded) {
-                state = ChaptersUI.DOWNLOAD_STATE_PREVIOUS;
-            }
-            ChaptersUI.updateDownloadStateImage(downloadStateDiv, state);
+        
+        for (let chapterStatusColumn of linksTable.querySelectorAll(".chapterStatusColumn")) {
+            // Restore normal chapter status content
+            ChaptersUI.restoreChapterStatus(chapterStatusColumn);
         }
     }
 
@@ -285,21 +251,41 @@ class ChaptersUI {
             }
         };
         col.appendChild(checkbox);
-        ChaptersUI.addDownloadStateToCheckboxColumn(col, chapter.previousDownload);
         row.appendChild(col);
     }
 
-    static addDownloadStateToCheckboxColumn(col, previousDownload) {
-        let downloadStateDiv = document.createElement("div");
-        downloadStateDiv.className = "downloadStateDiv tooltip-wrapper";
-        let img = document.createElement("img");
-        img.className = "downloadState";
-
-        downloadStateDiv.appendChild(img);
-        ChaptersUI.updateDownloadStateImage(downloadStateDiv,
-            previousDownload ? ChaptersUI.DOWNLOAD_STATE_PREVIOUS : ChaptersUI.DOWNLOAD_STATE_NONE
-        );
-        col.appendChild(downloadStateDiv);
+    /**
+    * Restore normal chapter status content after status changes
+    */
+    static async restoreChapterStatus(chapterStatusColumn) {
+        if (!chapterStatusColumn) return;
+        
+        // Get the chapter info from the row
+        let row = chapterStatusColumn.parentElement;
+        let titleInput = row.querySelector("input[type=\"text\"]");
+        let urlCell = row.querySelector("td:nth-child(3)");
+        
+        if (!titleInput || !urlCell) return;
+        
+        let title = titleInput.value;
+        let sourceUrl = urlCell.textContent.trim();
+        
+        // Check if chapter is cached
+        try {
+            let cachedContent = await ChapterCache.get(sourceUrl);
+            if (cachedContent) {
+                let col = row.querySelector(".chapterStatusColumn");
+                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
+            } else {
+                let col = row.querySelector(".chapterStatusColumn");
+                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+            }
+        } catch (err) {
+            console.error("Error restoring chapter status content:", err);
+            // Fallback to download icon
+            let col = row.querySelector(".chapterStatusColumn");
+            ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+        }
     }
 
     /** 
@@ -348,25 +334,20 @@ class ChaptersUI {
     */
     static async appendViewCacheButtonToRow(row, chapter) {
         let col = document.createElement("td");
-        col.className = "cacheViewColumn";
+        col.className = "chapterStatusColumn";
         row.appendChild(col);
         
         // Check if chapter is cached
         return ChapterCache.get(chapter.sourceUrl).then(async cachedContent => {
             if (cachedContent) {
-                // Use the shared function to add the icon
-                await ChaptersUI.addCacheIconToRow(row, chapter.sourceUrl, chapter.title);
-                
-                // Update download state to show as previously downloaded
-                let downloadStateDiv = row.querySelector(".downloadStateDiv");
-                if (downloadStateDiv) {
-                    ChaptersUI.updateDownloadStateImage(downloadStateDiv, ChaptersUI.DOWNLOAD_STATE_PREVIOUS);
-                }
-                
+                // Chapter is cached - show eye icon
+                let col = row.querySelector(".chapterStatusColumn");
+                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
                 return true;
             } else {
-                // Add download icon for uncached chapters
-                ChaptersUI.addDownloadIconToRow(row, chapter.sourceUrl, chapter.title);
+                // Chapter is not cached - show download icon
+                let col = row.querySelector(".chapterStatusColumn");
+                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                 return false;
             }
         }).catch(err => {
@@ -387,75 +368,6 @@ class ChaptersUI {
         }
     }
 
-    /**
-    * @public
-    * Add cache icon to row when chapter is cached (called after successful caching)
-    */
-    static async addCacheIconToRow(row, sourceUrl, title) {
-        let col = row.querySelector(".cacheViewColumn");
-        if (col) {
-            // Clear existing content (including download icons) before adding cache icon
-            col.innerHTML = "";
-            
-            // Create wrapper for custom tooltip
-            let wrapper = document.createElement("div");
-            wrapper.className = "tooltip-wrapper tooltip-right";
-            wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-            
-            // Create the eye icon
-            let button = document.createElement("img");
-            button.src = "images/EyeFill.svg";
-            
-            // Create the custom tooltip
-            let tooltip = document.createElement("span");
-            tooltip.className = "tooltipText";
-            tooltip.textContent = ChapterCache.CacheText.tooltipViewChapter;
-            
-            // Assemble the components
-            wrapper.appendChild(button);
-            wrapper.appendChild(tooltip);
-            col.appendChild(wrapper);
-            
-            // Create more actions menu
-            ChaptersUI.addMoreActionsMenu(col, sourceUrl, title);
-            
-            // Update delete button visibility
-            await ChaptersUI.updateDeleteCacheButtonVisibility();
-        }
-    }
-
-    /**
-    * @public
-    * Add download icon to row when chapter is not cached
-    */
-    static addDownloadIconToRow(row, sourceUrl, title) {
-        let col = row.querySelector(".cacheViewColumn");
-        if (col && !col.querySelector("img")) {
-            // Create wrapper for custom tooltip
-            let wrapper = document.createElement("div");
-            wrapper.className = "tooltip-wrapper tooltip-right";
-            wrapper.onclick = async () => {
-                // Replace the download icon with eye icon when download starts
-                wrapper.innerHTML = "";
-                await ChapterCache.downloadChapter(sourceUrl, title, col);
-            };
-            
-            // Create the download icon
-            let button = document.createElement("img");
-            button.src = "images/Download.svg";
-            button.className = "download-chapter-icon";
-            
-            // Create the custom tooltip
-            let tooltip = document.createElement("span");
-            tooltip.className = "tooltipText";
-            tooltip.textContent = ChapterCache.CacheText.tooltipDownloadChapter;
-            
-            // Assemble the components
-            wrapper.appendChild(button);
-            wrapper.appendChild(tooltip);
-            col.appendChild(wrapper);
-        }
-    }
 
     /**
     * @private
@@ -464,12 +376,11 @@ class ChaptersUI {
     static addMoreActionsMenu(col, sourceUrl, title) {
         // Create more actions wrapper
         let moreWrapper = document.createElement("div");
-        moreWrapper.className = "more-actions-wrapper";
+        moreWrapper.className = "more-actions-wrapper clickable-icon";
         
         // Create three dots icon
         let moreIcon = document.createElement("img");
         moreIcon.src = "images/ThreeDotsVertical.svg";
-        moreIcon.className = "more-actions-icon";
         
         // Create dropdown menu
         let menu = document.createElement("div");
@@ -571,7 +482,54 @@ class ChaptersUI {
         menu.classList.remove("show");
     }
 
-
+    /**
+     * @public
+     * Unified method to set chapter status icon based on state
+     * Handles all chapter states: cached, uncached, downloading, sleeping
+     */
+    static setChapterStatusIcon(column, state, sourceUrl, title) {
+        if (!column) return;
+        
+        // Clear existing content
+        column.innerHTML = "";
+        
+        // Create common DOM elements
+        let wrapper = document.createElement("div");
+        wrapper.className = "tooltip-wrapper";
+        
+        let img = document.createElement("img");
+        img.src = ChaptersUI.ImageForState[state];
+        
+        let tooltip = document.createElement("span");
+        tooltip.className = "tooltipText";
+        tooltip.textContent = ChaptersUI.TooltipForState[state];
+        
+        // Assemble components
+        wrapper.appendChild(img);
+        wrapper.appendChild(tooltip);
+        column.appendChild(wrapper);
+        
+        // Apply state-specific behavior and styling
+        switch (state) {
+        case ChaptersUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
+            wrapper.className += " clickable-icon";
+            wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
+            ChaptersUI.addMoreActionsMenu(column, sourceUrl, title);
+            break;
+            
+        case ChaptersUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
+            wrapper.className += " clickable-icon";
+            wrapper.onclick = async () => {
+                await ChapterCache.downloadChapter(sourceUrl, title, column);
+            };
+            break;
+            
+        case ChaptersUI.CHAPTER_STATUS_DOWNLOADING: // Currently downloading - show downloading icon  
+        case ChaptersUI.CHAPTER_STATUS_SLEEPING: // Waiting between downloads - show sleeping icon
+            // Non-clickable, just tooltip wrapper (no additional classes needed)
+            break;
+        }
+    }
 
     static setVisibileUI(toTable) {
         // toggle mode
@@ -930,24 +888,21 @@ ChaptersUI.RangeCalculator = class {
 };
 
 
-ChaptersUI.DOWNLOAD_STATE_NONE = 0;
-ChaptersUI.DOWNLOAD_STATE_DOWNLOADING = 1;
-ChaptersUI.DOWNLOAD_STATE_LOADED = 2;
-ChaptersUI.DOWNLOAD_STATE_SLEEPING = 3;
-ChaptersUI.DOWNLOAD_STATE_PREVIOUS = 4;
+ChaptersUI.CHAPTER_STATUS_NONE = 0;
+ChaptersUI.CHAPTER_STATUS_DOWNLOADING = 1;
+ChaptersUI.CHAPTER_STATUS_DOWNLOADED = 2;
+ChaptersUI.CHAPTER_STATUS_SLEEPING = 3;
 ChaptersUI.ImageForState = [
-    "images/ChapterStateNone.svg",
+    "images/Download.svg",
     "images/ChapterStateDownloading.svg",
-    "images/FileEarmarkCheckFill.svg",
-    "images/ChapterStateSleeping.svg",
-    "images/FileEarmarkCheck.svg"
+    "images/EyeFill.svg",
+    "images/ChapterStateSleeping.svg"
 ];
-ChaptersUI.TooltipForSate = [
-    null,
+ChaptersUI.TooltipForState = [
+    chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
     chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloading__"),
-    chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloaded__"),
-    chrome.i18n.getMessage("__MSG_Tooltip_chapter_sleeping__"),
-    chrome.i18n.getMessage("__MSG_Tooltip_chapter_previously_downloaded__")
+    chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
+    chrome.i18n.getMessage("__MSG_Tooltip_chapter_sleeping__")
 ];
 
 ChaptersUI.lastSelectedRow = null;

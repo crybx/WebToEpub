@@ -146,7 +146,7 @@ const main = (function() {
         }
 
         ChapterUrlsUI.limitNumOfChapterS(userPreferences.maxChaptersPerEpub.value);
-        ChapterUrlsUI.resetDownloadStateImages();
+        ChapterUrlsUI.resetChapterStatusIcons();
         ErrorLog.clearHistory();
         window.workInProgress = true;
         main.getPackEpubButton().disabled = true;
@@ -203,7 +203,7 @@ const main = (function() {
 
     async function downloadChapters() {
         ChapterUrlsUI.limitNumOfChapterS(userPreferences.maxChaptersPerEpub.value);
-        ChapterUrlsUI.resetDownloadStateImages();
+        ChapterUrlsUI.resetChapterStatusIcons();
         ErrorLog.clearHistory();
         window.workInProgress = true;
         main.getPackEpubButton().disabled = true;
