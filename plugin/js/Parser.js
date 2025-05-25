@@ -58,6 +58,7 @@ class Parser {
         this.state = new ParserState();
         this.imageCollector = imageCollector || new ImageCollector();
         this.userPreferences = null;
+        this.enableChapterCaching = true;  // Toggle for caching, default true
     }
 
     copyState(otherParser) {
@@ -128,6 +129,15 @@ class Parser {
             let errorMsg = chrome.i18n.getMessage("warningNoVisibleContent", [webPage.sourceUrl]);
             ErrorLog.showErrorMessage(errorMsg);
         }
+        
+        // Cache the processed content if caching is enabled
+        if (this.enableChapterCaching && webPage.sourceUrl) {
+            // Fire and forget - don't wait for cache write
+            ChapterCache.set(webPage.sourceUrl, content).catch(e => 
+                console.error("Failed to cache chapter:", e)
+            );
+        }
+        
         return content;
     }
 
@@ -574,6 +584,28 @@ class Parser {
         await this.rateLimitDelay();
         ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_DOWNLOADING);
         let pageParser = webPage.parser;
+        
+        // Check cache first if caching is enabled
+        if (that.enableChapterCaching) {
+            try {
+                let cachedContent = await ChapterCache.get(webPage.sourceUrl);
+                if (cachedContent) {
+                    // Create a mock DOM with cached content
+                    let cachedDom = Parser.makeEmptyDocForContent(webPage.sourceUrl);
+                    cachedDom.content.parentNode.replaceChild(cachedContent, cachedDom.content);
+                    
+                    webPage.rawDom = cachedDom.dom;
+                    delete webPage.error;
+                    
+                    // The content is already processed, so we just need to handle images
+                    return pageParser.fetchImagesUsedInDocument(cachedContent, webPage);
+                }
+            } catch (e) {
+                console.error("Error reading from cache:", e);
+                // Continue with normal fetch if cache read fails
+            }
+        }
+        
         return pageParser.fetchChapter(webPage.sourceUrl).then(function(webPageDom) {
             delete webPage.error;
             webPage.rawDom = webPageDom;
