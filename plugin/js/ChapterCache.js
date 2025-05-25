@@ -1,5 +1,5 @@
 /*
- * Handles caching of chapter content in chrome.storage.local
+ * Handles caching of chapter content in chrome.storage.local (browser.storage.local in Firefox)
  */
 "use strict";
 
