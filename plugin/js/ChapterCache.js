@@ -57,7 +57,7 @@ class ChapterCache {
             // If storage is full or other error, just log and continue
             console.error("Error writing to cache:", e);
             // Try to clear some old entries if storage is full
-            if (e.message && e.message.includes('quota')) {
+            if (e.message && e.message.includes("quota")) {
                 await this.clearOldEntries();
             }
         }

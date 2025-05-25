@@ -40,15 +40,13 @@ class ChapterUrlsUI {
         let rangeStart = ChapterUrlsUI.getRangeStartChapterSelect();
         let rangeEnd = ChapterUrlsUI.getRangeEndChapterSelect();
         let memberForTextOption = ChapterUrlsUI.textToShowInRange();
-        let anyCached = false;
         chapters.forEach(function(chapter) {
             let row = document.createElement("tr");
             ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
             ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
             ChapterUrlsUI.appendColumnDataToRow(row, chapter.sourceUrl);
-            ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter).then(cached => {
-                if (cached) anyCached = true;
+            ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter).then(() => {
                 ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             });
             linksTable.appendChild(row);
@@ -138,7 +136,7 @@ class ChapterUrlsUI {
 
     static limitNumOfChapterS(maxChapters) {
         let max = util.isNullOrEmpty(maxChapters) ? 10000 : parseInt(maxChapters.replace(",", ""));
-        let selectedRows = [...ChapterUrlsUI.getChapterUrlsTable().querySelectorAll("[type='checkbox']")]
+        let selectedRows = [...ChapterUrlsUI.getChapterUrlsTable().querySelectorAll("[type=\"checkbox\"]")]
             .filter(c => c.checked)
             .map(c => c.parentElement.parentElement);
         if (max< selectedRows.length ) {
@@ -249,7 +247,7 @@ class ChapterUrlsUI {
 
     /** @private */
     static setRowCheckboxState(row, checked) {
-        let input = row.querySelector("input[type='checkbox']");
+        let input = row.querySelector("input[type=\"checkbox\"]");
         if (input.checked !== checked) {
             input.checked = checked;
             input.onclick();
@@ -324,7 +322,7 @@ class ChapterUrlsUI {
 
     /** @private */
     static resizeTitleColumnToFit(linksTable) {
-        let inputs = [...linksTable.querySelectorAll("input[type='text']")];
+        let inputs = [...linksTable.querySelectorAll("input[type=\"text\"]")];
         let width = inputs.reduce((acc, element) => Math.max(acc, element.value.length), 0);
         if (0 < width) {
             inputs.forEach(i => i.size = width); 
@@ -349,8 +347,6 @@ class ChapterUrlsUI {
     */
     static async appendViewCacheButtonToRow(row, chapter) {
         let col = document.createElement("td");
-        col.style.textAlign = "center";
-        col.style.width = "30px";
         col.className = "cacheViewColumn";
         row.appendChild(col);
         
@@ -381,7 +377,10 @@ class ChapterUrlsUI {
     */
     static updateDeleteCacheButtonVisibility() {
         let hasCache = document.querySelector(".cacheViewColumn img") !== null;
-        document.getElementById("deleteAllCachedChapters").style.display = hasCache ? "block" : "none";
+        let deleteButton = document.getElementById("deleteAllCachedChapters");
+        if (deleteButton) {
+            deleteButton.style.display = hasCache ? "block" : "none";
+        }
     }
 
     /**
@@ -393,9 +392,6 @@ class ChapterUrlsUI {
         if (col && !col.querySelector("img")) {
             let button = document.createElement("img");
             button.src = "images/EyeFill.svg";
-            button.style.cursor = "pointer";
-            button.style.width = "20px";
-            button.style.height = "20px";
             button.title = "View cached chapter";
             button.onclick = () => ChapterUrlsUI.viewCachedChapter(sourceUrl, title);
             col.appendChild(button);
@@ -459,7 +455,7 @@ class ChapterUrlsUI {
                 contentDiv.appendChild(cachedContent.cloneNode(true));
                 
                 // Show viewer
-                viewer.style.display = "block";
+                viewer.style.display = "flex";
                 
                 // Set up close button
                 document.getElementById("closeCachedViewer").onclick = () => {
@@ -658,7 +654,7 @@ class ChapterUrlsUI {
                         values: Array.from(item.querySelectorAll("td")).map(item => item.innerText).join("/").split("/"),
                         valueString: ""
                     };
-                filterObj.values.push(item.querySelector("input[type='text']").value);
+                filterObj.values.push(item.querySelector("input[type=\"text\"]").value);
                 filterObj.values = filterObj.values.filter(item => item.length > 3 && !item.startsWith("http"));
                 filterObj.valueString = filterObj.values.join(" ");
 
