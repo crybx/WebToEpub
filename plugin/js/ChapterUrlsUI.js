@@ -373,7 +373,6 @@ class ChapterUrlsUI {
     }
 
     /**
-    * @private
     * Update visibility of delete cache button based on whether any chapters are cached
     */
     static updateDeleteCacheButtonVisibility() {
@@ -475,7 +474,27 @@ class ChapterUrlsUI {
         };
         
         // Add items to menu
+        // Download menu item
+        let downloadItem = document.createElement("div");
+        downloadItem.className = "menu-item";
+        
+        let downloadIcon = document.createElement("img");
+        downloadIcon.src = "images/Download.svg";
+        
+        let downloadText = document.createElement("span");
+        downloadText.textContent = ChapterCache.CacheText.menuDownloadChapter;
+        
+        downloadItem.appendChild(downloadIcon);
+        downloadItem.appendChild(downloadText);
+        downloadItem.onclick = async (e) => {
+            e.stopPropagation();
+            await ChapterCache.downloadSingleChapterAsFile(sourceUrl, title);
+            ChapterUrlsUI.hideMoreActionsMenu(menu);
+        };
+        
+        // Add items to menu
         menu.appendChild(refreshItem);
+        menu.appendChild(downloadItem);
         menu.appendChild(deleteItem);
         
         // Add click handler to show/hide menu

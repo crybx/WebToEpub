@@ -842,6 +842,10 @@
 		"message": "Delete Chapter",
 		"description": "Menu option to delete a single cached chapter"
 	},
+	"__MSG_menu_Download_Chapter__": {
+		"message": "Download HTML File",
+		"description": "Menu option to download a single chapter as HTML file"
+	},
 	"__MSG_confirm_Clear_All_Cache__": {
 		"message": "Are you sure you want to clear all cached chapters? This action cannot be undone.",
 		"description": "Confirmation dialog when clearing all cached chapters"

@@ -560,6 +560,10 @@
 		"message": "Видалити розділ",
 		"description": "Tooltip for delete chapter menu option"
 	},
+	"__MSG_menu_Download_Chapter__": {
+		"message": "Завантажити HTML файл",
+		"description": "Menu option to download a single chapter as HTML file"
+	},
 	"__MSG_tooltip_More_Actions__": {
 		"message": "Додаткові дії",
 		"description": "Tooltip for more actions menu button"

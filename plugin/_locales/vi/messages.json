@@ -496,7 +496,11 @@
         "message": "Xóa chương",
         "description": "Tooltip for delete chapter menu option"
     },
-    "__MSG_tooltip_More_Actions__": {
+    "__MSG_menu_Download_Chapter__": {
+		"message": "Tải xuống tệp HTML",
+		"description": "Menu option to download a single chapter as HTML file"
+	},
+	"__MSG_tooltip_More_Actions__": {
         "message": "Thêm hành động",
         "description": "Tooltip for more actions menu button"
     }

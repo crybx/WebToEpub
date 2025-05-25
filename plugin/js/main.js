@@ -201,6 +201,36 @@ const main = (function() {
         util.sleepControler.abort();
     }
 
+    async function downloadChapters() {
+        ChapterUrlsUI.limitNumOfChapterS(userPreferences.maxChaptersPerEpub.value);
+        ChapterUrlsUI.resetDownloadStateImages();
+        ErrorLog.clearHistory();
+        window.workInProgress = true;
+        main.getPackEpubButton().disabled = true;
+        document.getElementById("LibAddToLibrary").disabled = true;
+        document.getElementById("downloadChaptersButton").disabled = true;
+        parser.onStartCollecting();
+
+        await parser.fetchContent().then(function() {
+            return ChapterCache.downloadChaptersToCache();
+        }).then(function() {
+            window.workInProgress = false;
+            main.getPackEpubButton().disabled = false;
+            document.getElementById("LibAddToLibrary").disabled = false;
+            document.getElementById("downloadChaptersButton").disabled = false;
+            parser.updateReadingList();
+            ErrorLog.showLogToUser();
+            dumpErrorLogToFile();
+        }).catch(function(err) {
+            window.workInProgress = false;
+            main.getPackEpubButton().disabled = false;
+            document.getElementById("LibAddToLibrary").disabled = false;
+            document.getElementById("downloadChaptersButton").disabled = false;
+            ErrorLog.showErrorMessage(err);
+        });
+    }
+
+
     function epubVersionFromPreferences() {
         return userPreferences.createEpub3.value ?
             EpubPacker.EPUB_VERSION_3 : EpubPacker.EPUB_VERSION_2;
@@ -562,6 +592,7 @@ const main = (function() {
 
     function addEventHandlers() {
         getPackEpubButton().onclick = fetchContentAndPackEpub;
+        document.getElementById("downloadChaptersButton").onclick = downloadChapters;
         document.getElementById("diagnosticsCheckBoxInput").onclick = onDiagnosticsClick;
         document.getElementById("reloadButton").onclick = populateControls;
         getManuallySelectParserTag().onchange = populateControls;

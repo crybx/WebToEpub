@@ -21,7 +21,10 @@ class ChapterCache {
         tooltipDeleteAllCached: chrome.i18n.getMessage("__MSG_tooltip_Delete_All_Cached__"),
         menuRefreshChapter: chrome.i18n.getMessage("__MSG_menu_Refresh_Chapter__"),
         menuDeleteChapter: chrome.i18n.getMessage("__MSG_menu_Delete_Chapter__"),
+        menuDownloadChapter: chrome.i18n.getMessage("__MSG_menu_Download_Chapter__"),
         confirmClearAll: chrome.i18n.getMessage("__MSG_confirm_Clear_All_Cache__"),
+        downloadSuccess: chrome.i18n.getMessage("__MSG_download_Success__"),
+        downloadError: chrome.i18n.getMessage("__MSG_download_Error__"),
         errorClearCache: chrome.i18n.getMessage("__MSG_error_Failed_Clear_Cache__"),
         errorSaveSettings: chrome.i18n.getMessage("__MSG_error_Failed_Save_Cache_Settings__")
     };
@@ -67,7 +70,7 @@ class ChapterCache {
     static async set(url, contentElement) {
         try {
             // Check if caching is enabled
-            if (!(await this.isEnabled())) {
+            if (!(this.isEnabled())) {
                 return;
             }
             
@@ -442,5 +445,156 @@ class ChapterCache {
             console.error("Error deleting cached chapters:", err);
             alert("Error deleting cached chapters");
         }
+    }
+
+    /**
+    * Download chapters to cache (for Download Chapters button)
+    */
+    static async downloadChaptersToCache() {
+        let parser = ChapterCache.getCurrentParser();
+        if (!parser) {
+            throw new Error("No parser available");
+        }
+        
+        let webPages = [...parser.state.webPages.values()].filter(c => c.isIncludeable);
+        
+        for (let webPage of webPages) {
+            if (webPage.rawDom && !webPage.error) {
+                // Process the content using the existing parser system
+                let content = parser.convertRawDomToContent(webPage);
+                if (content) {
+                    // Cache the processed content
+                    await ChapterCache.set(webPage.sourceUrl, content);
+                    console.log(`Cached chapter: ${webPage.title}`);
+                }
+            }
+        }
+        
+        // Update UI to show cached icons
+        ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+    }
+
+    /**
+    * Download a single chapter as HTML file
+    */
+    static async downloadSingleChapterAsFile(sourceUrl, title) {
+        try {
+            let parser = ChapterCache.getCurrentParser();
+            if (!parser) {
+                throw new Error("No parser available");
+            }
+            
+            // Find the webPage object for this URL
+            let webPage = null;
+            for (let page of parser.getPagesToFetch().values()) {
+                if (page.sourceUrl === sourceUrl) {
+                    webPage = page;
+                    break;
+                }
+            }
+            
+            if (!webPage) {
+                throw new Error(`WebPage not found for URL: ${sourceUrl}`);
+            }
+            
+            let content;
+            // Check if we have content in cache first
+            let cachedContent = await ChapterCache.get(sourceUrl);
+            if (cachedContent) {
+                content = cachedContent;
+            } else if (webPage.rawDom) {
+                // Use existing content from memory
+                content = parser.convertRawDomToContent(webPage);
+            } else {
+                // Need to fetch the content
+                if (!webPage.parser) {
+                    webPage.parser = parser;
+                }
+                await parser.fetchWebPageContent(webPage);
+                if (webPage.rawDom && !webPage.error) {
+                    content = parser.convertRawDomToContent(webPage);
+                }
+            }
+            
+            if (!content) {
+                throw new Error("No content available for download");
+            }
+            
+            // Create HTML file with proper structure
+            let htmlContent = ChapterCache.createChapterHtml(title, content);
+            
+            // Generate safe filename
+            let fileName = ChapterCache.sanitizeFilename(title || "Chapter") + ".html";
+            
+            // Download the file
+            let blob = new Blob([htmlContent], {type: "text/html"});
+            let overwriteExisting = true; // Allow overwrite for individual downloads
+            let backgroundDownload = false; // Show download dialog for individual files
+            
+            // Use the Download utility from the main codebase
+            if (typeof Download !== "undefined" && Download.save) {
+                await Download.save(blob, fileName, overwriteExisting, backgroundDownload);
+            } else {
+                // Fallback download method
+                let url = URL.createObjectURL(blob);
+                let a = document.createElement("a");
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            console.log(`Downloaded chapter as file: ${fileName}`);
+        } catch (error) {
+            console.error("Failed to download chapter as file:", error);
+            alert("Failed to download chapter as file: " + error.message);
+        }
+    }
+
+    /**
+    * Create HTML content for a chapter download
+    */
+    static createChapterHtml(title, contentElement) {
+        // Use the content element's HTML directly
+        let content = contentElement ? contentElement.outerHTML : "No content available";
+        
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${ChapterCache.escapeHtml(title)}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .chapter-content { max-width: 800px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="chapter-content">
+        <h1>${ChapterCache.escapeHtml(title)}</h1>
+        ${content}
+    </div>
+</body>
+</html>`;
+    }
+
+    /**
+    * Sanitize filename for safe file system usage
+    */
+    static sanitizeFilename(filename) {
+        // Remove or replace characters that are invalid in filenames
+        return filename.replace(/[<>:"/\\|?*]/g, "_").trim();
+    }
+
+    /**
+    * Escape HTML to prevent XSS
+    */
+    static escapeHtml(text) {
+        let div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
     }
 }
