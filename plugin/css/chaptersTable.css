@@ -58,7 +58,7 @@ img.downloadState {
 }
 
 /* Eye icon tooltip should appear to the left to avoid covering menu */
-.cacheViewColumn .tooltip-wrapper .tooltipText {
+.cacheViewColumn .tooltip-wrapper.tooltip-right .tooltipText {
     top: -5px;
     right: 105%;
     left: auto;

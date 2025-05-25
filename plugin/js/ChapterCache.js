@@ -143,6 +143,16 @@ class ChapterCache {
         }
     }
 
+    static async deleteChapter(url) {
+        try {
+            let key = this.getCacheKey(url);
+            await this.storage.local.remove([key]);
+        } catch (e) {
+            console.error("Error deleting cached chapter:", e);
+            throw e;
+        }
+    }
+
     static async getCacheStats() {
         try {
             let storage = await this.storage.local.get();

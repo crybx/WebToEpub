@@ -450,9 +450,9 @@ class ChapterUrlsUI {
         
         refreshItem.appendChild(refreshIcon);
         refreshItem.appendChild(refreshText);
-        refreshItem.onclick = (e) => {
+        refreshItem.onclick = async (e) => {
             e.stopPropagation();
-            ChapterUrlsUI.refreshChapter(sourceUrl, title);
+            await ChapterUrlsUI.refreshChapter(sourceUrl, title, col);
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
@@ -468,9 +468,9 @@ class ChapterUrlsUI {
         
         deleteItem.appendChild(deleteIcon);
         deleteItem.appendChild(deleteText);
-        deleteItem.onclick = (e) => {
+        deleteItem.onclick = async (e) => {
             e.stopPropagation();
-            ChapterUrlsUI.deleteChapter(sourceUrl);
+            await ChapterUrlsUI.deleteChapter(sourceUrl, col);
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
@@ -490,7 +490,7 @@ class ChapterUrlsUI {
         col.appendChild(moreWrapper);
         
         // Close menu when clicking outside
-        document.addEventListener('click', () => ChapterUrlsUI.hideMoreActionsMenu(menu));
+        document.addEventListener("click", () => ChapterUrlsUI.hideMoreActionsMenu(menu));
     }
 
     /**
@@ -499,11 +499,11 @@ class ChapterUrlsUI {
     */
     static toggleMoreActionsMenu(menu) {
         // Hide all other open menus first
-        document.querySelectorAll('.more-actions-menu.show').forEach(m => {
-            if (m !== menu) m.classList.remove('show');
+        document.querySelectorAll(".more-actions-menu.show").forEach(m => {
+            if (m !== menu) m.classList.remove("show");
         });
         
-        menu.classList.toggle('show');
+        menu.classList.toggle("show");
     }
 
     /**
@@ -511,37 +511,80 @@ class ChapterUrlsUI {
     * Hide more actions menu
     */
     static hideMoreActionsMenu(menu) {
-        menu.classList.remove('show');
+        menu.classList.remove("show");
     }
 
     /**
     * @private
     * Refresh a cached chapter (delete and redownload)
     */
-    static async refreshChapter(sourceUrl, title) {
+    static async refreshChapter(sourceUrl, title, cacheCol) {
         try {
-            // Delete the cached chapter
+            // Delete the cached chapter first
             await ChapterCache.deleteChapter(sourceUrl);
             
-            // TODO: Trigger redownload - this would need integration with the download system
-            console.log(`Refreshing chapter: ${title} from ${sourceUrl}`);
+            // Remove the cache icons from the specific column immediately
+            if (cacheCol) {
+                cacheCol.innerHTML = "";
+            }
             
-            // For now, just remove the cache icon from the row
-            let rows = document.querySelectorAll('#chapterUrlsTable tbody tr');
-            for (let row of rows) {
-                let urlCell = row.querySelector('td:nth-child(3)');
-                if (urlCell && urlCell.textContent.trim() === sourceUrl) {
-                    let cacheCol = row.querySelector('.cacheViewColumn');
-                    if (cacheCol) {
-                        cacheCol.innerHTML = ''; // Remove cache icons
-                    }
+            // Find the parser and webPage for this URL
+            let parser = ChapterUrlsUI.getCurrentParser();
+            if (!parser) {
+                throw new Error("No parser available for refresh");
+            }
+            
+            // Find the webPage object for this URL
+            let webPage = null;
+            for (let page of parser.getPagesToFetch().values()) {
+                if (page.sourceUrl === sourceUrl) {
+                    webPage = page;
                     break;
+                }
+            }
+            
+            if (!webPage) {
+                throw new Error(`WebPage not found for URL: ${sourceUrl}`);
+            }
+            
+            // Ensure webPage has parser reference (may be missing in some cases)
+            if (!webPage.parser) {
+                webPage.parser = parser;
+            }
+            
+            // Trigger the re-download using the existing download system
+            console.log(`Refreshing chapter: ${title} from ${sourceUrl}`);
+            await parser.fetchWebPageContent(webPage);
+            
+            // Process and cache the downloaded content (this step is normally done during EPUB creation)
+            if (webPage.rawDom && !webPage.error) {
+                let content = parser.convertRawDomToContent(webPage);
+                if (content) {
+                    console.log(`Successfully refreshed and cached chapter: ${title}`);
                 }
             }
             
             ChapterUrlsUI.updateDeleteCacheButtonVisibility();
         } catch (error) {
-            console.error('Failed to refresh chapter:', error);
+            console.error("Failed to refresh chapter:", error);
+            alert("Failed to refresh chapter: " + error.message);
+        }
+    }
+
+    /**
+    * @private
+    * Get the current parser instance from global scope
+    */
+    static getCurrentParser() {
+        // Access the parser from main.js global scope
+        if (typeof window !== "undefined" && window.parser) {
+            return window.parser;
+        }
+        // Fallback: try to get from the global scope
+        try {
+            return parser; // eslint-disable-line no-undef
+        } catch (e) {
+            return null;
         }
     }
 
@@ -549,26 +592,25 @@ class ChapterUrlsUI {
     * @private
     * Delete a single cached chapter
     */
-    static async deleteChapter(sourceUrl) {
+    static async deleteChapter(sourceUrl, cacheCol) {
         try {
             await ChapterCache.deleteChapter(sourceUrl);
             
-            // Remove the cache icon from the row
-            let rows = document.querySelectorAll('#chapterUrlsTable tbody tr');
-            for (let row of rows) {
-                let urlCell = row.querySelector('td:nth-child(3)');
-                if (urlCell && urlCell.textContent.trim() === sourceUrl) {
-                    let cacheCol = row.querySelector('.cacheViewColumn');
-                    if (cacheCol) {
-                        cacheCol.innerHTML = ''; // Remove cache icons
-                    }
-                    break;
-                }
+            // Remove the cache icons from the specific column
+            if (cacheCol) {
+                cacheCol.innerHTML = "";
             }
             
+            // Update UI elements
             ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            
+            // Refresh cache stats if ChapterCache has the method
+            if (typeof ChapterCache.refreshCacheStats === "function") {
+                await ChapterCache.refreshCacheStats();
+            }
         } catch (error) {
-            console.error('Failed to delete chapter:', error);
+            console.error("Failed to delete chapter:", error);
+            alert("Failed to delete cached chapter: " + error.message);
         }
     }
 

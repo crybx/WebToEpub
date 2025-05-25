@@ -292,6 +292,9 @@ const main = (function() {
             ErrorLog.showErrorMessage(chrome.i18n.getMessage("noParserFound"));
             return false;
         }
+        
+        // Make parser globally accessible for refresh functionality
+        window.parser = parser;
         getLoadAndAnalyseButton().hidden = true;
         let disabledMessage = parser.disabled();
         if (disabledMessage !== null) {
