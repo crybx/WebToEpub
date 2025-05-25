@@ -338,9 +338,10 @@ const main = (function() {
         let modal = document.getElementById("cacheOptionsModal");
         modal.style.display = "flex";
 
-        // Refresh cache statistics
+        // Refresh cache statistics and update button text
         await ChapterCache.refreshCacheStats();
-        
+        await ChapterCache.updateCacheButtonText();
+
         // Set up event handlers
         ChapterCache.setupCacheEventHandlers();
         
@@ -652,6 +653,7 @@ const main = (function() {
             getAdvancedOptionsSection().hidden = !userPreferences.advancedOptionsVisibleByDefault.value;
             getAdditionalMetadataSection().hidden = !userPreferences.ShowMoreMetadataOptions.value;
             addEventHandlers();
+            ChapterCache.updateCacheButtonText();
             populateControls();
             if (util.isFirefox()) {
                 Firefox.startWebRequestListeners();

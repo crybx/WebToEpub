@@ -194,6 +194,18 @@ class ChapterCache {
     }
 
     // UI Management Functions
+    static async updateCacheButtonText() {
+        try {
+            let enabled = await this.isEnabled();
+            let button = document.getElementById("cacheOptionsButton");
+            if (button) {
+                button.textContent = enabled ? "Caching Enabled" : "Caching Disabled";
+            }
+        } catch (error) {
+            console.error("Failed to update cache button text:", error);
+        }
+    }
+
     static async refreshCacheStats() {
         try {
             let stats = await this.getCacheStats();
@@ -252,6 +264,9 @@ class ChapterCache {
             
             await this.setEnabled(enabled);
             await this.setRetentionDays(retentionDays);
+            
+            // Update the main cache button text
+            await this.updateCacheButtonText();
         } catch (error) {
             console.error("Failed to save cache settings:", error);
             alert("Failed to save cache settings: " + error.message);

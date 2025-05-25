@@ -144,6 +144,19 @@
     margin-right: 8px;
 }
 
+#cacheRetentionDays {
+    width: 80px;
+}
+
+#refreshCacheStatsButton {
+    margin-left: 10px;
+}
+
+#clearAllCacheButton {
+    background-color: #dc3545;
+    color: white;
+}
+
 #closeCacheOptions {
     background: none;
     border: none;
