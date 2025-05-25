@@ -43,6 +43,10 @@
         "message": "Đóng gói EPUB",
         "description": ""
     },
+    "__MSG_button_Download_Chapters__": {
+        "message": "Tải các chương",
+        "description": "Label on button to download chapters without packing into EPUB"
+    },
     "__MSG_button_Reset__": {
         "message": "Cài đặt về ban đầu",
         "description": ""
@@ -391,5 +395,109 @@
                 "content": "$1"
             }
         }
+    },
+    "__MSG_button_Lib_Library__": {
+        "message": "Thư viện",
+        "description": "Label on button to toggle show 'Library'"
+    },
+    "__MSG_label_Lib_Show_Advanced_Library_Options__": {
+        "message": "Hiển thị tùy chọn thư viện nâng cao",
+        "description": "Label for checkbox to Show Advanced Library Options"
+    },
+    "__MSG_label_Lib_Compact_View__": {
+        "message": "Hiển thị thư viện ở định dạng gọn",
+        "description": "Label for checkbox to Show Advanced Library Options"
+    },
+    "__MSG_label_Lib_Download_Epub_After_Update__": {
+        "message": "Tải EPUB tự động sau khi thêm chương mới.",
+        "description": "Label for checkbox to Download Epubs after update"
+    },
+    "__MSG_label_Lib_Warning_In_Progress___": {
+        "message": "Đang xử lý....",
+        "description": "Label for Library loading in local storage in progress"
+    },
+    "__MSG_button_Lib_Template_Clear_Library__": {
+        "message": "Xóa thư viện",
+        "description": "Label on button to clear Local Storage"
+    },
+    "__MSG_button_Lib_Template_Export_Library__": {
+        "message": "Xuất thư viện",
+        "description": "Label on button to export Library in json format"
+    },
+    "__MSG_button_Lib_Template_Import_Library__": {
+        "message": "Nhập thư viện",
+        "description": "Label on button to import Library in json format"
+    },
+    "__MSG_button_Lib_Template_Upload_Epub__": {
+        "message": "Tải lên EPUB",
+        "description": "Label on button to Upload Epub in Library"
+    },
+    "__MSG_button_Lib_Template_Add_List_To_Library__": {
+        "message": "Thêm tiểu thuyết vào thư viện",
+        "description": "Label on button to Add novels to Library in Library"
+    },
+    "__MSG_button_Lib_Template_Update_All__": {
+        "message": "Cập nhật tất cả",
+        "description": "Label on button to Update all Epubs"
+    },
+    "__MSG_button_Lib_Template_Delete_EPUB__": {
+        "message": "Xóa EPUB",
+        "description": "Label on button to Delete EPUB from Library"
+    },
+    "__MSG_button_Lib_Template_Search_new_Chapters__": {
+        "message": "Tìm chương mới",
+        "description": "Label on button to Search new Chapters"
+    },
+    "__MSG_button_Lib_Template_Update_new_Chapters__": {
+        "message": "Cập nhật",
+        "description": "Label on button to Update new Chapters"
+    },
+    "__MSG_button_Lib_Template_Download_EPUB__": {
+        "message": "Tải EPUB",
+        "description": "Label on button to Download EPUB from Library"
+    },
+    "__MSG_button_Cache_Options__": {
+        "message": "Tùy chọn bộ nhớ đệm",
+        "description": "Label on button to open cache options"
+    },
+    "__MSG_label_Enable_Chapter_Caching__": {
+        "message": "Bật bộ nhớ đệm chương",
+        "description": "Label for checkbox to enable chapter caching"
+    },
+    "__MSG_label_Cache_Retention_Days__": {
+        "message": "Số ngày lưu trữ bộ nhớ đệm",
+        "description": "Label for input field for cache retention period in days"
+    },
+    "__MSG_label_Cached_Chapter_Count__": {
+        "message": "Số chương được lưu đệm",
+        "description": "Label for displaying number of cached chapters"
+    },
+    "__MSG_label_Chapter_Cache_Size__": {
+        "message": "Kích thước bộ nhớ đệm chương",
+        "description": "Label for displaying cache size"
+    },
+    "__MSG_button_Delete_All_Cached_Chapters__": {
+        "message": "Xóa tất cả chương đã lưu đệm",
+        "description": "Label on button to delete all cached chapters"
+    },
+    "__MSG_tooltip_View_Cached_Chapter__": {
+        "message": "Xem chương đã lưu đệm",
+        "description": "Tooltip for view cached chapter button"
+    },
+    "__MSG_tooltip_Delete_Cached_Chapter__": {
+        "message": "Xóa chương đã lưu đệm",
+        "description": "Tooltip for delete cached chapter button"
+    },
+    "__MSG_tooltip_Refresh_Chapter__": {
+        "message": "Làm mới chương",
+        "description": "Tooltip for refresh chapter menu option"
+    },
+    "__MSG_tooltip_Delete_Chapter__": {
+        "message": "Xóa chương",
+        "description": "Tooltip for delete chapter menu option"
+    },
+    "__MSG_tooltip_More_Actions__": {
+        "message": "Thêm hành động",
+        "description": "Tooltip for more actions menu button"
     }
 }

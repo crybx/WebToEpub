@@ -55,6 +55,10 @@
 		"message": "Упаковать EPUB",
 		"description": "Label on button to create the EPUB"
 	},
+	"__MSG_button_Download_Chapters__": {
+		"message": "Скачать главы",
+		"description": "Label on button to download chapters without packing into EPUB"
+	},
 	"__MSG_button_Reset__": {
 		"message": "Сброс",
 		"description": "Label on button that clears the dialog"
@@ -455,5 +459,109 @@
 			    "content": "$1"
 			}
 		}
+	},
+	"__MSG_button_Lib_Library__": {
+		"message": "Библиотека",
+		"description": "Label on button to toggle show 'Library'"
+	},
+	"__MSG_label_Lib_Show_Advanced_Library_Options__": {
+		"message": "Показать расширенные параметры библиотеки",
+		"description": "Label for checkbox to Show Advanced Library Options"
+	},
+	"__MSG_label_Lib_Compact_View__": {
+		"message": "Показать библиотеку в компактном виде",
+		"description": "Label for checkbox to Show Advanced Library Options"
+	},
+	"__MSG_label_Lib_Download_Epub_After_Update__": {
+		"message": "Скачать EPUB после автоматического добавления новой главы.",
+		"description": "Label for checkbox to Download Epubs after update"
+	},
+	"__MSG_label_Lib_Warning_In_Progress___": {
+		"message": "В процессе....",
+		"description": "Label for Library loading in local storage in progress"
+	},
+	"__MSG_button_Lib_Template_Clear_Library__": {
+		"message": "Очистить библиотеку",
+		"description": "Label on button to clear Local Storage"
+	},
+	"__MSG_button_Lib_Template_Export_Library__": {
+		"message": "Экспорт библиотеки",
+		"description": "Label on button to export Library in json format"
+	},
+	"__MSG_button_Lib_Template_Import_Library__": {
+		"message": "Импорт библиотеки",
+		"description": "Label on button to import Library in json format"
+	},
+	"__MSG_button_Lib_Template_Upload_Epub__": {
+		"message": "Загрузить EPUB",
+		"description": "Label on button to Upload Epub in Library"
+	},
+	"__MSG_button_Lib_Template_Add_List_To_Library__": {
+		"message": "Добавить романы в библиотеку",
+		"description": "Label on button to Add novels to Library in Library"
+	},
+	"__MSG_button_Lib_Template_Update_All__": {
+		"message": "Обновить все",
+		"description": "Label on button to Update all Epubs"
+	},
+	"__MSG_button_Lib_Template_Delete_EPUB__": {
+		"message": "Удалить EPUB",
+		"description": "Label on button to Delete EPUB from Library"
+	},
+	"__MSG_button_Lib_Template_Search_new_Chapters__": {
+		"message": "Поиск новых глав",
+		"description": "Label on button to Search new Chapters"
+	},
+	"__MSG_button_Lib_Template_Update_new_Chapters__": {
+		"message": "Обновить",
+		"description": "Label on button to Update new Chapters"
+	},
+	"__MSG_button_Lib_Template_Download_EPUB__": {
+		"message": "Скачать EPUB",
+		"description": "Label on button to Download EPUB from Library"
+	},
+	"__MSG_button_Cache_Options__": {
+		"message": "Параметры кэша",
+		"description": "Label on button to open cache options"
+	},
+	"__MSG_label_Enable_Chapter_Caching__": {
+		"message": "Включить кэширование глав",
+		"description": "Label for checkbox to enable chapter caching"
+	},
+	"__MSG_label_Cache_Retention_Days__": {
+		"message": "Дни хранения кэша",
+		"description": "Label for input field for cache retention period in days"
+	},
+	"__MSG_label_Cached_Chapter_Count__": {
+		"message": "Количество кэшированных глав",
+		"description": "Label for displaying number of cached chapters"
+	},
+	"__MSG_label_Chapter_Cache_Size__": {
+		"message": "Размер кэша глав",
+		"description": "Label for displaying cache size"
+	},
+	"__MSG_button_Delete_All_Cached_Chapters__": {
+		"message": "Удалить все кэшированные главы",
+		"description": "Label on button to delete all cached chapters"
+	},
+	"__MSG_tooltip_View_Cached_Chapter__": {
+		"message": "Просмотр кэшированной главы",
+		"description": "Tooltip for view cached chapter button"
+	},
+	"__MSG_tooltip_Delete_Cached_Chapter__": {
+		"message": "Удалить кэшированную главу",
+		"description": "Tooltip for delete cached chapter button"
+	},
+	"__MSG_tooltip_Refresh_Chapter__": {
+		"message": "Обновить главу",
+		"description": "Tooltip for refresh chapter menu option"
+	},
+	"__MSG_tooltip_Delete_Chapter__": {
+		"message": "Удалить главу",
+		"description": "Tooltip for delete chapter menu option"
+	},
+	"__MSG_tooltip_More_Actions__": {
+		"message": "Дополнительные действия",
+		"description": "Tooltip for more actions menu button"
 	}
 }
