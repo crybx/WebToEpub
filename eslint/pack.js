@@ -184,6 +184,10 @@ var packNonManifestExtensionFiles = function(zip, packedFileName) {
         }).then(function () {
             return addImageFileToZip(zip, "FileEarmarkCheckFill.svg");
         }).then(function () {
+            return addImageFileToZip(zip, "EyeFill.svg");
+        }).then(function () {
+            return addImageFileToZip(zip, "Trash3Fill.svg");
+        }).then(function () {
             return addCssFileToZip(zip, "default.css");
         }).then(function () {
             return addCssFileToZip(zip, "alwaysDark.css");
