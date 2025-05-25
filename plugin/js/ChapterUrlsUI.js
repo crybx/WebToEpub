@@ -416,7 +416,8 @@ class ChapterUrlsUI {
             
             // Delete from cache
             let keysToDelete = urls.map(url => ChapterCache.getCacheKey(url));
-            await chrome.storage.local.remove(keysToDelete);
+            // Use ChapterCache's storage API for compatibility
+            await ChapterCache.storage.local.remove(keysToDelete);
             
             // Update UI - remove all eye icons
             document.querySelectorAll(".cacheViewColumn img").forEach(img => img.remove());

@@ -8,6 +8,15 @@ class ChapterCache {
     static CACHE_VERSION = "1.0";  // Only bump this if cache format changes
     static MAX_CACHE_AGE_DAYS = 30;
 
+    // Get storage API (works for both Chrome and Firefox)
+    static get storage() {
+        // Firefox supports chrome.storage, but let's ensure compatibility
+        if (typeof browser !== "undefined" && browser.storage) {
+            return browser.storage;
+        }
+        return chrome.storage;
+    }
+
     static getCacheKey(url) {
         return this.CACHE_PREFIX + url;
     }
@@ -15,7 +24,7 @@ class ChapterCache {
     static async get(url) {
         try {
             let key = this.getCacheKey(url);
-            let result = await chrome.storage.local.get(key);
+            let result = await this.storage.local.get(key);
             let cached = result[key];
             
             if (cached) {
@@ -28,7 +37,7 @@ class ChapterCache {
                     return doc.body.firstChild;
                 }
                 // Remove expired cache
-                await chrome.storage.local.remove(key);
+                await this.storage.local.remove(key);
             }
         } catch (e) {
             console.error("Error reading from cache:", e);
@@ -52,7 +61,7 @@ class ChapterCache {
             
             let storageObject = {};
             storageObject[key] = data;
-            await chrome.storage.local.set(storageObject);
+            await this.storage.local.set(storageObject);
         } catch (e) {
             // If storage is full or other error, just log and continue
             console.error("Error writing to cache:", e);
@@ -65,7 +74,7 @@ class ChapterCache {
 
     static async clearOldEntries() {
         try {
-            let storage = await chrome.storage.local.get();
+            let storage = await this.storage.local.get();
             let keysToRemove = [];
             
             for (let key in storage) {
@@ -84,7 +93,7 @@ class ChapterCache {
             }
             
             if (keysToRemove.length > 0) {
-                await chrome.storage.local.remove(keysToRemove);
+                await this.storage.local.remove(keysToRemove);
             }
         } catch (e) {
             console.error("Error clearing old cache entries:", e);
@@ -93,7 +102,7 @@ class ChapterCache {
 
     static async clearAll() {
         try {
-            let storage = await chrome.storage.local.get();
+            let storage = await this.storage.local.get();
             let keysToRemove = [];
             
             for (let key in storage) {
@@ -103,7 +112,7 @@ class ChapterCache {
             }
             
             if (keysToRemove.length > 0) {
-                await chrome.storage.local.remove(keysToRemove);
+                await this.storage.local.remove(keysToRemove);
             }
         } catch (e) {
             console.error("Error clearing cache:", e);
