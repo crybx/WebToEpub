@@ -290,7 +290,7 @@ class ChapterUrlsUI {
 
     static addDownloadStateToCheckboxColumn(col, previousDownload) {
         let downloadStateDiv = document.createElement("div");
-        downloadStateDiv.className = "downloadStateDiv";
+        downloadStateDiv.className = "downloadStateDiv tooltip-wrapper";
         let img = document.createElement("img");
         img.className = "downloadState";
 
@@ -394,7 +394,7 @@ class ChapterUrlsUI {
         if (col && !col.querySelector("img")) {
             // Create wrapper for custom tooltip
             let wrapper = document.createElement("div");
-            wrapper.className = "cacheIconWrapper";
+            wrapper.className = "tooltip-wrapper tooltip-right";
             
             // Create the eye icon
             let button = document.createElement("img");

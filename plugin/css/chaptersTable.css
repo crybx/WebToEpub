@@ -14,14 +14,14 @@ img.downloadState {
     margin-top: 3px;
 }
 
-.downloadStateDiv {
+/* General tooltip styles */
+.tooltip-wrapper {
     position: relative;
     display: inline-block;
 }
 
-.downloadStateDiv .tooltipText {
+.tooltip-wrapper .tooltipText {
     visibility: hidden;
-    width: 120px;
     background-color: #808080;
     color: white;
     text-align: center;
@@ -29,62 +29,31 @@ img.downloadState {
     border-radius: 5px;
     position: absolute;
     z-index: 1;
+    min-width: 120px;
+    max-width: 200px;
+    font-weight: normal;
+}
+
+.tooltip-wrapper:hover .tooltipText {
+    visibility: visible;
+}
+
+/* Tooltip positioning variants */
+.tooltip-right .tooltipText {
     top: -5px;
     left: 105%;
 }
 
-.downloadStateDiv:hover .tooltipText {
-    visibility: visible;
-}
-
-/* Custom tooltips for cache icons */
-.cacheIconWrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.cacheIconWrapper .tooltipText {
-    visibility: hidden;
-    width: 120px;
-    background-color: #808080;
-    color: white;
-    text-align: center;
-    padding: 5px;
-    border-radius: 5px;
-    position: absolute;
-    z-index: 1;
-    top: -5px;
-    left: 105%;
-}
-
-.cacheIconWrapper:hover .tooltipText {
-    visibility: visible;
-}
-
-/* For trash icon in header - position tooltip differently */
-.trashIconWrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.trashIconWrapper .tooltipText {
-    visibility: hidden;
-    width: 150px;
-    background-color: #808080;
-    color: white;
-    text-align: center;
-    padding: 5px;
-    border-radius: 5px;
-    position: absolute;
-    z-index: 1;
+.tooltip-top .tooltipText {
     bottom: 100%;
     left: 50%;
-    margin-left: -75px;
+    transform: translateX(-50%);
     margin-bottom: 5px;
 }
 
-.trashIconWrapper:hover .tooltipText {
-    visibility: visible;
+.downloadStateDiv .tooltipText {
+    top: -5px;
+    left: 105%;
 }
 
 #chapterUrlsTable input[type=text] {

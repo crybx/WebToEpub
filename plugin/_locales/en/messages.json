@@ -548,7 +548,7 @@
 		"description": "Tell user how to shift-click to multiselect."
 	},
 	"__MSG_Tooltip_chapter_downloading__": {
-		"message": "Downloading chapter",
+		"message": "Downloading Chapter",
 		"description": "Tooltip for chapter download status icon: chapter is currently downloading"
 	},
 	"__MSG_Tooltip_chapter_downloaded__": {
@@ -556,11 +556,11 @@
 		"description": "Tooltip for chapter download status icon: chapter download succeeded"
 	},
 	"__MSG_Tooltip_chapter_sleeping__": {
-		"message": "Waiting for chapter delay time to elapse",
+		"message": "Waiting For Chapter Delay Time To Elapse",
 		"description": "Tooltip for chapter download status icon: waiting for chapter delay time to elapse"
 	},
 	"__MSG_Tooltip_chapter_previously_downloaded__": {
-		"message": "Chapter previously downloaded",
+		"message": "Chapter Previously Downloaded",
 		"description": "Tooltip for chapter download status icon: chapter has been downloaded before."
 	},
 	"chapterPlaceholderMessage": {
@@ -823,11 +823,11 @@
 		"description": "Cache button text when caching is disabled"
 	},
 	"__MSG_tooltip_View_Chapter__": {
-		"message": "View chapter",
+		"message": "View Chapter",
 		"description": "Tooltip text for the view cached chapter icon"
 	},
 	"__MSG_tooltip_Delete_All_Cached__": {
-		"message": "Delete all cached chapters on this page",
+		"message": "Delete All Cached Chapters On Page",
 		"description": "Tooltip text for the delete all cached chapters icon"
 	},
 	"__MSG_confirm_Clear_All_Cache__": {
