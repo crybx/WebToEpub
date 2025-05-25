@@ -210,10 +210,8 @@ const main = (function() {
         document.getElementById("LibAddToLibrary").disabled = true;
         document.getElementById("downloadChaptersButton").disabled = true;
         parser.onStartCollecting();
-
-        await parser.fetchContent().then(function() {
-            return ChapterCache.downloadChaptersToCache();
-        }).then(function() {
+        
+        await ChapterCache.downloadChaptersToCache().then(function() {
             window.workInProgress = false;
             main.getPackEpubButton().disabled = false;
             document.getElementById("LibAddToLibrary").disabled = false;

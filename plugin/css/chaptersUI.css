@@ -147,6 +147,22 @@ img.downloadState {
     filter: brightness(0) saturate(100%) invert(35%) sepia(100%) saturate(2000%) hue-rotate(197deg) brightness(85%) contrast(110%);
 }
 
+/* Download chapter icon */
+.download-chapter-icon {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.download-chapter-icon:hover {
+    filter: brightness(0) saturate(100%) invert(40%) sepia(96%) saturate(1815%) hue-rotate(197deg) brightness(95%) contrast(101%);
+}
+
+.download-chapter-icon:active {
+    filter: brightness(0) saturate(100%) invert(35%) sepia(100%) saturate(2000%) hue-rotate(197deg) brightness(85%) contrast(110%);
+}
+
 .more-actions-menu {
     visibility: hidden;
     position: absolute;

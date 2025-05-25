@@ -834,6 +834,10 @@
 		"message": "Delete All Cached Chapters On Page",
 		"description": "Tooltip text for the delete all cached chapters icon"
 	},
+	"__MSG_tooltip_Download_Chapter__": {
+		"message": "Download Chapter",
+		"description": "Tooltip text for the download chapter icon"
+	},
 	"__MSG_menu_Refresh_Chapter__": {
 		"message": "Refresh Chapter",
 		"description": "Menu option to delete and redownload a cached chapter"

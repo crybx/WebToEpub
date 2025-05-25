@@ -364,8 +364,11 @@ class ChaptersUI {
                 }
                 
                 return true;
+            } else {
+                // Add download icon for uncached chapters
+                ChaptersUI.addDownloadIconToRow(row, chapter.sourceUrl, chapter.title);
+                return false;
             }
-            return false;
         }).catch(err => {
             console.error("Error checking cache:", err);
             return false;
@@ -391,7 +394,10 @@ class ChaptersUI {
     */
     static addCacheIconToRow(row, sourceUrl, title) {
         let col = row.querySelector(".cacheViewColumn");
-        if (col && !col.querySelector("img")) {
+        if (col) {
+            // Clear existing content (including download icons) before adding cache icon
+            col.innerHTML = "";
+            
             // Create wrapper for custom tooltip
             let wrapper = document.createElement("div");
             wrapper.className = "tooltip-wrapper tooltip-right";
@@ -416,6 +422,39 @@ class ChaptersUI {
             
             // Update delete button visibility
             ChaptersUI.updateDeleteCacheButtonVisibility();
+        }
+    }
+
+    /**
+    * @public
+    * Add download icon to row when chapter is not cached
+    */
+    static addDownloadIconToRow(row, sourceUrl, title) {
+        let col = row.querySelector(".cacheViewColumn");
+        if (col && !col.querySelector("img")) {
+            // Create wrapper for custom tooltip
+            let wrapper = document.createElement("div");
+            wrapper.className = "tooltip-wrapper tooltip-right";
+            wrapper.onclick = async () => {
+                // Replace the download icon with eye icon when download starts
+                wrapper.innerHTML = "";
+                await ChapterCache.downloadChapter(sourceUrl, title, col);
+            };
+            
+            // Create the download icon
+            let button = document.createElement("img");
+            button.src = "images/Download.svg";
+            button.className = "download-chapter-icon";
+            
+            // Create the custom tooltip
+            let tooltip = document.createElement("span");
+            tooltip.className = "tooltipText";
+            tooltip.textContent = ChapterCache.CacheText.tooltipDownloadChapter;
+            
+            // Assemble the components
+            wrapper.appendChild(button);
+            wrapper.appendChild(tooltip);
+            col.appendChild(wrapper);
         }
     }
 
@@ -469,7 +508,7 @@ class ChaptersUI {
         deleteItem.appendChild(deleteText);
         deleteItem.onclick = async (e) => {
             e.stopPropagation();
-            await ChapterCache.deleteSingleChapter(sourceUrl, col);
+            await ChapterCache.deleteSingleChapter(sourceUrl, title, col);
             ChaptersUI.hideMoreActionsMenu(menu);
         };
         

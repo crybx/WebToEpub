@@ -552,6 +552,10 @@
 		"message": "Удалить кэшированную главу",
 		"description": "Tooltip for delete cached chapter button"
 	},
+	"__MSG_tooltip_Download_Chapter__": {
+		"message": "Скачать главу",
+		"description": "Tooltip text for the download chapter icon"
+	},
 	"__MSG_tooltip_Refresh_Chapter__": {
 		"message": "Обновить главу",
 		"description": "Tooltip for refresh chapter menu option"

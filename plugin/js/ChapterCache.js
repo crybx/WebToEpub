@@ -22,6 +22,7 @@ class ChapterCache {
         statusError: chrome.i18n.getMessage("__MSG_status_Error__"),
         tooltipViewChapter: chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
         tooltipDeleteAllCached: chrome.i18n.getMessage("__MSG_tooltip_Delete_All_Cached__"),
+        tooltipDownloadChapter: chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
         menuRefreshChapter: chrome.i18n.getMessage("__MSG_menu_Refresh_Chapter__"),
         menuDeleteChapter: chrome.i18n.getMessage("__MSG_menu_Delete_Chapter__"),
         menuDownloadChapter: chrome.i18n.getMessage("__MSG_menu_Download_Chapter__"),
@@ -519,22 +520,14 @@ class ChapterCache {
     }
 
     /**
-    * Refresh a cached chapter (delete and redownload)
+    * Download a chapter and cache it
     */
-    static async refreshChapter(sourceUrl, title, cacheCol) {
+    static async downloadChapter(sourceUrl, title, cacheCol) {
         try {
-            // Delete the cached chapter first
-            await ChapterCache.deleteChapter(sourceUrl);
-            
-            // Remove the cache icons from the specific column immediately
-            if (cacheCol) {
-                cacheCol.innerHTML = "";
-            }
-            
             // Find the parser and webPage for this URL
             let parser = ChapterCache.getCurrentParser();
             if (!parser) {
-                throw new Error("No parser available for refresh");
+                throw new Error("No parser available for download");
             }
             
             // Find the webPage object for this URL
@@ -555,19 +548,46 @@ class ChapterCache {
                 webPage.parser = parser;
             }
             
-            // Trigger the re-download using the existing download system
-            console.log(`Refreshing chapter: ${title} from ${sourceUrl}`);
+            // Trigger the download using the existing download system
+            console.log(`Downloading chapter: ${title} from ${sourceUrl}`);
             await parser.fetchWebPageContent(webPage);
             
             // Process and cache the downloaded content (this step is normally done during EPUB creation)
             if (webPage.rawDom && !webPage.error) {
                 let content = parser.convertRawDomToContent(webPage);
                 if (content) {
-                    console.log(`Successfully refreshed and cached chapter: ${title}`);
+                    console.log(`Successfully downloaded and cached chapter: ${title}`);
+                    
+                    // Add cache icon to the row if cacheCol is provided
+                    if (cacheCol) {
+                        let row = cacheCol.parentElement;
+                        ChaptersUI.addCacheIconToRow(row, sourceUrl, title);
+                    }
                 }
             }
             
             ChaptersUI.updateDeleteCacheButtonVisibility();
+        } catch (error) {
+            console.error("Failed to download chapter:", error);
+            alert("Failed to download chapter: " + error.message);
+        }
+    }
+
+    /**
+    * Refresh a cached chapter (delete and redownload)
+    */
+    static async refreshChapter(sourceUrl, title, cacheCol) {
+        try {
+            // Delete the cached chapter first
+            await ChapterCache.deleteChapter(sourceUrl);
+            
+            // Remove the cache icons from the specific column immediately
+            if (cacheCol) {
+                cacheCol.innerHTML = "";
+            }
+            
+            // Download the chapter again using the shared download logic
+            await ChapterCache.downloadChapter(sourceUrl, title, cacheCol);
         } catch (error) {
             console.error("Failed to refresh chapter:", error);
             alert("Failed to refresh chapter: " + error.message);
@@ -577,13 +597,17 @@ class ChapterCache {
     /**
     * Delete a single cached chapter and update UI
     */
-    static async deleteSingleChapter(sourceUrl, cacheCol) {
+    static async deleteSingleChapter(sourceUrl, title, cacheCol) {
         try {
             await ChapterCache.deleteChapter(sourceUrl);
             
             // Remove the cache icons from the specific column
             if (cacheCol) {
                 cacheCol.innerHTML = "";
+                
+                // Add download icon since chapter is no longer cached
+                let row = cacheCol.parentElement;
+                ChaptersUI.addDownloadIconToRow(row, sourceUrl, title);
             }
             
             // Update UI elements
@@ -616,8 +640,17 @@ class ChapterCache {
             // Use ChapterCache's active storage API for compatibility
             await ChapterCache.getActiveStorage().remove(keysToDelete);
             
-            // Update UI - remove all eye icons
-            document.querySelectorAll(".cacheViewColumn img").forEach(img => img.remove());
+            // Update UI - remove all cache icons and add download icons
+            chapters.forEach(chapter => {
+                if (chapter.row) {
+                    let cacheCol = chapter.row.querySelector(".cacheViewColumn");
+                    if (cacheCol) {
+                        cacheCol.innerHTML = "";
+                        // Add download icon since chapter is no longer cached
+                        ChaptersUI.addDownloadIconToRow(chapter.row, chapter.sourceUrl, chapter.title);
+                    }
+                }
+            });
             
             // Update delete button visibility
             ChaptersUI.updateDeleteCacheButtonVisibility();
@@ -640,16 +673,31 @@ class ChapterCache {
         
         let webPages = [...parser.state.webPages.values()].filter(c => c.isIncludeable);
         
-        for (let webPage of webPages) {
-            if (webPage.rawDom && !webPage.error) {
-                // Process the content using the existing parser system
-                let content = parser.convertRawDomToContent(webPage);
-                if (content) {
-                    // Cache the processed content
-                    await ChapterCache.set(webPage.sourceUrl, content);
-                    console.log(`Cached chapter: ${webPage.title}`);
-                }
+        // Set up progress bar
+        ProgressBar.setMax(webPages.length + 1);
+        ProgressBar.setValue(1);
+        
+        await parser.addParsersToPages(webPages);
+        let index = 0;
+        try {
+            let group = parser.groupPagesToFetch(webPages, index);
+            while (0 < group.length) {
+                await Promise.all(group.map(async (webPage) => {
+                    await parser.fetchWebPageContent(webPage);
+                    
+                    // After fetching, process and cache the content
+                    if (webPage.rawDom && !webPage.error) {
+                        // convertRawDomToContent handles both processing and caching automatically
+                        parser.convertRawDomToContent(webPage);
+                        console.log(`Downloaded and cached chapter: ${webPage.title}`);
+                    }
+                    // Note: Progress bar is updated automatically by Parser.updateLoadState()
+                }));
+                index += group.length;
+                group = parser.groupPagesToFetch(webPages, index);
             }
+        } catch (err) {
+            ErrorLog.log(err);
         }
         
         // Update UI to show cached icons

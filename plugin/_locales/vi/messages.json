@@ -488,6 +488,10 @@
         "message": "Xóa chương đã lưu đệm",
         "description": "Tooltip for delete cached chapter button"
     },
+    "__MSG_tooltip_Download_Chapter__": {
+        "message": "Tải xuống chương",
+        "description": "Tooltip text for the download chapter icon"
+    },
     "__MSG_tooltip_Refresh_Chapter__": {
         "message": "Làm mới chương",
         "description": "Tooltip for refresh chapter menu option"
