@@ -458,6 +458,14 @@ const main = (function() {
         }
     }
 
+    function setupCustomTooltips() {
+        // Set up trash icon tooltip with localized text
+        let deleteTooltip = document.getElementById("deleteAllTooltip");
+        if (deleteTooltip) {
+            deleteTooltip.textContent = ChapterCache.CacheText.tooltipDeleteAllCached;
+        }
+    }
+
     function clearCoverUrl() {
         CoverImageUI.setCoverImageUrl(null);
     }
@@ -650,6 +658,7 @@ const main = (function() {
         if (isRunningInTabMode()) {
             ErrorLog.SuppressErrorLog = false;
             localizeHtmlPage();
+            setupCustomTooltips();
             getAdvancedOptionsSection().hidden = !userPreferences.advancedOptionsVisibleByDefault.value;
             getAdditionalMetadataSection().hidden = !userPreferences.ShowMoreMetadataOptions.value;
             addEventHandlers();

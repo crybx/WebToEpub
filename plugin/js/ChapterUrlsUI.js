@@ -392,11 +392,24 @@ class ChapterUrlsUI {
     static addCacheIconToRow(row, sourceUrl, title) {
         let col = row.querySelector(".cacheViewColumn");
         if (col && !col.querySelector("img")) {
+            // Create wrapper for custom tooltip
+            let wrapper = document.createElement("div");
+            wrapper.className = "cacheIconWrapper";
+            
+            // Create the eye icon
             let button = document.createElement("img");
             button.src = "images/EyeFill.svg";
-            button.title = ChapterCache.CacheText.tooltipViewChapter;
             button.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-            col.appendChild(button);
+            
+            // Create the custom tooltip
+            let tooltip = document.createElement("span");
+            tooltip.className = "tooltipText";
+            tooltip.textContent = ChapterCache.CacheText.tooltipViewChapter;
+            
+            // Assemble the components
+            wrapper.appendChild(button);
+            wrapper.appendChild(tooltip);
+            col.appendChild(wrapper);
             
             // Update delete button visibility
             ChapterUrlsUI.updateDeleteCacheButtonVisibility();

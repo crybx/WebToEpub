@@ -826,6 +826,10 @@
 		"message": "View chapter",
 		"description": "Tooltip text for the view cached chapter icon"
 	},
+	"__MSG_tooltip_Delete_All_Cached__": {
+		"message": "Delete all cached chapters on this page",
+		"description": "Tooltip text for the delete all cached chapters icon"
+	},
 	"__MSG_confirm_Clear_All_Cache__": {
 		"message": "Are you sure you want to clear all cached chapters? This action cannot be undone.",
 		"description": "Confirmation dialog when clearing all cached chapters"
