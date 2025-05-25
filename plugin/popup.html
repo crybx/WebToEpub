@@ -156,6 +156,7 @@
             <div class="HiddenButtonSection">
                 <button id="hiddenBibButton">__MSG_button_Lib_Library__</button>
                 <button id="advancedOptionsButton">__MSG_button_Advanced_Options__</button>
+                <button id="cacheOptionsButton">Cache</button>
             </div>
             <section id="hiddenBibSection" hidden="true">
                 <div id="LibraryTemplate" hidden="true">
@@ -469,6 +470,7 @@
                     </tr>
                 </table>
             </section>
+
         </section>
         <section id="testSection"></section>
         <section id="imageSection" hidden="true">
@@ -550,6 +552,47 @@
                 <button id="closeCachedViewer">✕</button>
             </div>
             <div id="cachedChapterContent"></div>
+        </div>
+    </div>
+
+    <!-- Cache Options Modal -->
+    <div id="cacheOptionsModal">
+        <div>
+            <div id="cacheOptionsTitleBar">
+                <h2>Cache Options</h2>
+                <button id="closeCacheOptions">✕</button>
+            </div>
+            <div id="cacheOptionsContent">
+                <table id="cacheOptionsTable">
+                    <tr>
+                        <td><input id="enableChapterCachingCheckbox" type="checkbox" name="enableChapterCachingCheckbox" checked="true"></td>
+                        <td>Enable Chapter Caching</td>
+                    </tr>
+                    <tr>
+                        <td>Cache Retention (days)</td>
+                        <td>
+                            <input id="cacheRetentionDays" type="number" name="cacheRetentionDays" value="30" min="1" max="365" style="width: 80px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cached Chapters</td>
+                        <td>
+                            <span id="cachedChapterCount">Loading...</span>
+                            <button id="refreshCacheStatsButton" style="margin-left: 10px;">Refresh</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cache Size</td>
+                        <td><span id="cacheSize">Loading...</span></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <button id="clearAllCacheButton" style="background-color: #dc3545; color: white;">Clear All Cache</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 

@@ -23,15 +23,21 @@ class ChapterCache {
 
     static async get(url) {
         try {
+            // Check if caching is enabled
+            if (!(await this.isEnabled())) {
+                return null;
+            }
+            
             let key = this.getCacheKey(url);
             let result = await this.storage.local.get(key);
             let cached = result[key];
             
             if (cached) {
                 let data = cached;
-                // Check if cache is expired
+                // Check if cache is expired using current retention setting
+                let retentionDays = await this.getRetentionDays();
                 let ageInDays = (Date.now() - data.timestamp) / (1000 * 60 * 60 * 24);
-                if (ageInDays < this.MAX_CACHE_AGE_DAYS && data.version === this.CACHE_VERSION) {
+                if (ageInDays < retentionDays && data.version === this.CACHE_VERSION) {
                     // Convert the HTML string back to DOM
                     let doc = new DOMParser().parseFromString(data.html, "text/html");
                     return doc.body.firstChild;
@@ -47,6 +53,11 @@ class ChapterCache {
 
     static async set(url, contentElement) {
         try {
+            // Check if caching is enabled
+            if (!(await this.isEnabled())) {
+                return;
+            }
+            
             let key = this.getCacheKey(url);
             // Clone the element to avoid modifying the original
             let clonedContent = contentElement.cloneNode(true);
@@ -116,6 +127,79 @@ class ChapterCache {
             }
         } catch (e) {
             console.error("Error clearing cache:", e);
+        }
+    }
+
+    static async getCacheStats() {
+        try {
+            let storage = await this.storage.local.get();
+            let cacheKeys = Object.keys(storage).filter(key => key.startsWith(this.CACHE_PREFIX));
+            let totalSize = 0;
+            
+            for (let key of cacheKeys) {
+                if (storage[key] && storage[key].html) {
+                    totalSize += storage[key].html.length;
+                }
+            }
+            
+            return {
+                count: cacheKeys.length,
+                sizeBytes: totalSize,
+                sizeFormatted: this.formatBytes(totalSize)
+            };
+        } catch (e) {
+            console.error("Error getting cache stats:", e);
+            return { count: 0, sizeBytes: 0, sizeFormatted: "0 B" };
+        }
+    }
+
+    static formatBytes(bytes) {
+        if (bytes === 0) return "0 B";
+        const k = 1024;
+        const sizes = ["B", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    }
+
+    // Cache settings management
+    static async isEnabled() {
+        try {
+            let result = await this.storage.local.get("webtoepub_cache_enabled");
+            return result.webtoepub_cache_enabled !== false; // Default to true
+        } catch (e) {
+            console.error("Error reading cache enabled setting:", e);
+            return true; // Default to enabled
+        }
+    }
+
+    static async setEnabled(enabled) {
+        try {
+            await this.storage.local.set({ "webtoepub_cache_enabled": enabled });
+        } catch (e) {
+            console.error("Error setting cache enabled:", e);
+        }
+    }
+
+    static async getRetentionDays() {
+        try {
+            let result = await this.storage.local.get("webtoepub_cache_retention_days");
+            return result.webtoepub_cache_retention_days || this.MAX_CACHE_AGE_DAYS;
+        } catch (e) {
+            console.error("Error reading cache retention days:", e);
+            return this.MAX_CACHE_AGE_DAYS;
+        }
+    }
+
+    static async setRetentionDays(days) {
+        try {
+            if (days < 1 || days > 365) {
+                throw new Error("Retention days must be between 1 and 365");
+            }
+            await this.storage.local.set({ "webtoepub_cache_retention_days": days });
+            this.MAX_CACHE_AGE_DAYS = days; // Update the current value
+        } catch (e) {
+            console.error("Error setting cache retention days:", e);
+            throw e;
         }
     }
 }

@@ -329,6 +329,96 @@ const main = (function() {
         }
         section = getAdvancedOptionsSection();
         section.hidden = true;
+        // Hide cache options modal if it's open
+        document.getElementById("cacheOptionsModal").style.display = "none";
+    }
+
+    async function onCacheOptionsClick() {
+        // Show the cache options modal
+        let modal = document.getElementById("cacheOptionsModal");
+        modal.style.display = "flex";
+
+        // Refresh cache statistics
+        await refreshCacheStats();
+
+        // Set up event handlers
+        setupCacheEventHandlers();
+
+        // Set up close button
+        document.getElementById("closeCacheOptions").onclick = () => {
+            modal.style.display = "none";
+        };
+
+        // Close on background click
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    }
+
+    async function refreshCacheStats() {
+        try {
+            let stats = await ChapterCache.getCacheStats();
+            document.getElementById("cachedChapterCount").textContent = stats.count.toString();
+            document.getElementById("cacheSize").textContent = stats.sizeFormatted;
+        } catch (error) {
+            document.getElementById("cachedChapterCount").textContent = "Error";
+            document.getElementById("cacheSize").textContent = "Error";
+            console.error("Failed to refresh cache stats:", error);
+        }
+    }
+
+    function setupCacheEventHandlers() {
+        // Refresh cache stats button
+        document.getElementById("refreshCacheStatsButton").onclick = refreshCacheStats;
+
+        // Clear all cache button
+        document.getElementById("clearAllCacheButton").onclick = async () => {
+            if (confirm("Are you sure you want to clear all cached chapters? This action cannot be undone.")) {
+                try {
+                    await ChapterCache.clearAll();
+                    await refreshCacheStats();
+                    // Update the chapter table to remove cache indicators
+                    ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+                } catch (error) {
+                    console.error("Failed to clear cache:", error);
+                    alert("Failed to clear cache: " + error.message);
+                }
+            }
+        };
+
+        // Load current settings
+        loadCacheSettings();
+
+        // Save settings when changed
+        document.getElementById("enableChapterCachingCheckbox").onchange = saveCacheSettings;
+        document.getElementById("cacheRetentionDays").onchange = saveCacheSettings;
+    }
+
+    async function loadCacheSettings() {
+        try {
+            let enabled = await ChapterCache.isEnabled();
+            let retentionDays = await ChapterCache.getRetentionDays();
+
+            document.getElementById("enableChapterCachingCheckbox").checked = enabled;
+            document.getElementById("cacheRetentionDays").value = retentionDays;
+        } catch (error) {
+            console.error("Failed to load cache settings:", error);
+        }
+    }
+
+    async function saveCacheSettings() {
+        try {
+            let enabled = document.getElementById("enableChapterCachingCheckbox").checked;
+            let retentionDays = parseInt(document.getElementById("cacheRetentionDays").value);
+
+            await ChapterCache.setEnabled(enabled);
+            await ChapterCache.setRetentionDays(retentionDays);
+        } catch (error) {
+            console.error("Failed to save cache settings:", error);
+            alert("Failed to save cache settings: " + error.message);
+        }
     }
 
     function onStylesheetToDefaultClick() {
@@ -529,6 +619,7 @@ const main = (function() {
         getManuallySelectParserTag().onchange = populateControls;
         document.getElementById("advancedOptionsButton").onclick = onAdvancedOptionsClick;
         document.getElementById("hiddenBibButton").onclick = onLibraryClick;
+        document.getElementById("cacheOptionsButton").onclick = onCacheOptionsClick;
         document.getElementById("ShowMoreMetadataOptionsCheckbox").addEventListener("change", function() {onShowMoreMetadataOptionsClick();});
         document.getElementById("LibShowAdvancedOptionsCheckbox").addEventListener("change", function() {Library.LibRenderSavedEpubs();});
         document.getElementById("LibAddToLibrary").addEventListener("click", fetchContentAndPackEpub);
