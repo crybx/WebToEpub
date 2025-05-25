@@ -352,18 +352,13 @@ class ChapterUrlsUI {
         col.style.textAlign = "center";
         col.style.width = "30px";
         col.className = "cacheViewColumn";
+        row.appendChild(col);
         
         // Check if chapter is cached
         return ChapterCache.get(chapter.sourceUrl).then(cachedContent => {
             if (cachedContent) {
-                let button = document.createElement("img");
-                button.src = "images/EyeFill.svg";
-                button.style.cursor = "pointer";
-                button.style.width = "20px";
-                button.style.height = "20px";
-                button.title = "View cached chapter";
-                button.onclick = () => ChapterUrlsUI.viewCachedChapter(chapter.sourceUrl, chapter.title);
-                col.appendChild(button);
+                // Use the shared function to add the icon
+                ChapterUrlsUI.addCacheIconToRow(row, chapter.sourceUrl, chapter.title);
                 
                 // Update download state to show as previously downloaded
                 let downloadStateDiv = row.querySelector(".downloadStateDiv");
@@ -371,14 +366,11 @@ class ChapterUrlsUI {
                     ChapterUrlsUI.updateDownloadStateImage(downloadStateDiv, ChapterUrlsUI.DOWNLOAD_STATE_PREVIOUS);
                 }
                 
-                row.appendChild(col);
                 return true;
             }
-            row.appendChild(col);
             return false;
         }).catch(err => {
             console.error("Error checking cache:", err);
-            row.appendChild(col);
             return false;
         });
     }
