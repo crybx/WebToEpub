@@ -314,4 +314,133 @@ class ChapterCache {
             console.error("Failed to update toggle state text:", error);
         }
     }
+
+    // Chapter Cache Operations
+
+    /**
+    * Get the current parser instance from global scope
+    */
+    static getCurrentParser() {
+        // Access the parser from main.js global scope
+        if (typeof window !== "undefined" && window.parser) {
+            return window.parser;
+        }
+        // Fallback: try to get from the global scope
+        try {
+            return parser; // eslint-disable-line no-undef
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
+    * Refresh a cached chapter (delete and redownload)
+    */
+    static async refreshChapter(sourceUrl, title, cacheCol) {
+        try {
+            // Delete the cached chapter first
+            await ChapterCache.deleteChapter(sourceUrl);
+            
+            // Remove the cache icons from the specific column immediately
+            if (cacheCol) {
+                cacheCol.innerHTML = "";
+            }
+            
+            // Find the parser and webPage for this URL
+            let parser = ChapterCache.getCurrentParser();
+            if (!parser) {
+                throw new Error("No parser available for refresh");
+            }
+            
+            // Find the webPage object for this URL
+            let webPage = null;
+            for (let page of parser.getPagesToFetch().values()) {
+                if (page.sourceUrl === sourceUrl) {
+                    webPage = page;
+                    break;
+                }
+            }
+            
+            if (!webPage) {
+                throw new Error(`WebPage not found for URL: ${sourceUrl}`);
+            }
+            
+            // Ensure webPage has parser reference (may be missing in some cases)
+            if (!webPage.parser) {
+                webPage.parser = parser;
+            }
+            
+            // Trigger the re-download using the existing download system
+            console.log(`Refreshing chapter: ${title} from ${sourceUrl}`);
+            await parser.fetchWebPageContent(webPage);
+            
+            // Process and cache the downloaded content (this step is normally done during EPUB creation)
+            if (webPage.rawDom && !webPage.error) {
+                let content = parser.convertRawDomToContent(webPage);
+                if (content) {
+                    console.log(`Successfully refreshed and cached chapter: ${title}`);
+                }
+            }
+            
+            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        } catch (error) {
+            console.error("Failed to refresh chapter:", error);
+            alert("Failed to refresh chapter: " + error.message);
+        }
+    }
+
+    /**
+    * Delete a single cached chapter and update UI
+    */
+    static async deleteSingleChapter(sourceUrl, cacheCol) {
+        try {
+            await ChapterCache.deleteChapter(sourceUrl);
+            
+            // Remove the cache icons from the specific column
+            if (cacheCol) {
+                cacheCol.innerHTML = "";
+            }
+            
+            // Update UI elements
+            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            
+            // Refresh cache stats if ChapterCache has the method
+            if (typeof ChapterCache.refreshCacheStats === "function") {
+                await ChapterCache.refreshCacheStats();
+            }
+        } catch (error) {
+            console.error("Failed to delete chapter:", error);
+            alert("Failed to delete cached chapter: " + error.message);
+        }
+    }
+
+    /**
+    * Delete all cached chapters for the given chapter list
+    */
+    static async deleteAllCachedChapters(chapters) {
+        if (!confirm("Delete all cached chapters on this page?")) {
+            return;
+        }
+        
+        try {
+            // Get all chapter URLs
+            let urls = chapters.map(ch => ch.sourceUrl);
+            
+            // Delete from cache
+            let keysToDelete = urls.map(url => ChapterCache.getCacheKey(url));
+            // Use ChapterCache's storage API for compatibility
+            await ChapterCache.storage.local.remove(keysToDelete);
+            
+            // Update UI - remove all eye icons
+            document.querySelectorAll(".cacheViewColumn img").forEach(img => img.remove());
+            
+            // Update delete button visibility
+            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            
+            console.log(`Deleted ${keysToDelete.length} cached chapters`);
+        } catch (err) {
+            console.error("Error deleting cached chapters:", err);
+            alert("Error deleting cached chapters");
+        }
+    }
 }
