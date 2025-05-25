@@ -421,8 +421,8 @@ class ChapterUrlsUI {
             // Update UI - remove all eye icons
             document.querySelectorAll(".cacheViewColumn img").forEach(img => img.remove());
             
-            // Hide delete button
-            document.getElementById("deleteAllCachedChapters").style.display = "none";
+            // Update delete button visibility
+            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             
             console.log(`Deleted ${keysToDelete.length} cached chapters`);
         } catch (err) {
