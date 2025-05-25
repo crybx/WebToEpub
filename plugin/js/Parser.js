@@ -135,7 +135,7 @@ class Parser {
             ChapterCache.set(webPage.sourceUrl, content).then(() => {
                 // Update UI to show cache icon
                 if (webPage.row) {
-                    ChapterUrlsUI.addCacheIconToRow(webPage.row, webPage.sourceUrl, webPage.title);
+                    ChaptersUI.addCacheIconToRow(webPage.row, webPage.sourceUrl, webPage.title);
                 }
             }).catch(e => 
                 console.error("Failed to cache chapter:", e)
@@ -464,7 +464,7 @@ class Parser {
         let that = this;
         this.state.firstPageDom = firstPageDom;
         this.state.chapterListUrl = url;
-        let chapterUrlsUI = new ChapterUrlsUI(this);
+        let chapterUrlsUI = new ChaptersUI(this);
         this.userPreferences.setReadingListCheckbox(url);
 
         // returns promise, because may need to fetch additional pages to find list of chapters
@@ -592,7 +592,7 @@ class Parser {
                 let cachedContent = await ChapterCache.get(webPage.sourceUrl);
                 if (cachedContent) {
                     // Skip the delay for cached content
-                    ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_DOWNLOADING);
+                    ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_DOWNLOADING);
                     
                     // Create a mock DOM with cached content
                     let cachedDom = Parser.makeEmptyDocForContent(webPage.sourceUrl);
@@ -611,9 +611,9 @@ class Parser {
         }
         
         // Only apply rate limit delay for actual web fetches
-        ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_SLEEPING);
+        ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_SLEEPING);
         await this.rateLimitDelay();
-        ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_DOWNLOADING);
+        ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_DOWNLOADING);
         
         return pageParser.fetchChapter(webPage.sourceUrl).then(function(webPageDom) {
             delete webPage.error;
@@ -673,7 +673,7 @@ class Parser {
     }
 
     updateLoadState(webPage) {
-        ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_LOADED);
+        ChaptersUI.showDownloadState(webPage.row, ChaptersUI.DOWNLOAD_STATE_LOADED);
         ProgressBar.updateValue(1);
     }
 
