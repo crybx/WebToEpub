@@ -1,7 +1,6 @@
-/* Chapter Viewer and Modal Styles */
+/* Reusable Modal Styles */
 
-/* Cached Chapter Viewer */
-#cachedChapterViewer {
+.modal-backdrop {
     display: none;
     position: fixed;
     top: 0;
@@ -15,11 +14,8 @@
     font-size: 16px;
 }
 
-#cachedChapterViewer > div {
+.modal-container {
     position: relative;
-    width: 90%;
-    max-width: 850px;
-    height: 90%;
     background-color: white;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -28,7 +24,7 @@
     flex-direction: column;
 }
 
-#cachedChapterTitleBar {
+.modal-title-bar {
     position: relative;
     background-color: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
@@ -40,7 +36,7 @@
     justify-content: space-between;
 }
 
-#cachedChapterTitle {
+.modal-title {
     margin: 0;
     font-size: 18px;
     color: #333;
@@ -49,13 +45,7 @@
     word-wrap: break-word;
 }
 
-#cachedChapterContent {
-    padding: 20px 25px;
-    overflow: auto;
-    flex: 1;
-}
-
-#closeCachedViewer {
+.modal-close {
     background: none;
     border: none;
     cursor: pointer;
@@ -69,55 +59,29 @@
     color: #666;
 }
 
-#closeCachedViewer:hover {
+.modal-close:hover {
     background-color: #f0f0f0;
 }
 
-/* Cache Options Modal */
-#cacheOptionsModal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
+/* Specific Modal Implementations */
+
+/* Chapter Viewer specific sizing */
+#chapterViewer .modal-container {
+    width: 90%;
+    max-width: 850px;
+    height: 90%;
 }
 
-#cacheOptionsModal > div {
-    position: relative;
+#chapterViewerContent {
+    padding: 20px 25px;
+    overflow: auto;
+    flex: 1;
+}
+
+/* Cache Options specific sizing */
+#cacheOptionsModal .modal-container {
     width: 500px;
     max-width: 90%;
-    background-color: white;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-}
-
-#cacheOptionsTitleBar {
-    position: relative;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    padding: 15px 20px;
-    border-radius: 8px 8px 0 0;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#cacheOptionsTitleBar h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
-    flex-grow: 1;
-    padding-right: 20px;
 }
 
 #cacheOptionsContent {
@@ -208,22 +172,4 @@
     vertical-align: middle;
     display: inline-block;
     line-height: 24px;
-}
-
-#closeCacheOptions {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: #666;
-}
-
-#closeCacheOptions:hover {
-    background-color: #f0f0f0;
 }

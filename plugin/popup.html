@@ -5,7 +5,7 @@
     <title>WebToEpub</title>
     <link href="css/default.css" rel="stylesheet" type="text/css" />
     <link href="css/chaptersTable.css" rel="stylesheet" type="text/css" />
-    <link href="css/chapterViewer.css" rel="stylesheet" type="text/css" />
+    <link href="css/modals.css" rel="stylesheet" type="text/css" />
     <link href="css/autoDark.css" rel="stylesheet" type="text/css"  id="autoDark" />
     <link href="css/alwaysDark.css" rel="stylesheet" type="text/css" id="alwaysDark" disabled="true"/>
     <base />
@@ -545,22 +545,22 @@
     </div>
 
     <!-- Cached Chapter Viewer -->
-    <div id="cachedChapterViewer">
-        <div>
-            <div id="cachedChapterTitleBar">
-                <h2 id="cachedChapterTitle"></h2>
-                <button id="closeCachedViewer">✕</button>
+    <div id="chapterViewer" class="modal-backdrop">
+        <div class="modal-container">
+            <div id="chapterViewerTitleBar" class="modal-title-bar">
+                <h2 id="chapterViewerTitle" class="modal-title"></h2>
+                <button id="closeChapterViewer" class="modal-close">✕</button>
             </div>
-            <div id="cachedChapterContent"></div>
+            <div id="chapterViewerContent"></div>
         </div>
     </div>
 
     <!-- Cache Options Modal -->
-    <div id="cacheOptionsModal">
-        <div>
-            <div id="cacheOptionsTitleBar">
-                <h2>Cache Options</h2>
-                <button id="closeCacheOptions">✕</button>
+    <div id="cacheOptionsModal" class="modal-backdrop">
+        <div class="modal-container">
+            <div id="cacheOptionsTitleBar" class="modal-title-bar">
+                <h2 class="modal-title">Cache Options</h2>
+                <button id="closeCacheOptions" class="modal-close">✕</button>
             </div>
             <div id="cacheOptionsContent">
                 <table id="cacheOptionsTable">
