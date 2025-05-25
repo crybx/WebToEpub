@@ -565,8 +565,11 @@
             <div id="cacheOptionsContent">
                 <table id="cacheOptionsTable">
                     <tr>
-                        <td><input id="enableChapterCachingCheckbox" type="checkbox" name="enableChapterCachingCheckbox" checked="true"></td>
                         <td>Enable Chapter Caching</td>
+                        <td>
+                            <input id="enableChapterCachingCheckbox" type="checkbox" name="enableChapterCachingCheckbox" checked="true">
+                            <span id="toggleStateText">On</span>
+                        </td>
                     </tr>
                     <tr>
                         <td>Cache Retention (days)</td>
@@ -575,21 +578,15 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Cached Chapters</td>
+                        <td>Cached Chapter Count</td>
                         <td>
                             <span id="cachedChapterCount">Loading...</span>
-                            <button id="refreshCacheStatsButton">Refresh</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Cache Size</td>
-                        <td><span id="cacheSize">Loading...</span></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>
                             <button id="clearAllCacheButton">Delete All Cached Chapters</button>
                         </td>
+                    </tr>
+                    <tr>
+                        <td>Chapter Cache Size</td>
+                        <td><span id="cacheSize">Loading...</span></td>
                     </tr>
                 </table>
             </div>

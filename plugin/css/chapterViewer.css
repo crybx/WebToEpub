@@ -133,6 +133,7 @@
 #cacheOptionsTable td {
     padding: 10px 5px;
     vertical-align: middle;
+    line-height: 24px; /* Match toggle height for better alignment */
 }
 
 #cacheOptionsTable td:first-child {
@@ -140,16 +141,73 @@
     text-align: left;
 }
 
-#cacheOptionsTable input[type="checkbox"] {
+/* Style the enable caching checkbox as a toggle switch */
+#enableChapterCachingCheckbox {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #ccc;
+    border-radius: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-right: 8px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+#enableChapterCachingCheckbox:checked {
+    background-color: #4CAF50;
+}
+
+#enableChapterCachingCheckbox::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.2s;
+}
+
+#enableChapterCachingCheckbox:checked::before {
+    transform: translateX(26px);
+}
+
+#toggleStateText {
+    margin-left: 8px;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 24px;
+}
+
+/* Other checkboxes keep normal styling */
+#cacheOptionsTable input[type="checkbox"]:not(#enableChapterCachingCheckbox) {
     margin-right: 8px;
 }
 
 #cacheRetentionDays {
     width: 80px;
+    vertical-align: middle;
 }
 
-#refreshCacheStatsButton {
+#clearAllCacheButton {
     margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Ensure all spans in the cache table are properly aligned */
+#cacheOptionsTable span {
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 24px;
 }
 
 #closeCacheOptions {

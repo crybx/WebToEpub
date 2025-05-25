@@ -225,9 +225,6 @@ class ChapterCache {
     }
 
     static setupCacheEventHandlers() {
-        // Refresh cache stats button
-        document.getElementById("refreshCacheStatsButton").onclick = this.refreshCacheStats.bind(this);
-        
         // Clear all cache button
         document.getElementById("clearAllCacheButton").onclick = async () => {
             if (confirm("Are you sure you want to clear all cached chapters? This action cannot be undone.")) {
@@ -258,6 +255,7 @@ class ChapterCache {
             
             document.getElementById("enableChapterCachingCheckbox").checked = enabled;
             document.getElementById("cacheRetentionDays").value = retentionDays;
+            this.updateToggleStateText(enabled);
         } catch (error) {
             console.error("Failed to load cache settings:", error);
         }
@@ -271,11 +269,23 @@ class ChapterCache {
             this.setEnabled(enabled);
             this.setRetentionDays(retentionDays);
             
-            // Update the main cache button text
+            // Update the toggle state text and main cache button text
+            this.updateToggleStateText(enabled);
             this.updateCacheButtonText();
         } catch (error) {
             console.error("Failed to save cache settings:", error);
             alert("Failed to save cache settings: " + error.message);
+        }
+    }
+
+    static updateToggleStateText(enabled) {
+        try {
+            let toggleText = document.getElementById("toggleStateText");
+            if (toggleText) {
+                toggleText.textContent = enabled ? "On" : "Off";
+            }
+        } catch (error) {
+            console.error("Failed to update toggle state text:", error);
         }
     }
 }
