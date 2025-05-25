@@ -393,6 +393,27 @@ class ChapterUrlsUI {
     }
 
     /**
+    * @public
+    * Add cache icon to row when chapter is cached (called after successful caching)
+    */
+    static addCacheIconToRow(row, sourceUrl, title) {
+        let col = row.querySelector(".cacheViewColumn");
+        if (col && !col.querySelector("img")) {
+            let button = document.createElement("img");
+            button.src = "images/EyeFill.svg";
+            button.style.cursor = "pointer";
+            button.style.width = "20px";
+            button.style.height = "20px";
+            button.title = "View cached chapter";
+            button.onclick = () => ChapterUrlsUI.viewCachedChapter(sourceUrl, title);
+            col.appendChild(button);
+            
+            // Update delete button visibility
+            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        }
+    }
+
+    /**
     * @private
     * Delete all cached chapters on the current page
     */
