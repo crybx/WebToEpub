@@ -340,8 +340,8 @@ const main = (function() {
 
         // Refresh cache statistics and update button text
         await ChapterCache.refreshCacheStats();
-        await ChapterCache.updateCacheButtonText();
-
+        ChapterCache.updateCacheButtonText();
+        
         // Set up event handlers
         ChapterCache.setupCacheEventHandlers();
         

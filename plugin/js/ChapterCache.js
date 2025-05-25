@@ -7,6 +7,8 @@ class ChapterCache {
     static CACHE_PREFIX = "webtoepub_chapter_";
     static CACHE_VERSION = "1.0";  // Only bump this if cache format changes
     static MAX_CACHE_AGE_DAYS = 30;
+    static CACHE_ENABLED_KEY = "chapterCacheEnabled";
+    static CACHE_RETENTION_KEY = "chapterCacheRetentionDays";
 
     // Get storage API (works for both Chrome and Firefox)
     static get storage() {
@@ -30,7 +32,7 @@ class ChapterCache {
             if (cached) {
                 let data = cached;
                 // Check if cache is expired using current retention setting
-                let retentionDays = await this.getRetentionDays();
+                let retentionDays = this.getRetentionDays();
                 let ageInDays = (Date.now() - data.timestamp) / (1000 * 60 * 60 * 24);
                 if (ageInDays < retentionDays && data.version === this.CACHE_VERSION) {
                     // Convert the HTML string back to DOM
@@ -48,6 +50,11 @@ class ChapterCache {
 
     static async set(url, contentElement) {
         try {
+            // Check if caching is enabled
+            if (!(await this.isEnabled())) {
+                return;
+            }
+            
             let key = this.getCacheKey(url);
             // Clone the element to avoid modifying the original
             let clonedContent = contentElement.cloneNode(true);
@@ -151,42 +158,41 @@ class ChapterCache {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
     }
 
-    // Cache settings management
-    static async isEnabled() {
+    // Cache settings management (stored in localStorage like UserPreferences)
+    static isEnabled() {
         try {
-            let result = await this.storage.local.get("webtoepub_cache_enabled");
-            return result.webtoepub_cache_enabled !== false; // Default to true
+            let value = localStorage.getItem(this.CACHE_ENABLED_KEY);
+            return value !== "false"; // Default to true, only false if explicitly set to "false"
         } catch (e) {
             console.error("Error reading cache enabled setting:", e);
             return true; // Default to enabled
         }
     }
 
-    static async setEnabled(enabled) {
+    static setEnabled(enabled) {
         try {
-            await this.storage.local.set({ "webtoepub_cache_enabled": enabled });
+            localStorage.setItem(this.CACHE_ENABLED_KEY, enabled.toString());
         } catch (e) {
             console.error("Error setting cache enabled:", e);
         }
     }
 
-    static async getRetentionDays() {
+    static getRetentionDays() {
         try {
-            let result = await this.storage.local.get("webtoepub_cache_retention_days");
-            return result.webtoepub_cache_retention_days || this.MAX_CACHE_AGE_DAYS;
+            let value = localStorage.getItem(this.CACHE_RETENTION_KEY);
+            return value ? parseInt(value) : this.MAX_CACHE_AGE_DAYS;
         } catch (e) {
             console.error("Error reading cache retention days:", e);
             return this.MAX_CACHE_AGE_DAYS;
         }
     }
 
-    static async setRetentionDays(days) {
+    static setRetentionDays(days) {
         try {
             if (days < 1 || days > 365) {
                 throw new Error("Retention days must be between 1 and 365");
             }
-            await this.storage.local.set({ "webtoepub_cache_retention_days": days });
-            this.MAX_CACHE_AGE_DAYS = days; // Update the current value
+            localStorage.setItem(this.CACHE_RETENTION_KEY, days.toString());
         } catch (e) {
             console.error("Error setting cache retention days:", e);
             throw e;
@@ -194,9 +200,9 @@ class ChapterCache {
     }
 
     // UI Management Functions
-    static async updateCacheButtonText() {
+    static updateCacheButtonText() {
         try {
-            let enabled = await this.isEnabled();
+            let enabled = this.isEnabled();
             let button = document.getElementById("cacheOptionsButton");
             if (button) {
                 button.textContent = enabled ? "Caching Enabled" : "Caching Disabled";
@@ -245,10 +251,10 @@ class ChapterCache {
         document.getElementById("cacheRetentionDays").onchange = this.saveCacheSettings.bind(this);
     }
 
-    static async loadCacheSettings() {
+    static loadCacheSettings() {
         try {
-            let enabled = await this.isEnabled();
-            let retentionDays = await this.getRetentionDays();
+            let enabled = this.isEnabled();
+            let retentionDays = this.getRetentionDays();
             
             document.getElementById("enableChapterCachingCheckbox").checked = enabled;
             document.getElementById("cacheRetentionDays").value = retentionDays;
@@ -257,16 +263,16 @@ class ChapterCache {
         }
     }
 
-    static async saveCacheSettings() {
+    static saveCacheSettings() {
         try {
             let enabled = document.getElementById("enableChapterCachingCheckbox").checked;
             let retentionDays = parseInt(document.getElementById("cacheRetentionDays").value);
             
-            await this.setEnabled(enabled);
-            await this.setRetentionDays(retentionDays);
+            this.setEnabled(enabled);
+            this.setRetentionDays(retentionDays);
             
             // Update the main cache button text
-            await this.updateCacheButtonText();
+            this.updateCacheButtonText();
         } catch (error) {
             console.error("Failed to save cache settings:", error);
             alert("Failed to save cache settings: " + error.message);

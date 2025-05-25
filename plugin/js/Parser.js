@@ -58,7 +58,6 @@ class Parser {
         this.state = new ParserState();
         this.imageCollector = imageCollector || new ImageCollector();
         this.userPreferences = null;
-        this.enableChapterCaching = true;  // Toggle for caching, default true
     }
 
     copyState(otherParser) {
@@ -131,7 +130,7 @@ class Parser {
         }
         
         // Cache the processed content if caching is enabled
-        if (this.enableChapterCaching && webPage.sourceUrl) {
+        if (webPage.sourceUrl && ChapterCache.isEnabled()) {
             // Fire and forget - don't wait for cache write
             ChapterCache.set(webPage.sourceUrl, content).then(() => {
                 // Update UI to show cache icon
@@ -587,8 +586,8 @@ class Parser {
         let that = this;
         let pageParser = webPage.parser;
         
-        // Check cache first if caching is enabled - no delay needed for cached content
-        if (that.enableChapterCaching) {
+        // Check cache first if caching is enabled
+        if (ChapterCache.isEnabled()) {
             try {
                 let cachedContent = await ChapterCache.get(webPage.sourceUrl);
                 if (cachedContent) {
