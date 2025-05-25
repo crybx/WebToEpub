@@ -163,6 +163,10 @@
 		"message": "Pack EPUB",
 		"description": "Label on button to create the EPUB"
 	},
+	"__MSG_button_Download_Chapters__": {
+		"message": "Download Chapters",
+		"description": "Label on button to download chapters without packing into EPUB"
+	},
 	"__MSG_button_Add_to_Library__": {
 		"message": "Add to Library",
 		"description": "Label on button to create the EPUB and Add it to the Library"

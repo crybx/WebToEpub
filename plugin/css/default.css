@@ -17,7 +17,8 @@
     width: 36px;
     display: inline-block;
     position: absolute;
-    left: 46%;
+    left: 50%;
+    transform: translateX(-50%);
     color: white;
     z-index: 1000;
     font-weight: bolder;
@@ -149,13 +150,32 @@ button {
 .progressSection {
     width: 94%;
     position: relative;
-    display: flex;
-    height: 60px;
     border: 1px #CCC solid;
-    padding-top: 30px;
-    padding-left: 39px;
+    padding: 15px;
     border-radius: 8px;
     max-width: 648px;
+}
+
+.progressBarRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.progressButtonRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.progressButtonRow .expandedButton {
+    flex: 1;
+    min-width: 150px;
 }
 
 #coverUrlSection img {

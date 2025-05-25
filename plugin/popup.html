@@ -147,11 +147,15 @@
             </table>
 
             <div class="progressSection">
-                <button id="packEpubButton" class="expandedButton">__MSG_button_Pack_EPUB__</button>
-                <progress id="fetchProgress" value=" 0" max="1"></progress>
-                <span id="progressString"></span>
-                <button data-libclick="yes" id="LibAddToLibrary" class="expandedButton">__MSG_button_Add_to_Library__</button>
-                <button data-libclick="yes" id="LibPauseToLibrary" class="expandedButton" hidden="true">__MSG_button_Pause_to_Library__</button>
+                <div class="progressBarRow">
+                    <progress id="fetchProgress" value=" 0" max="1"></progress>
+                    <span id="progressString"></span>
+                </div>
+                <div class="progressButtonRow">
+                    <button id="packEpubButton" class="expandedButton">__MSG_button_Pack_EPUB__</button>
+                    <button id="downloadChaptersButton" class="expandedButton">__MSG_button_Download_Chapters__</button>
+                    <button data-libclick="yes" id="LibAddToLibrary" class="expandedButton">Add to Library</button>
+                </div>
             </div>
             <div class="HiddenButtonSection">
                 <button id="hiddenBibButton">__MSG_button_Lib_Library__</button>
