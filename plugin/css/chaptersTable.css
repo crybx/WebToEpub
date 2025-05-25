@@ -79,12 +79,34 @@ img.downloadState {
 }
 
 .cacheViewColumn img {
-    cursor: pointer;
     width: 16px;
     height: 16px;
     margin: 2px;
+    transition: filter 0.2s ease;
+}
+
+/* Make the entire tooltip wrapper area clickable and hoverable */
+.tooltip-wrapper {
+    cursor: pointer;
+}
+
+.tooltip-wrapper:hover img[src*="EyeFill.svg"] {
+    filter: brightness(1.2);
+}
+
+.tooltip-wrapper:active img[src*="EyeFill.svg"] {
+    filter: brightness(0.8);
+}
+
+.tooltip-wrapper:hover #deleteAllCachedChapters {
+    filter: brightness(0) saturate(100%) invert(13%) sepia(77%) saturate(2217%) hue-rotate(348deg) brightness(96%) contrast(91%);
+}
+
+.tooltip-wrapper:active #deleteAllCachedChapters {
+    filter: brightness(0) saturate(100%) invert(8%) sepia(84%) saturate(2943%) hue-rotate(342deg) brightness(90%) contrast(95%);
 }
 
 #deleteAllCachedChapters {
     display: none;
+    transition: filter 0.2s ease;
 }

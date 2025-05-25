@@ -58,7 +58,8 @@ class ChapterUrlsUI {
         
         // Set up delete cache handler
         let deleteButton = document.getElementById("deleteAllCachedChapters");
-        deleteButton.onclick = () => this.deleteAllCachedChapters(chapters);
+        let deleteWrapper = deleteButton.parentElement;
+        deleteWrapper.onclick = () => this.deleteAllCachedChapters(chapters);
         this.showHideChapterUrlsColumn();
         ChapterUrlsUI.resizeTitleColumnToFit(linksTable);
     }
@@ -395,11 +396,11 @@ class ChapterUrlsUI {
             // Create wrapper for custom tooltip
             let wrapper = document.createElement("div");
             wrapper.className = "tooltip-wrapper tooltip-right";
+            wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
             
             // Create the eye icon
             let button = document.createElement("img");
             button.src = "images/EyeFill.svg";
-            button.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
             
             // Create the custom tooltip
             let tooltip = document.createElement("span");
