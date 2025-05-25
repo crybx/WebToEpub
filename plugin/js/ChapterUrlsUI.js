@@ -46,6 +46,7 @@ class ChapterUrlsUI {
             ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
             ChapterUrlsUI.appendColumnDataToRow(row, chapter.sourceUrl);
+            ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter);
             linksTable.appendChild(row);
             ChapterUrlsUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
             ChapterUrlsUI.appendOptionToSelect(rangeEnd, index, chapter, memberForTextOption);
@@ -331,6 +332,80 @@ class ChapterUrlsUI {
         col.style.whiteSpace = "nowrap";
         row.appendChild(col);
         return col;
+    }
+
+    /**
+    * @private
+    * Add view cache button to row if chapter is cached
+    */
+    static async appendViewCacheButtonToRow(row, chapter) {
+        let col = document.createElement("td");
+        col.style.textAlign = "center";
+        col.style.width = "30px";
+        
+        // Check if chapter is cached
+        ChapterCache.get(chapter.sourceUrl).then(cachedContent => {
+            if (cachedContent) {
+                let button = document.createElement("img");
+                button.src = "images/EyeFill.svg";
+                button.style.cursor = "pointer";
+                button.style.width = "20px";
+                button.style.height = "20px";
+                button.title = "View cached chapter";
+                button.onclick = () => ChapterUrlsUI.viewCachedChapter(chapter.sourceUrl, chapter.title);
+                col.appendChild(button);
+            }
+        }).catch(err => {
+            console.error("Error checking cache:", err);
+        });
+        
+        row.appendChild(col);
+    }
+
+    /**
+    * @private
+    * View cached chapter in a popup
+    */
+    static async viewCachedChapter(sourceUrl, title) {
+        try {
+            let cachedContent = await ChapterCache.get(sourceUrl);
+            if (cachedContent) {
+                // Show the viewer
+                let viewer = document.getElementById("cachedChapterViewer");
+                let contentDiv = document.getElementById("cachedChapterContent");
+                
+                // Clear previous content
+                contentDiv.innerHTML = "";
+                
+                // Add title
+                let titleElement = document.createElement("h2");
+                titleElement.textContent = title;
+                contentDiv.appendChild(titleElement);
+                
+                // Add chapter content
+                contentDiv.appendChild(cachedContent.cloneNode(true));
+                
+                // Show viewer
+                viewer.style.display = "block";
+                
+                // Set up close button
+                document.getElementById("closeCachedViewer").onclick = () => {
+                    viewer.style.display = "none";
+                };
+                
+                // Close on background click
+                viewer.onclick = (e) => {
+                    if (e.target === viewer) {
+                        viewer.style.display = "none";
+                    }
+                };
+            } else {
+                alert("Chapter not found in cache");
+            }
+        } catch (err) {
+            console.error("Error viewing cached chapter:", err);
+            alert("Error loading cached chapter");
+        }
     }
 
     /** 
