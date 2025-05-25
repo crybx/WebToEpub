@@ -39,7 +39,7 @@ class FuhuzzParser extends Parser {
     }
 
     flatObjFn2(obj) {
-        var finalObj = {}; 
+        var finalObj = {};
         for (let key in obj) {
             if (typeof obj[key] === "object") {
                 Object.assign(finalObj, this.flatObjFn2(obj[key], key));
