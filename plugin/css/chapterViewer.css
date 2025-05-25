@@ -1,19 +1,4 @@
-/* Cached Chapter Viewer Styles */
-
-.cacheViewColumn {
-    text-align: center;
-    width: 30px;
-}
-
-.cacheViewColumn img {
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-}
-
-#deleteAllCachedChapters {
-    display: none;
-}
+/* Chapter Viewer Styles */
 
 #cachedChapterViewer {
     display: none;
@@ -26,7 +11,7 @@
     z-index: 1000;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 #cachedChapterViewer > div {
@@ -49,7 +34,7 @@
 #closeCachedViewer {
     position: absolute;
     top: 10px;
-    right: 15px;
+    right: 20px;
     font-size: 24px;
     background: none;
     border: none;

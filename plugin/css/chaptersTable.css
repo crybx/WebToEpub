@@ -1,0 +1,71 @@
+#chapterUrlsTable,
+table.chapterList {
+    width: 100%;
+}
+
+#chapterUrlsTable input[type=checkbox],
+#chapterUrlsTable img,
+#chapterUrlsTable .tooltip {
+    float: left;
+}
+
+img.downloadState {
+    height: 1em;
+    margin-top: 3px;
+}
+
+.downloadStateDiv {
+    position: relative;
+    display: inline-block;
+}
+
+.downloadStateDiv .tooltipText {
+    visibility: hidden;
+    width: 120px;
+    background-color: #808080;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+}
+
+.downloadStateDiv:hover .tooltipText {
+    visibility: visible;
+}
+
+#chapterUrlsTable input[type=text] {
+    width: 101.5%;
+    position: relative;
+    left: -16px;
+    max-width: 580px;
+}
+
+#chapterUrlsTable tbody > tr > th {
+    text-align: center;
+    border-bottom: 1px #CCC solid;
+    padding: 0;
+}
+
+#chapterUrlsTable > tr > td:first-child, #chapterUrlsTable > tbody > tr > td:nth-child(2) {
+    width: 3px;
+}
+
+.cacheViewColumn {
+    text-align: center;
+    width: 20px;
+}
+
+.cacheViewColumn img {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 2px;
+}
+
+#deleteAllCachedChapters {
+    display: none;
+}
