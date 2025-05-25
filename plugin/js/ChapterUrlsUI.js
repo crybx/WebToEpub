@@ -364,6 +364,13 @@ class ChapterUrlsUI {
                 button.title = "View cached chapter";
                 button.onclick = () => ChapterUrlsUI.viewCachedChapter(chapter.sourceUrl, chapter.title);
                 col.appendChild(button);
+                
+                // Update download state to show as previously downloaded
+                let downloadStateDiv = row.querySelector(".downloadStateDiv");
+                if (downloadStateDiv) {
+                    ChapterUrlsUI.updateDownloadStateImage(downloadStateDiv, ChapterUrlsUI.DOWNLOAD_STATE_PREVIOUS);
+                }
+                
                 row.appendChild(col);
                 return true;
             }
