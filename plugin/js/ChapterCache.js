@@ -23,11 +23,6 @@ class ChapterCache {
 
     static async get(url) {
         try {
-            // Check if caching is enabled
-            if (!(await this.isEnabled())) {
-                return null;
-            }
-            
             let key = this.getCacheKey(url);
             let result = await this.storage.local.get(key);
             let cached = result[key];
@@ -53,11 +48,6 @@ class ChapterCache {
 
     static async set(url, contentElement) {
         try {
-            // Check if caching is enabled
-            if (!(await this.isEnabled())) {
-                return;
-            }
-            
             let key = this.getCacheKey(url);
             // Clone the element to avoid modifying the original
             let clonedContent = contentElement.cloneNode(true);
@@ -200,6 +190,71 @@ class ChapterCache {
         } catch (e) {
             console.error("Error setting cache retention days:", e);
             throw e;
+        }
+    }
+
+    // UI Management Functions
+    static async refreshCacheStats() {
+        try {
+            let stats = await this.getCacheStats();
+            document.getElementById("cachedChapterCount").textContent = stats.count.toString();
+            document.getElementById("cacheSize").textContent = stats.sizeFormatted;
+        } catch (error) {
+            document.getElementById("cachedChapterCount").textContent = "Error";
+            document.getElementById("cacheSize").textContent = "Error";
+            console.error("Failed to refresh cache stats:", error);
+        }
+    }
+
+    static setupCacheEventHandlers() {
+        // Refresh cache stats button
+        document.getElementById("refreshCacheStatsButton").onclick = this.refreshCacheStats.bind(this);
+        
+        // Clear all cache button
+        document.getElementById("clearAllCacheButton").onclick = async () => {
+            if (confirm("Are you sure you want to clear all cached chapters? This action cannot be undone.")) {
+                try {
+                    await this.clearAll();
+                    await this.refreshCacheStats();
+                    // Update the chapter table to remove cache indicators
+                    ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+                } catch (error) {
+                    console.error("Failed to clear cache:", error);
+                    alert("Failed to clear cache: " + error.message);
+                }
+            }
+        };
+        
+        // Load current settings
+        this.loadCacheSettings();
+        
+        // Save settings when changed
+        document.getElementById("enableChapterCachingCheckbox").onchange = this.saveCacheSettings.bind(this);
+        document.getElementById("cacheRetentionDays").onchange = this.saveCacheSettings.bind(this);
+    }
+
+    static async loadCacheSettings() {
+        try {
+            let enabled = await this.isEnabled();
+            let retentionDays = await this.getRetentionDays();
+            
+            document.getElementById("enableChapterCachingCheckbox").checked = enabled;
+            document.getElementById("cacheRetentionDays").value = retentionDays;
+        } catch (error) {
+            console.error("Failed to load cache settings:", error);
+        }
+    }
+
+    static async saveCacheSettings() {
+        try {
+            let enabled = document.getElementById("enableChapterCachingCheckbox").checked;
+            let retentionDays = parseInt(document.getElementById("cacheRetentionDays").value);
+            
+            await this.setEnabled(enabled);
+            await this.setRetentionDays(retentionDays);
+        } catch (error) {
+            console.error("Failed to save cache settings:", error);
+            alert("Failed to save cache settings: " + error.message);
         }
     }
 }
