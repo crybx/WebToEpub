@@ -40,19 +40,27 @@ class ChapterUrlsUI {
         let rangeStart = ChapterUrlsUI.getRangeStartChapterSelect();
         let rangeEnd = ChapterUrlsUI.getRangeEndChapterSelect();
         let memberForTextOption = ChapterUrlsUI.textToShowInRange();
+        let anyCached = false;
         chapters.forEach(function(chapter) {
             let row = document.createElement("tr");
             ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
             ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
             ChapterUrlsUI.appendColumnDataToRow(row, chapter.sourceUrl);
-            ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter);
+            ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter).then(cached => {
+                if (cached) anyCached = true;
+                ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            });
             linksTable.appendChild(row);
             ChapterUrlsUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
             ChapterUrlsUI.appendOptionToSelect(rangeEnd, index, chapter, memberForTextOption);
             ++index;
         });
         ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
+        
+        // Set up delete cache handler
+        let deleteButton = document.getElementById("deleteAllCachedChapters");
+        deleteButton.onclick = () => this.deleteAllCachedChapters(chapters);
         this.showHideChapterUrlsColumn();
         ChapterUrlsUI.resizeTitleColumnToFit(linksTable);
     }
@@ -337,14 +345,16 @@ class ChapterUrlsUI {
     /**
     * @private
     * Add view cache button to row if chapter is cached
+    * @returns {Promise<boolean>} true if chapter is cached
     */
     static async appendViewCacheButtonToRow(row, chapter) {
         let col = document.createElement("td");
         col.style.textAlign = "center";
         col.style.width = "30px";
+        col.className = "cacheViewColumn";
         
         // Check if chapter is cached
-        ChapterCache.get(chapter.sourceUrl).then(cachedContent => {
+        return ChapterCache.get(chapter.sourceUrl).then(cachedContent => {
             if (cachedContent) {
                 let button = document.createElement("img");
                 button.src = "images/EyeFill.svg";
@@ -354,12 +364,55 @@ class ChapterUrlsUI {
                 button.title = "View cached chapter";
                 button.onclick = () => ChapterUrlsUI.viewCachedChapter(chapter.sourceUrl, chapter.title);
                 col.appendChild(button);
+                row.appendChild(col);
+                return true;
             }
+            row.appendChild(col);
+            return false;
         }).catch(err => {
             console.error("Error checking cache:", err);
+            row.appendChild(col);
+            return false;
         });
+    }
+
+    /**
+    * @private
+    * Update visibility of delete cache button based on whether any chapters are cached
+    */
+    static updateDeleteCacheButtonVisibility() {
+        let hasCache = document.querySelector(".cacheViewColumn img") !== null;
+        document.getElementById("deleteAllCachedChapters").style.display = hasCache ? "block" : "none";
+    }
+
+    /**
+    * @private
+    * Delete all cached chapters on the current page
+    */
+    async deleteAllCachedChapters(chapters) {
+        if (!confirm("Delete all cached chapters on this page?")) {
+            return;
+        }
         
-        row.appendChild(col);
+        try {
+            // Get all chapter URLs
+            let urls = chapters.map(ch => ch.sourceUrl);
+            
+            // Delete from cache
+            let keysToDelete = urls.map(url => ChapterCache.getCacheKey(url));
+            await chrome.storage.local.remove(keysToDelete);
+            
+            // Update UI - remove all eye icons
+            document.querySelectorAll(".cacheViewColumn img").forEach(img => img.remove());
+            
+            // Hide delete button
+            document.getElementById("deleteAllCachedChapters").style.display = "none";
+            
+            console.log(`Deleted ${keysToDelete.length} cached chapters`);
+        } catch (err) {
+            console.error("Error deleting cached chapters:", err);
+            alert("Error deleting cached chapters");
+        }
     }
 
     /**
