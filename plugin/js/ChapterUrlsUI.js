@@ -376,7 +376,9 @@ class ChapterUrlsUI {
     * Update visibility of delete cache button based on whether any chapters are cached
     */
     static updateDeleteCacheButtonVisibility() {
-        let hasCache = document.querySelector(".cacheViewColumn img") !== null;
+        // Only check for cached chapters in the current chapter table, excluding the delete button itself
+        let chapterTable = document.getElementById("chapterUrlsTable");
+        let hasCache = chapterTable && chapterTable.querySelector(".cacheViewColumn img:not(#deleteAllCachedChapters)") !== null;
         let deleteButton = document.getElementById("deleteAllCachedChapters");
         if (deleteButton) {
             deleteButton.style.display = hasCache ? "block" : "none";
