@@ -9,9 +9,9 @@ class KemonopartyParser extends Parser {
     constructor() {
         super();
     }
-    
+
     static isKemono(dom) {
-        let baseurl = new URL(dom.baseURI); 
+        let baseurl = new URL(dom.baseURI);
         return baseurl.hostname.split(".")[0] == "kemono";
     }
 
@@ -40,7 +40,7 @@ class KemonopartyParser extends Parser {
         newDoc.content.appendChild(header);
         header.textContent = json.post.title;
         let content = util.sanitize(json.post.content);
-        util.moveChildElements(content.body, newDoc.content);        
+        util.moveChildElements(content.body, newDoc.content);
         this.copyImagesIntoContent(newDoc.dom);
         this.addFileImages(json, newDoc);
         return newDoc.dom;

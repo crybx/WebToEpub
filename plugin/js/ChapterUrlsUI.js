@@ -253,7 +253,7 @@ class ChapterUrlsUI {
             .filter(r => r.querySelector("th") === null);
     }
 
-    /** 
+    /**
     * @private
     */
     static appendCheckBoxToRow(row, chapter) {

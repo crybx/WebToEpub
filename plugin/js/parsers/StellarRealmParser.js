@@ -35,7 +35,7 @@ class StellarRealmParser extends Parser {
         this.tags = this.tags.concat(bookinfo.props.series.genre?.map(a => a.name));
         let parsed = util.sanitize(bookinfo.props.series.description);
         this.description = parsed.body.textContent;
-        this.img = bookinfo.props.series.cover?.path 
+        this.img = bookinfo.props.series.cover?.path
             ? "https://stellarrealm.net/storage/"+bookinfo.props.series.cover.path
             : null;
         return;

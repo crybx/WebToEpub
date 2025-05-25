@@ -100,8 +100,8 @@ class FetchErrorHandler {
             case 500:
             // is fault at server, retry might clear
                 return {retryDelay: retryDelay, promptUser: false};
-            case 502: 
-            case 503: 
+            case 502:
+            case 503:
             case 504:
             case 520:
             case 522:

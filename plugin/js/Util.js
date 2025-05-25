@@ -8,15 +8,15 @@
 "use strict";
 
 const util = (function() {
-    var sleepControler = new AbortController;
+    let sleepController = new AbortController;
 
     function sleep(ms) {
         return new Promise(resolve => {
             function finished() {
                 resolve();
-                sleepControler.signal.removeEventListener("abort", finished);
+                sleepController.signal.removeEventListener("abort", finished);
             }
-            sleepControler.signal.addEventListener("abort", finished);
+            sleepController.signal.addEventListener("abort", finished);
             setTimeout(finished, ms);
         });
     }
@@ -96,7 +96,7 @@ const util = (function() {
     }
 
     // assumes we're making link from file in EPUB\text to EPUB\images
-    var makeRelative = function(href) {
+    function makeRelative(href) {
         return ".." + href.substring(4);
     }
 
@@ -845,7 +845,7 @@ const util = (function() {
         return dom;
     }
 
-    var styleSheetFileName = function () {
+    function styleSheetFileName() {
         return "EPUB/styles/stylesheet.css";
     }
 
@@ -1141,7 +1141,7 @@ const util = (function() {
         BLOCK_ELEMENTS: BLOCK_ELEMENTS,
         HEADER_TAGS: HEADER_TAGS,
         sleep: sleep,
-        sleepControler: sleepControler,
+        sleepController: sleepController,
         randomInteger: randomInteger,
         isFirefox: isFirefox,
         extensionVersion: extensionVersion,
