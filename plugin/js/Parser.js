@@ -132,10 +132,10 @@ class Parser {
         // Cache the processed content (uses persistent or session storage based on settings)
         if (webPage.sourceUrl) {
             // Fire and forget - don't wait for cache write
-            ChapterCache.set(webPage.sourceUrl, content).then(() => {
+            ChapterCache.set(webPage.sourceUrl, content).then(async () => {
                 // Update UI to show cache icon
                 if (webPage.row) {
-                    ChaptersUI.addCacheIconToRow(webPage.row, webPage.sourceUrl, webPage.title);
+                    await ChaptersUI.addCacheIconToRow(webPage.row, webPage.sourceUrl, webPage.title);
                 }
             }).catch(e => 
                 console.error("Failed to cache chapter:", e)

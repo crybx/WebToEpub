@@ -88,9 +88,14 @@ img.downloadState {
 
 .cacheViewColumn {
     text-align: left;
+    height: 20px;
     width: 36px;
     display: flex;
     align-items: center;
+}
+
+th.cacheViewColumn {
+    margin-left: 1px;
 }
 
 .cacheViewColumn img {

@@ -46,8 +46,8 @@ class ChaptersUI {
             ChaptersUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
             ChaptersUI.appendColumnDataToRow(row, chapter.sourceUrl);
-            ChaptersUI.appendViewCacheButtonToRow(row, chapter).then(() => {
-                ChaptersUI.updateDeleteCacheButtonVisibility();
+            ChaptersUI.appendViewCacheButtonToRow(row, chapter).then(async () => {
+                await ChaptersUI.updateDeleteCacheButtonVisibility();
             });
             linksTable.appendChild(row);
             ChaptersUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
@@ -352,10 +352,10 @@ class ChaptersUI {
         row.appendChild(col);
         
         // Check if chapter is cached
-        return ChapterCache.get(chapter.sourceUrl).then(cachedContent => {
+        return ChapterCache.get(chapter.sourceUrl).then(async cachedContent => {
             if (cachedContent) {
                 // Use the shared function to add the icon
-                ChaptersUI.addCacheIconToRow(row, chapter.sourceUrl, chapter.title);
+                await ChaptersUI.addCacheIconToRow(row, chapter.sourceUrl, chapter.title);
                 
                 // Update download state to show as previously downloaded
                 let downloadStateDiv = row.querySelector(".downloadStateDiv");
@@ -378,10 +378,9 @@ class ChaptersUI {
     /**
     * Update visibility of delete cache button based on whether any chapters are cached
     */
-    static updateDeleteCacheButtonVisibility() {
-        // Only check for cached chapters in the current chapter table, excluding the delete button itself
-        let chapterTable = document.getElementById("chapterUrlsTable");
-        let hasCache = chapterTable && chapterTable.querySelector(".cacheViewColumn img:not(#deleteAllCachedChapters)") !== null;
+    static async updateDeleteCacheButtonVisibility() {
+        // Check if there are actually cached chapters for the current page's URLs
+        let hasCache = await ChapterCache.hasAnyCachedChaptersOnPage();
         let deleteButton = document.getElementById("deleteAllCachedChapters");
         if (deleteButton) {
             deleteButton.style.display = hasCache ? "block" : "none";
@@ -392,7 +391,7 @@ class ChaptersUI {
     * @public
     * Add cache icon to row when chapter is cached (called after successful caching)
     */
-    static addCacheIconToRow(row, sourceUrl, title) {
+    static async addCacheIconToRow(row, sourceUrl, title) {
         let col = row.querySelector(".cacheViewColumn");
         if (col) {
             // Clear existing content (including download icons) before adding cache icon
@@ -421,7 +420,7 @@ class ChaptersUI {
             ChaptersUI.addMoreActionsMenu(col, sourceUrl, title);
             
             // Update delete button visibility
-            ChaptersUI.updateDeleteCacheButtonVisibility();
+            await ChaptersUI.updateDeleteCacheButtonVisibility();
         }
     }
 
