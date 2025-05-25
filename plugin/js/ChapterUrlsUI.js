@@ -394,7 +394,7 @@ class ChapterUrlsUI {
         if (col && !col.querySelector("img")) {
             let button = document.createElement("img");
             button.src = "images/EyeFill.svg";
-            button.title = "View chapter";
+            button.title = ChapterCache.CacheText.tooltipViewChapter;
             button.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
             col.appendChild(button);
             

@@ -337,14 +337,14 @@ const main = (function() {
         // Show the cache options modal
         let modal = document.getElementById("cacheOptionsModal");
         modal.style.display = "flex";
+        
+        // Set up event handlers first
+        ChapterCache.setupCacheEventHandlers();
 
-        // Refresh cache statistics and update button text
+        // Then refresh cache statistics and update button text
         await ChapterCache.refreshCacheStats();
         ChapterCache.updateCacheButtonText();
-        
-        // Set up event handlers
-        ChapterCache.setupCacheEventHandlers();
-        
+
         // Set up close button
         document.getElementById("closeCacheOptions").onclick = () => {
             modal.style.display = "none";

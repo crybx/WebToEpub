@@ -769,5 +769,83 @@
 			    "content": "$1"
 			}
 		}
+	},
+	"__MSG_button_Cache_Options__": {
+		"message": "Cache",
+		"description": "Label on button to open Cache Options modal"
+	},
+	"__MSG_modal_title_Cache_Options__": {
+		"message": "Cache Options",
+		"description": "Title of the Cache Options modal"
+	},
+	"__MSG_label_Enable_Chapter_Caching__": {
+		"message": "Enable Chapter Caching",
+		"description": "Label for checkbox to enable/disable chapter caching"
+	},
+	"__MSG_label_Cache_Retention_Days__": {
+		"message": "Cache Retention (days)",
+		"description": "Label for input field to set cache retention period in days"
+	},
+	"__MSG_label_Cached_Chapter_Count__": {
+		"message": "Cached Chapter Count",
+		"description": "Label for display of number of cached chapters"
+	},
+	"__MSG_button_Delete_All_Cached_Chapters__": {
+		"message": "Delete All Cached Chapters",
+		"description": "Label on button to delete all cached chapters"
+	},
+	"__MSG_label_Chapter_Cache_Size__": {
+		"message": "Chapter Cache Size",
+		"description": "Label for display of total cache storage size"
+	},
+	"__MSG_status_Loading__": {
+		"message": "Loading...",
+		"description": "Status text shown while loading cache statistics"
+	},
+	"__MSG_status_Error__": {
+		"message": "Error",
+		"description": "Status text shown when there is an error loading cache statistics"
+	},
+	"__MSG_toggle_state_On__": {
+		"message": "On",
+		"description": "Toggle state text when caching is enabled"
+	},
+	"__MSG_toggle_state_Off__": {
+		"message": "Off",
+		"description": "Toggle state text when caching is disabled"
+	},
+	"__MSG_button_cache_status_Enabled__": {
+		"message": "Caching Enabled",
+		"description": "Cache button text when caching is enabled"
+	},
+	"__MSG_button_cache_status_Disabled__": {
+		"message": "Caching Disabled",
+		"description": "Cache button text when caching is disabled"
+	},
+	"__MSG_tooltip_View_Chapter__": {
+		"message": "View chapter",
+		"description": "Tooltip text for the view cached chapter icon"
+	},
+	"__MSG_confirm_Clear_All_Cache__": {
+		"message": "Are you sure you want to clear all cached chapters? This action cannot be undone.",
+		"description": "Confirmation dialog when clearing all cached chapters"
+	},
+	"__MSG_error_Failed_Clear_Cache__": {
+		"message": "Failed to clear cache: $error$",
+		"description": "Error message when clearing cache fails",
+		"placeholders": {
+			"error": {
+			    "content": "$1"
+			}
+		}
+	},
+	"__MSG_error_Failed_Save_Cache_Settings__": {
+		"message": "Failed to save cache settings: $error$",
+		"description": "Error message when saving cache settings fails",
+		"placeholders": {
+			"error": {
+			    "content": "$1"
+			}
+		}
 	}
 }

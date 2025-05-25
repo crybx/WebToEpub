@@ -87,7 +87,7 @@ class ChapterViewer {
                 let atRules = [];
                 let cssWithoutAtRules = css.replace(/@[^;]+;/g, (match) => {
                     atRules.push(match);
-                    return ''; // Remove from main CSS
+                    return ""; // Remove from main CSS
                 });
                 
                 // Now extract regular CSS rules from the cleaned CSS
@@ -98,7 +98,7 @@ class ChapterViewer {
                 // Add @-rules (like @charset) at the beginning
                 scopedRules.push(...atRules);
                 
-                let bodyMargins = { top: '0px', right: '0px', bottom: '0px', left: '0px' };
+                let bodyMargins = { top: "0px", right: "0px", bottom: "0px", left: "0px" };
                 
                 // Process each CSS rule
                 for (let rule of rules) {
@@ -114,21 +114,21 @@ class ChapterViewer {
                         
                         // Handle comma-separated selectors properly
                         let scopedSelectors = selectorPart
-                            .split(',')
+                            .split(",")
                             .map(selector => {
                                 let trimmedSelector = selector.trim();
-                                // Special case: if selector is just 'body', map it to the content container
-                                if (trimmedSelector === 'body') {
+                                // Special case: if selector is just "body", map it to the content container
+                                if (trimmedSelector === "body") {
                                     // Extract margin values from body styles
                                     bodyMargins = this.extractMargins(declarations);
                                     // Remove margins from body declarations to prevent scrollbar issues
                                     declarations = this.removeMargins(declarations);
-                                    return '#chapterViewerContent';
+                                    return "#chapterViewerContent";
                                 }
                                 // Otherwise, scope normally
                                 return `#chapterViewerContent ${trimmedSelector}`;
                             })
-                            .join(', ');
+                            .join(", ");
                         
                         scopedRules.push(`${scopedSelectors} {\n  ${declarations}\n}`);
                     }
@@ -140,7 +140,7 @@ class ChapterViewer {
                     scopedRules.push(paddingRule);
                 }
 
-                styleElement.textContent = scopedRules.join('\n\n');
+                styleElement.textContent = scopedRules.join("\n\n");
                 document.head.appendChild(styleElement);
             }
         } catch (error) {
@@ -153,16 +153,16 @@ class ChapterViewer {
      * @private
      */
     static extractMargins(declarations) {
-        let margins = { top: '0px', right: '0px', bottom: '0px', left: '0px' };
+        let margins = { top: "0px", right: "0px", bottom: "0px", left: "0px" };
         
         // Split declarations by semicolon and process each
-        let decls = declarations.split(';').map(d => d.trim()).filter(d => d);
+        let decls = declarations.split(";").map(d => d.trim()).filter(d => d);
         
         for (let decl of decls) {
-            let [property, value] = decl.split(':').map(s => s.trim());
+            let [property, value] = decl.split(":").map(s => s.trim());
             if (!property || !value) continue;
             
-            if (property === 'margin') {
+            if (property === "margin") {
                 // Handle shorthand margin property
                 let values = value.split(/\s+/);
                 if (values.length === 1) {
@@ -180,13 +180,13 @@ class ChapterViewer {
                     margins.bottom = values[2];
                     margins.left = values[3];
                 }
-            } else if (property === 'margin-top') {
+            } else if (property === "margin-top") {
                 margins.top = value;
-            } else if (property === 'margin-right') {
+            } else if (property === "margin-right") {
                 margins.right = value;
-            } else if (property === 'margin-bottom') {
+            } else if (property === "margin-bottom") {
                 margins.bottom = value;
-            } else if (property === 'margin-left') {
+            } else if (property === "margin-left") {
                 margins.left = value;
             }
         }
@@ -200,12 +200,12 @@ class ChapterViewer {
      */
     static removeMargins(declarations) {
         // Split declarations by semicolon and filter out margin properties
-        let decls = declarations.split(';').map(d => d.trim()).filter(d => d);
+        let decls = declarations.split(";").map(d => d.trim()).filter(d => d);
         let filteredDecls = decls.filter(decl => {
-            let property = decl.split(':')[0].trim();
-            return !property.startsWith('margin');
+            let property = decl.split(":")[0].trim();
+            return !property.startsWith("margin");
         });
         
-        return filteredDecls.join(';\n  ');
+        return filteredDecls.join(";\n  ");
     }
 }
