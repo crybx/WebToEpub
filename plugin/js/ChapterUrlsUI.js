@@ -445,14 +445,13 @@ class ChapterUrlsUI {
                 // Show the viewer
                 let viewer = document.getElementById("cachedChapterViewer");
                 let contentDiv = document.getElementById("cachedChapterContent");
+                let titleElement = document.getElementById("cachedChapterTitle");
                 
                 // Clear previous content
                 contentDiv.innerHTML = "";
                 
-                // Add title
-                let titleElement = document.createElement("h2");
+                // Set title in the title bar
                 titleElement.textContent = title;
-                contentDiv.appendChild(titleElement);
                 
                 // Add chapter content
                 contentDiv.appendChild(cachedContent.cloneNode(true));
