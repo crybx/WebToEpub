@@ -9,6 +9,9 @@ class ChapterCache {
     static MAX_CACHE_AGE_DAYS = 30;
     static CACHE_ENABLED_KEY = "chapterCacheEnabled";
     static CACHE_RETENTION_KEY = "chapterCacheRetentionDays";
+    static SESSION_CLEANUP_INTERVAL = 4 * 60 * 60 * 1000; // 4 hours
+    static SESSION_MAX_ENTRIES = 3000; // Maximum entries to keep in session storage
+    static SESSION_MIN_AGE_HOURS = 2; // Minimum age before entries can be cleaned up
 
     // Localized text strings for cache UI
     static CacheText = {
@@ -38,6 +41,89 @@ class ChapterCache {
         return chrome.storage;
     }
 
+    // Get active storage type based on cache settings
+    static getActiveStorage() {
+        let storage = this.storage;
+        
+        if (this.isEnabled()) {
+            // Use persistent local storage when caching is enabled
+            return storage.local;
+        } else {
+            // Use session storage when caching is disabled for privacy
+            // Falls back to local storage if session storage is not available
+            let sessionStorage = storage.session || storage.local;
+            
+            // Initialize session cleanup if using session storage
+            if (storage.session && !this.isEnabled()) {
+                this.initSessionCleanup();
+            }
+            
+            return sessionStorage;
+        }
+    }
+
+    // Initialize session storage cleanup for long-running sessions
+    static initSessionCleanup() {
+        // Only initialize once
+        if (this.sessionCleanupInitialized) {
+            return;
+        }
+        this.sessionCleanupInitialized = true;
+        
+        // Run cleanup every 4 hours
+        setInterval(() => {
+            this.cleanupSessionStorage();
+        }, this.SESSION_CLEANUP_INTERVAL);
+        
+        console.log("Session storage cleanup initialized (4 hour intervals)");
+    }
+
+    // Clean up session storage when it gets too large
+    static async cleanupSessionStorage() {
+        try {
+            // Only cleanup if we're using session storage (cache disabled)
+            if (this.isEnabled() || !this.storage.session) {
+                return;
+            }
+            
+            let storage = await this.storage.session.get();
+            let cacheKeys = Object.keys(storage).filter(key => key.startsWith(this.CACHE_PREFIX));
+            
+            // If we have more than the maximum allowed entries, remove oldest eligible ones
+            if (cacheKeys.length > this.SESSION_MAX_ENTRIES) {
+                let now = Date.now();
+                let minAgeMs = this.SESSION_MIN_AGE_HOURS * 60 * 60 * 1000;
+                
+                // Sort by timestamp (oldest first) and filter by minimum age
+                let entries = cacheKeys.map(key => ({
+                    key: key,
+                    timestamp: storage[key]?.timestamp || 0
+                })).filter(entry => {
+                    // Only consider entries older than minimum age for removal
+                    return (now - entry.timestamp) >= minAgeMs;
+                }).sort((a, b) => a.timestamp - b.timestamp);
+                
+                // Calculate how many entries we need to remove
+                let entriesToRemove = cacheKeys.length - this.SESSION_MAX_ENTRIES;
+                
+                if (entries.length > 0 && entriesToRemove > 0) {
+                    // Remove oldest eligible entries up to the required count
+                    let toRemove = entries.slice(0, Math.min(entriesToRemove, entries.length));
+                    let keysToRemove = toRemove.map(entry => entry.key);
+                    
+                    if (keysToRemove.length > 0) {
+                        await this.storage.session.remove(keysToRemove);
+                        console.log(`Cleaned up ${keysToRemove.length} old session cache entries (minimum age: ${this.SESSION_MIN_AGE_HOURS}h)`);
+                    }
+                } else if (entriesToRemove > 0) {
+                    console.log(`Session storage over limit (${cacheKeys.length}/${this.SESSION_MAX_ENTRIES}) but no entries older than ${this.SESSION_MIN_AGE_HOURS}h to remove`);
+                }
+            }
+        } catch (e) {
+            console.error("Error cleaning up session storage:", e);
+        }
+    }
+
     static getCacheKey(url) {
         return this.CACHE_PREFIX + url;
     }
@@ -45,7 +131,7 @@ class ChapterCache {
     static async get(url) {
         try {
             let key = this.getCacheKey(url);
-            let result = await this.storage.local.get(key);
+            let result = await this.getActiveStorage().get(key);
             let cached = result[key];
             
             if (cached) {
@@ -59,7 +145,7 @@ class ChapterCache {
                     return doc.body.firstChild;
                 }
                 // Remove expired cache
-                await this.storage.local.remove(key);
+                await this.getActiveStorage().remove(key);
             }
         } catch (e) {
             console.error("Error reading from cache:", e);
@@ -69,11 +155,6 @@ class ChapterCache {
 
     static async set(url, contentElement) {
         try {
-            // Check if caching is enabled
-            if (!(this.isEnabled())) {
-                return;
-            }
-            
             let key = this.getCacheKey(url);
             // Clone the element to avoid modifying the original
             let clonedContent = contentElement.cloneNode(true);
@@ -88,7 +169,7 @@ class ChapterCache {
             
             let storageObject = {};
             storageObject[key] = data;
-            await this.storage.local.set(storageObject);
+            await this.getActiveStorage().set(storageObject);
         } catch (e) {
             // If storage is full or other error, just log and continue
             console.error("Error writing to cache:", e);
@@ -101,7 +182,7 @@ class ChapterCache {
 
     static async clearOldEntries() {
         try {
-            let storage = await this.storage.local.get();
+            let storage = await this.getActiveStorage().get();
             let keysToRemove = [];
             
             for (let key in storage) {
@@ -120,7 +201,7 @@ class ChapterCache {
             }
             
             if (keysToRemove.length > 0) {
-                await this.storage.local.remove(keysToRemove);
+                await this.getActiveStorage().remove(keysToRemove);
             }
         } catch (e) {
             console.error("Error clearing old cache entries:", e);
@@ -129,7 +210,7 @@ class ChapterCache {
 
     static async clearAll() {
         try {
-            let storage = await this.storage.local.get();
+            let storage = await this.getActiveStorage().get();
             let keysToRemove = [];
             
             for (let key in storage) {
@@ -139,7 +220,7 @@ class ChapterCache {
             }
             
             if (keysToRemove.length > 0) {
-                await this.storage.local.remove(keysToRemove);
+                await this.getActiveStorage().remove(keysToRemove);
             }
         } catch (e) {
             console.error("Error clearing cache:", e);
@@ -149,7 +230,7 @@ class ChapterCache {
     static async deleteChapter(url) {
         try {
             let key = this.getCacheKey(url);
-            await this.storage.local.remove([key]);
+            await this.getActiveStorage().remove([key]);
         } catch (e) {
             console.error("Error deleting cached chapter:", e);
             throw e;
@@ -158,7 +239,7 @@ class ChapterCache {
 
     static async getCacheStats() {
         try {
-            let storage = await this.storage.local.get();
+            let storage = await this.getActiveStorage().get();
             let cacheKeys = Object.keys(storage).filter(key => key.startsWith(this.CACHE_PREFIX));
             let totalSize = 0;
             
@@ -171,11 +252,12 @@ class ChapterCache {
             return {
                 count: cacheKeys.length,
                 sizeBytes: totalSize,
-                sizeFormatted: this.formatBytes(totalSize)
+                sizeFormatted: this.formatBytes(totalSize),
+                storageType: this.isEnabled() ? "persistent" : "session"
             };
         } catch (e) {
             console.error("Error getting cache stats:", e);
-            return { count: 0, sizeBytes: 0, sizeFormatted: "0 B" };
+            return { count: 0, sizeBytes: 0, sizeFormatted: "0 B", storageType: "unknown" };
         }
     }
 
@@ -185,6 +267,95 @@ class ChapterCache {
         const sizes = ["B", "KB", "MB", "GB"];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    }
+
+    // Migrate chapters between storage types when cache setting changes
+    static async migrateChapters(fromEnabled, toEnabled) {
+        try {
+            if (fromEnabled === toEnabled) {
+                return; // No migration needed
+            }
+
+            let sourceStorage, targetStorage;
+            
+            if (toEnabled) {
+                // Migrating from session to persistent (cache being enabled)
+                sourceStorage = this.storage.session;
+                targetStorage = this.storage.local;
+                console.log("Migrating chapters from session to persistent storage...");
+            } else {
+                // Migrating from persistent to session (cache being disabled)
+                sourceStorage = this.storage.local;
+                targetStorage = this.storage.session || this.storage.local;
+                console.log("Migrating chapters from persistent to session storage...");
+            }
+
+            if (!sourceStorage || !targetStorage) {
+                console.log("Migration skipped: storage API not available");
+                return;
+            }
+
+            // Get all chapters from source storage
+            let sourceData = await sourceStorage.get();
+            let chapterKeys = Object.keys(sourceData).filter(key => key.startsWith(this.CACHE_PREFIX));
+            
+            if (chapterKeys.length === 0) {
+                console.log("No chapters to migrate");
+                return;
+            }
+
+            let chaptersToMigrate = {};
+            let keysToRemove = [];
+
+            if (!toEnabled && sourceStorage !== targetStorage) {
+                // Migrating from persistent to session - respect session storage limits
+                console.log("Applying session storage limits during migration...");
+                
+                // Sort chapters by timestamp (newest first) and apply limits
+                let chaptersWithTimestamp = chapterKeys.map(key => ({
+                    key: key,
+                    data: sourceData[key],
+                    timestamp: sourceData[key]?.timestamp || 0
+                })).sort((a, b) => b.timestamp - a.timestamp); // Newest first
+                
+                // Only migrate up to SESSION_MAX_ENTRIES newest chapters
+                let chaptersToKeep = chaptersWithTimestamp.slice(0, this.SESSION_MAX_ENTRIES);
+                let chaptersToDiscard = chaptersWithTimestamp.slice(this.SESSION_MAX_ENTRIES);
+                
+                // Prepare chapters for migration
+                for (let chapter of chaptersToKeep) {
+                    chaptersToMigrate[chapter.key] = chapter.data;
+                }
+                
+                // All chapters will be removed from source (kept ones are migrated, excess ones are discarded)
+                keysToRemove = chapterKeys;
+                
+                console.log("Migration summary: keeping " + chaptersToKeep.length + " newest chapters, discarding " + chaptersToDiscard.length + " oldest chapters due to session storage limits");
+                
+            } else {
+                // Migrating from session to persistent - no limits, migrate everything
+                for (let key of chapterKeys) {
+                    chaptersToMigrate[key] = sourceData[key];
+                }
+                keysToRemove = chapterKeys;
+            }
+
+            // Copy chapters to target storage
+            if (Object.keys(chaptersToMigrate).length > 0) {
+                await targetStorage.set(chaptersToMigrate);
+            }
+            
+            // Remove chapters from source storage (only if different storage types)
+            if (sourceStorage !== targetStorage && keysToRemove.length > 0) {
+                await sourceStorage.remove(keysToRemove);
+            }
+
+            console.log("Successfully migrated " + Object.keys(chaptersToMigrate).length + " chapters to " + (toEnabled ? "persistent" : "session") + " storage");
+            
+        } catch (e) {
+            console.error("Error migrating chapters:", e);
+            // Don't throw - migration failure shouldn't break the setting change
+        }
     }
 
     // Cache settings management (stored in localStorage like UserPreferences)
@@ -244,7 +415,9 @@ class ChapterCache {
     static async refreshCacheStats() {
         try {
             let stats = await this.getCacheStats();
-            document.getElementById("cachedChapterCount").textContent = stats.count.toString();
+            let storageTypeText = stats.storageType === "persistent" ? "Persistent" : "Session";
+            
+            document.getElementById("cachedChapterCount").textContent = stats.count + " (" + storageTypeText + ")";
             document.getElementById("cacheSize").textContent = stats.sizeFormatted;
         } catch (error) {
             document.getElementById("cachedChapterCount").textContent = this.CacheText.statusError;
@@ -261,7 +434,7 @@ class ChapterCache {
                     await this.clearAll();
                     await this.refreshCacheStats();
                     // Update the chapter table to remove cache indicators
-                    ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+                    ChaptersUI.updateDeleteCacheButtonVisibility();
                 } catch (error) {
                     console.error("Failed to clear cache:", error);
                     alert(ChapterCache.CacheText.errorClearCache.replace("$error$", error.message));
@@ -290,10 +463,16 @@ class ChapterCache {
         }
     }
 
-    static saveCacheSettings() {
+    static async saveCacheSettings() {
         try {
+            let previouslyEnabled = this.isEnabled();
             let enabled = document.getElementById("enableChapterCachingCheckbox").checked;
             let retentionDays = parseInt(document.getElementById("cacheRetentionDays").value);
+            
+            // Trigger migration if cache setting changed
+            if (previouslyEnabled !== enabled) {
+                await this.migrateChapters(previouslyEnabled, enabled);
+            }
             
             this.setEnabled(enabled);
             this.setRetentionDays(retentionDays);
@@ -301,6 +480,9 @@ class ChapterCache {
             // Update the toggle state text and main cache button text
             this.updateToggleStateText(enabled);
             this.updateCacheButtonText();
+            
+            // Refresh cache stats to show new storage type
+            await this.refreshCacheStats();
         } catch (error) {
             console.error("Failed to save cache settings:", error);
             alert(ChapterCache.CacheText.errorSaveSettings.replace("$error$", error.message));
@@ -385,7 +567,7 @@ class ChapterCache {
                 }
             }
             
-            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            ChaptersUI.updateDeleteCacheButtonVisibility();
         } catch (error) {
             console.error("Failed to refresh chapter:", error);
             alert("Failed to refresh chapter: " + error.message);
@@ -405,7 +587,7 @@ class ChapterCache {
             }
             
             // Update UI elements
-            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            ChaptersUI.updateDeleteCacheButtonVisibility();
             
             // Refresh cache stats if ChapterCache has the method
             if (typeof ChapterCache.refreshCacheStats === "function") {
@@ -431,14 +613,14 @@ class ChapterCache {
             
             // Delete from cache
             let keysToDelete = urls.map(url => ChapterCache.getCacheKey(url));
-            // Use ChapterCache's storage API for compatibility
-            await ChapterCache.storage.local.remove(keysToDelete);
+            // Use ChapterCache's active storage API for compatibility
+            await ChapterCache.getActiveStorage().remove(keysToDelete);
             
             // Update UI - remove all eye icons
             document.querySelectorAll(".cacheViewColumn img").forEach(img => img.remove());
             
             // Update delete button visibility
-            ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            ChaptersUI.updateDeleteCacheButtonVisibility();
             
             console.log(`Deleted ${keysToDelete.length} cached chapters`);
         } catch (err) {
@@ -471,7 +653,7 @@ class ChapterCache {
         }
         
         // Update UI to show cached icons
-        ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        ChaptersUI.updateDeleteCacheButtonVisibility();
     }
 
     /**

@@ -525,8 +525,8 @@
 		"description": "Label on button to open cache options"
 	},
 	"__MSG_label_Enable_Chapter_Caching__": {
-		"message": "Включить кэширование глав",
-		"description": "Label for checkbox to enable chapter caching"
+		"message": "Включить постоянное кэширование глав",
+		"description": "Label for checkbox to enable/disable persistent chapter caching"
 	},
 	"__MSG_label_Cache_Retention_Days__": {
 		"message": "Дни хранения кэша",

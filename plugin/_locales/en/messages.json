@@ -783,8 +783,8 @@
 		"description": "Title of the Cache Options modal"
 	},
 	"__MSG_label_Enable_Chapter_Caching__": {
-		"message": "Enable Chapter Caching",
-		"description": "Label for checkbox to enable/disable chapter caching"
+		"message": "Enable Persistent Chapter Caching",
+		"description": "Label for checkbox to enable/disable persistent chapter caching"
 	},
 	"__MSG_label_Cache_Retention_Days__": {
 		"message": "Cache Retention (days)",
@@ -819,11 +819,11 @@
 		"description": "Toggle state text when caching is disabled"
 	},
 	"__MSG_button_cache_status_Enabled__": {
-		"message": "Caching (Enabled)",
+		"message": "Cache (Persistent)",
 		"description": "Cache button text when caching is enabled"
 	},
 	"__MSG_button_cache_status_Disabled__": {
-		"message": "Caching (Disabled)",
+		"message": "Cache (Session Only)",
 		"description": "Cache button text when caching is disabled"
 	},
 	"__MSG_tooltip_View_Chapter__": {

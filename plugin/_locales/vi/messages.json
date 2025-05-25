@@ -461,8 +461,8 @@
         "description": "Label on button to open cache options"
     },
     "__MSG_label_Enable_Chapter_Caching__": {
-        "message": "Bật bộ nhớ đệm chương",
-        "description": "Label for checkbox to enable chapter caching"
+        "message": "Bật bộ nhớ đệm chương vĩnh viễn",
+        "description": "Label for checkbox to enable/disable persistent chapter caching"
     },
     "__MSG_label_Cache_Retention_Days__": {
         "message": "Số ngày lưu trữ bộ nhớ đệm",

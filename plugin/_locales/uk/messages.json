@@ -525,8 +525,8 @@
 		"description": "Label on button to open cache options"
 	},
 	"__MSG_label_Enable_Chapter_Caching__": {
-		"message": "Увімкнути кешування розділів",
-		"description": "Label for checkbox to enable chapter caching"
+		"message": "Увімкнути постійне кешування розділів",
+		"description": "Label for checkbox to enable/disable persistent chapter caching"
 	},
 	"__MSG_label_Cache_Retention_Days__": {
 		"message": "Дні зберігання кешу",
