@@ -444,7 +444,7 @@
 		"description": "Label in front input for series Novel is part of"
 	},
 	"__MSG_label_Show_Chapter_Urls__": {
-		"message": "Show URLs of Chapters",
+		"message": "Show Chapter URLs",
 		"description": "Label for checkbox to toggle First and Last Chapter selectors between URLs and Titles"
 	},
 	"__MSG_label_Skip_Images__": {

@@ -85,7 +85,7 @@ class SvgIcons {
     static FILE_EARMARK_CHECK = `
 <!-- source: https://icons.getbootstrap.com/icons/file-earmark-check/ -->
 <svg xmlns="http://www.w3.org/2000/svg"
-     fill="dodgerblue"
+     fill="currentColor"
      class="bi bi-file-earmark-check"
      viewBox="0 0 16 16">
     <path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
@@ -95,10 +95,19 @@ class SvgIcons {
     static FILE_EARMARK_CHECK_FILL = `
 <!-- source: https://icons.getbootstrap.com/icons/file-earmark-check-fill/ -->
 <svg xmlns="http://www.w3.org/2000/svg"
-     fill="green"
+     fill="currentColor"
      class="bi bi-file-earmark-check-fill"
      viewBox="0 0 16 16">
     <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1m1.354 4.354-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+</svg>`
+
+    static INFO_FILL = `
+<!-- source: https://icons.getbootstrap.com/icons/info-circle-fill/ -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     fill="currentColor"
+     class="bi bi-info-circle-fill"
+     viewBox="0 0 16 16">
+  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
 </svg>`
 
     static THREE_DOTS_VERTICAL = `

@@ -56,6 +56,12 @@ class ChaptersUI {
         });
         ChaptersUI.setRangeOptionsToFirstAndLastChapters();
         
+        // Set up chapter select info icon
+        let chapterSelectInfo = document.getElementById("chapterSelectInfo");
+        if (chapterSelectInfo && chapterSelectInfo.children.length === 0) {
+            chapterSelectInfo.appendChild(SvgIcons.createSvgElement(SvgIcons.INFO_FILL));
+        }
+        
         // Set up delete cache handler
         let deleteButton = document.getElementById("deleteAllCachedChapters");
         if (deleteButton.children.length === 0) {
