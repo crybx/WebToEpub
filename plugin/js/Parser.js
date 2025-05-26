@@ -136,7 +136,7 @@ class Parser {
                 // Update UI to show cache icon
                 if (webPage.row) {
                     let col = webPage.row.querySelector(".chapterStatusColumn");
-                    ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
+                    ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
                 }
             }).catch(e => 
                 console.error("Failed to cache chapter:", e)
@@ -465,7 +465,7 @@ class Parser {
         let that = this;
         this.state.firstPageDom = firstPageDom;
         this.state.chapterListUrl = url;
-        let chapterUrlsUI = new ChaptersUI(this);
+        let chapterUrlsUI = new ChapterUrlsUI(this);
         this.userPreferences.setReadingListCheckbox(url);
 
         // returns promise, because may need to fetch additional pages to find list of chapters
@@ -593,7 +593,7 @@ class Parser {
                 let cachedContent = await ChapterCache.get(webPage.sourceUrl);
                 if (cachedContent) {
                     // Skip the delay for cached content
-                    ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
+                    ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
                     
                     // Create a mock DOM with cached content
                     let cachedDom = Parser.makeEmptyDocForContent(webPage.sourceUrl);
@@ -612,9 +612,9 @@ class Parser {
         }
         
         // Only apply rate limit delay for actual web fetches
-        ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_SLEEPING, webPage.sourceUrl, webPage.title);
+        ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_SLEEPING, webPage.sourceUrl, webPage.title);
         await this.rateLimitDelay();
-        ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
+        ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
         
         return pageParser.fetchChapter(webPage.sourceUrl).then(function(webPageDom) {
             delete webPage.error;
@@ -674,7 +674,7 @@ class Parser {
     }
 
     updateLoadState(webPage) {
-        ChaptersUI.showChapterStatus(webPage.row, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
+        ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
         ProgressBar.updateValue(1);
     }
 

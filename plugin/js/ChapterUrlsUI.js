@@ -1,10 +1,10 @@
 "use strict";
 
 /** Class that handles UI for selecting (chapter) URLs to fetch */
-class ChaptersUI {
+class ChapterUrlsUI {
     constructor(parser) {
         this.parser = parser;
-        ChaptersUI.getPleaseWaitMessageRow().hidden = false;
+        ChapterUrlsUI.getPleaseWaitMessageRow().hidden = false;
         if (this.parser)
         {
             let nameElement = document.getElementById("spanParserName");
@@ -23,38 +23,38 @@ class ChaptersUI {
     }
 
     connectButtonHandlers() {
-        document.getElementById("selectAllUrlsButton").onclick = ChaptersUI.setAllUrlsSelectState.bind(null, true);
-        document.getElementById("unselectAllUrlsButton").onclick = ChaptersUI.setAllUrlsSelectState.bind(null, false);
+        document.getElementById("selectAllUrlsButton").onclick = ChapterUrlsUI.setAllUrlsSelectState.bind(null, true);
+        document.getElementById("unselectAllUrlsButton").onclick = ChapterUrlsUI.setAllUrlsSelectState.bind(null, false);
         document.getElementById("reverseChapterUrlsOrderButton").onclick = this.reverseUrls.bind(this);
         document.getElementById("editChaptersUrlsButton").onclick = this.setEditInputMode.bind(this);
         document.getElementById("copyUrlsToClipboardButton").onclick = this.copyUrlsToClipboard.bind(this);
         document.getElementById("showChapterUrlsCheckbox").onclick = this.toggleShowUrlsForChapterRanges.bind(this);
-        ChaptersUI.modifyApplyChangesButtons(button => button.onclick = this.setTableMode.bind(this));
+        ChapterUrlsUI.modifyApplyChangesButtons(button => button.onclick = this.setTableMode.bind(this));
     }
 
     populateChapterUrlsTable(chapters) {
-        ChaptersUI.getPleaseWaitMessageRow().hidden = true;
-        ChaptersUI.clearChapterUrlsTable();
-        let linksTable = ChaptersUI.getChapterUrlsTable();
+        ChapterUrlsUI.getPleaseWaitMessageRow().hidden = true;
+        ChapterUrlsUI.clearChapterUrlsTable();
+        let linksTable = ChapterUrlsUI.getChapterUrlsTable();
         let index = 0;
-        let rangeStart = ChaptersUI.getRangeStartChapterSelect();
-        let rangeEnd = ChaptersUI.getRangeEndChapterSelect();
-        let memberForTextOption = ChaptersUI.textToShowInRange();
+        let rangeStart = ChapterUrlsUI.getRangeStartChapterSelect();
+        let rangeEnd = ChapterUrlsUI.getRangeEndChapterSelect();
+        let memberForTextOption = ChapterUrlsUI.textToShowInRange();
         chapters.forEach(function(chapter) {
             let row = document.createElement("tr");
-            ChaptersUI.appendCheckBoxToRow(row, chapter);
-            ChaptersUI.appendInputTextToRow(row, chapter);
+            ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
+            ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
-            ChaptersUI.appendColumnDataToRow(row, chapter.sourceUrl);
-            ChaptersUI.appendViewCacheButtonToRow(row, chapter).then(async () => {
-                await ChaptersUI.updateDeleteCacheButtonVisibility();
+            ChapterUrlsUI.appendColumnDataToRow(row, chapter.sourceUrl);
+            ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter).then(async () => {
+                await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             });
             linksTable.appendChild(row);
-            ChaptersUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
-            ChaptersUI.appendOptionToSelect(rangeEnd, index, chapter, memberForTextOption);
+            ChapterUrlsUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
+            ChapterUrlsUI.appendOptionToSelect(rangeEnd, index, chapter, memberForTextOption);
             ++index;
         });
-        ChaptersUI.setRangeOptionsToFirstAndLastChapters();
+        ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
         
         // Set up chapter select info icon
         let chapterSelectInfo = document.getElementById("chapterSelectInfo");
@@ -64,17 +64,17 @@ class ChaptersUI {
         
         // Set up delete cache handler
         let deleteButton = document.getElementById("deleteAllCachedChapters");
-        if (deleteButton.children.length === 0) {
+        if (deleteButton.children.length == 0) {
             deleteButton.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
         }
         let deleteWrapper = deleteButton.parentElement;
         deleteWrapper.onclick = () => ChapterCache.deleteAllCachedChapters(chapters);
         this.showHideChapterUrlsColumn();
-        ChaptersUI.resizeTitleColumnToFit(linksTable);
+        ChapterUrlsUI.resizeTitleColumnToFit(linksTable);
     }
 
     showTocProgress(chapters) {
-        let linksTable = ChaptersUI.getChapterUrlsTable();
+        let linksTable = ChapterUrlsUI.getChapterUrlsTable();
         chapters.forEach(function(chapter) {
             let row = document.createElement("tr");
             linksTable.appendChild(row);
@@ -90,29 +90,29 @@ class ChaptersUI {
     static showChapterStatus(row, state, sourceUrl = "", title = "") {
         if (row != null) {
             let chapterStatusColumn = row.querySelector(".chapterStatusColumn");
-            ChaptersUI.setChapterStatusIcon(chapterStatusColumn, state, sourceUrl, title);
+            ChapterUrlsUI.setChapterStatusIcon(chapterStatusColumn, state, sourceUrl, title);
         }
     }
 
 
     static async resetChapterStatusIcons() {
-        let linksTable = ChaptersUI.getChapterUrlsTable();
+        let linksTable = ChapterUrlsUI.getChapterUrlsTable();
         
         for (let chapterStatusColumn of linksTable.querySelectorAll(".chapterStatusColumn")) {
             // Restore normal chapter status content
-            await ChaptersUI.restoreChapterStatus(chapterStatusColumn);
+            await ChapterUrlsUI.restoreChapterStatus(chapterStatusColumn);
         }
     }
 
     static clearChapterUrlsTable() {
-        util.removeElements(ChaptersUI.getTableRowsWithChapters());
-        util.removeElements([...ChaptersUI.getRangeStartChapterSelect().options]);
-        util.removeElements([...ChaptersUI.getRangeEndChapterSelect().options]);
+        util.removeElements(ChapterUrlsUI.getTableRowsWithChapters());
+        util.removeElements([...ChapterUrlsUI.getRangeStartChapterSelect().options]);
+        util.removeElements([...ChapterUrlsUI.getRangeEndChapterSelect().options]);
     }
 
     static limitNumOfChapterS(maxChapters) {
         let max = util.isNullOrEmpty(maxChapters) ? 10000 : parseInt(maxChapters.replace(",", ""));
-        let selectedRows = [...ChaptersUI.getChapterUrlsTable().querySelectorAll("[type=\"checkbox\"]")]
+        let selectedRows = [...ChapterUrlsUI.getChapterUrlsTable().querySelectorAll("[type=\"checkbox\"]")]
             .filter(c => c.checked)
             .map(c => c.parentElement.parentElement);
         if (max< selectedRows.length ) {
@@ -120,7 +120,7 @@ class ChaptersUI {
                 [selectedRows.length, max]);
             if (confirm(message) === false) {
                 for (let row of selectedRows.slice(max)) {
-                    ChaptersUI.setRowCheckboxState(row, false);
+                    ChapterUrlsUI.setRowCheckboxState(row, false);
                 }
             }
         }
@@ -129,32 +129,32 @@ class ChaptersUI {
     /** @private */
     static setRangeOptionsToFirstAndLastChapters()
     {
-        let rangeStart = ChaptersUI.getRangeStartChapterSelect();
-        let rangeEnd = ChaptersUI.getRangeEndChapterSelect();
+        let rangeStart = ChapterUrlsUI.getRangeStartChapterSelect();
+        let rangeEnd = ChapterUrlsUI.getRangeEndChapterSelect();
 
         rangeStart.onchange = null;
         rangeEnd.onchange = null;
         
         rangeStart.selectedIndex = 0;
         rangeEnd.selectedIndex = rangeEnd.length - 1;
-        ChaptersUI.setChapterCount(rangeStart.selectedIndex, rangeEnd.selectedIndex);
+        ChapterUrlsUI.setChapterCount(rangeStart.selectedIndex, rangeEnd.selectedIndex);
         
-        rangeStart.onchange = ChaptersUI.onRangeChanged;
-        rangeEnd.onchange = ChaptersUI.onRangeChanged;
+        rangeStart.onchange = ChapterUrlsUI.onRangeChanged;
+        rangeEnd.onchange = ChapterUrlsUI.onRangeChanged;
     }
  
     /** @private */
     static onRangeChanged() {
-        let startIndex = ChaptersUI.selectionToRowIndex(ChaptersUI.getRangeStartChapterSelect());
-        let endIndex = ChaptersUI.selectionToRowIndex(ChaptersUI.getRangeEndChapterSelect());
-        let rc = new ChaptersUI.RangeCalculator();
+        let startIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeStartChapterSelect());
+        let endIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeEndChapterSelect());
+        let rc = new ChapterUrlsUI.RangeCalculator();
 
-        for (let row of ChaptersUI.getTableRowsWithChapters()) {
+        for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
             let inRange = rc.rowInRange(row);
-            ChaptersUI.setRowCheckboxState(row, rc.rowInRange(row));
+            ChapterUrlsUI.setRowCheckboxState(row, rc.rowInRange(row));
             row.hidden = !inRange;
         }
-        ChaptersUI.setChapterCount(startIndex, endIndex);
+        ChapterUrlsUI.setChapterCount(startIndex, endIndex);
     }
 
     static selectionToRowIndex(selectElement) {
@@ -214,11 +214,11 @@ class ChaptersUI {
 
     /** @private */
     static setAllUrlsSelectState(select) {
-        for (let row of ChaptersUI.getTableRowsWithChapters()) {
-            ChaptersUI.setRowCheckboxState(row, select);
+        for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
+            ChapterUrlsUI.setRowCheckboxState(row, select);
             row.hidden = false;
         }
-        ChaptersUI.setRangeOptionsToFirstAndLastChapters();
+        ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
     }
 
     /** @private */
@@ -231,7 +231,7 @@ class ChaptersUI {
     }
 
     static getTableRowsWithChapters() {
-        let linksTable = ChaptersUI.getChapterUrlsTable();
+        let linksTable = ChapterUrlsUI.getChapterUrlsTable();
         return [...linksTable.querySelectorAll("tr")]
             .filter(r => r.querySelector("th") === null);
     }
@@ -251,12 +251,12 @@ class ChaptersUI {
             chapter.isIncludeable = checkbox.checked;
             if (!event) return;
 
-            ChaptersUI.tellUserAboutShiftClick(event, row);
+            ChapterUrlsUI.tellUserAboutShiftClick(event, row);
 
-            if (event.shiftKey && (ChaptersUI.lastSelectedRow !== null)) {
-                ChaptersUI.updateRange(ChaptersUI.lastSelectedRow, row.rowIndex, checkbox.checked);
+            if (event.shiftKey && (ChapterUrlsUI.lastSelectedRow !== null)) {
+                ChapterUrlsUI.updateRange(ChapterUrlsUI.lastSelectedRow, row.rowIndex, checkbox.checked);
             } else {
-                ChaptersUI.lastSelectedRow = row.rowIndex;
+                ChapterUrlsUI.lastSelectedRow = row.rowIndex;
             }
         };
         col.appendChild(checkbox);
@@ -284,16 +284,16 @@ class ChaptersUI {
             let cachedContent = await ChapterCache.get(sourceUrl);
             if (cachedContent) {
                 let col = row.querySelector(".chapterStatusColumn");
-                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
+                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
             } else {
                 let col = row.querySelector(".chapterStatusColumn");
-                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
             }
         } catch (err) {
             console.error("Error restoring chapter status content:", err);
             // Fallback to download icon
             let col = row.querySelector(".chapterStatusColumn");
-            ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+            ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
         }
     }
 
@@ -351,12 +351,12 @@ class ChaptersUI {
             if (cachedContent) {
                 // Chapter is cached - show eye icon
                 let col = row.querySelector(".chapterStatusColumn");
-                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
                 return true;
             } else {
                 // Chapter is not cached - show download icon
                 let col = row.querySelector(".chapterStatusColumn");
-                ChaptersUI.setChapterStatusIcon(col, ChaptersUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
+                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                 return false;
             }
         }).catch(err => {
@@ -404,7 +404,7 @@ class ChaptersUI {
         refreshItem.onclick = async (e) => {
             e.stopPropagation();
             await ChapterCache.refreshChapter(sourceUrl, title, col);
-            ChaptersUI.hideMoreActionsMenu(menu);
+            ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
         // DELETE CHAPTER option
@@ -418,7 +418,7 @@ class ChaptersUI {
         deleteItem.onclick = async (e) => {
             e.stopPropagation();
             await ChapterCache.deleteSingleChapter(sourceUrl, title, col);
-            ChaptersUI.hideMoreActionsMenu(menu);
+            ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
         // DOWNLOAD HTML FILE option
@@ -432,7 +432,7 @@ class ChaptersUI {
         downloadItem.onclick = async (e) => {
             e.stopPropagation();
             await ChapterCache.downloadSingleChapterAsFile(sourceUrl, title);
-            ChaptersUI.hideMoreActionsMenu(menu);
+            ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
         // Add items to menu
@@ -443,7 +443,7 @@ class ChaptersUI {
         // Add click handler to show/hide menu
         moreWrapper.onclick = (e) => {
             e.stopPropagation();
-            ChaptersUI.toggleMoreActionsMenu(menu);
+            ChapterUrlsUI.toggleMoreActionsMenu(menu);
         };
         
         // Assemble more actions
@@ -452,7 +452,7 @@ class ChaptersUI {
         col.appendChild(moreWrapper);
         
         // Close menu when clicking outside
-        document.addEventListener("click", () => ChaptersUI.hideMoreActionsMenu(menu));
+        document.addEventListener("click", () => ChapterUrlsUI.hideMoreActionsMenu(menu));
     }
 
     /**
@@ -483,10 +483,10 @@ class ChaptersUI {
      */
     static createIconElement(state) {
         const svgConstants = {
-            [ChaptersUI.CHAPTER_STATUS_NONE]: SvgIcons.DOWNLOAD,
-            [ChaptersUI.CHAPTER_STATUS_DOWNLOADING]: SvgIcons.CHAPTER_STATE_DOWNLOADING,
-            [ChaptersUI.CHAPTER_STATUS_DOWNLOADED]: SvgIcons.EYE_FILL,
-            [ChaptersUI.CHAPTER_STATUS_SLEEPING]: SvgIcons.CHAPTER_STATE_SLEEPING
+            [ChapterUrlsUI.CHAPTER_STATUS_NONE]: SvgIcons.DOWNLOAD,
+            [ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING]: SvgIcons.CHAPTER_STATE_DOWNLOADING,
+            [ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED]: SvgIcons.EYE_FILL,
+            [ChapterUrlsUI.CHAPTER_STATUS_SLEEPING]: SvgIcons.CHAPTER_STATE_SLEEPING
         };
         
         return SvgIcons.createSvgElement(svgConstants[state]);
@@ -500,11 +500,11 @@ class ChaptersUI {
         let wrapper = document.createElement("div");
         wrapper.className = "tooltip-wrapper";
         
-        let iconElement = ChaptersUI.createIconElement(state);
+        let iconElement = ChapterUrlsUI.createIconElement(state);
         
         let tooltip = document.createElement("span");
         tooltip.className = "tooltipText";
-        tooltip.textContent = ChaptersUI.TooltipForState[state];
+        tooltip.textContent = ChapterUrlsUI.TooltipForState[state];
 
         wrapper.appendChild(iconElement);
         wrapper.appendChild(tooltip);
@@ -512,13 +512,13 @@ class ChaptersUI {
         
         // Apply state-specific behavior and styling
         switch (state) {
-            case ChaptersUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
+            case ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
                 wrapper.className += " clickable-icon";
                 wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-                ChaptersUI.addMoreActionsMenu(column, sourceUrl, title);
+                ChapterUrlsUI.addMoreActionsMenu(column, sourceUrl, title);
                 break;
 
-            case ChaptersUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
+            case ChapterUrlsUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
                 wrapper.className += " clickable-icon";
                 wrapper.onclick = async () => {
                     await ChapterCache.downloadChapter(sourceUrl, title, column);
@@ -529,12 +529,12 @@ class ChaptersUI {
 
     static setVisibileUI(toTable) {
         // toggle mode
-        ChaptersUI.getEditChaptersUrlsInput().hidden = toTable;
-        ChaptersUI.getChapterUrlsTable().hidden = !toTable;
+        ChapterUrlsUI.getEditChaptersUrlsInput().hidden = toTable;
+        ChapterUrlsUI.getChapterUrlsTable().hidden = !toTable;
         document.getElementById("inputSection").hidden = !toTable;
         document.getElementById("coverUrlSection").hidden = !toTable;
         document.getElementById("chapterSelectControlsDiv").hidden = !toTable;
-        ChaptersUI.modifyApplyChangesButtons(button => button.hidden = toTable);
+        ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = toTable);
         document.getElementById("editURLsHint").hidden = toTable;
     }
 
@@ -543,19 +543,19 @@ class ChaptersUI {
     */
     setTableMode() {
         try {
-            let inputvalue = ChaptersUI.getEditChaptersUrlsInput().value;
+            let inputValue = ChapterUrlsUI.getEditChaptersUrlsInput().value;
             let chapters;
-            let lines = inputvalue.split("\n");
-            lines = lines.filter(a => a.trim() != "").map(a => a.trim());
+            let lines = inputValue.split("\n");
+            lines = lines.filter(a => a.trim() !== "").map(a => a.trim());
             if (URL.canParse(lines[0])) {
                 chapters = this.URLsToChapters(lines);
             } else {
-                chapters = this.htmlToChapters(inputvalue);
+                chapters = this.htmlToChapters(inputValue);
             }
             this.parser.setPagesToFetch(chapters);
             this.populateChapterUrlsTable(chapters);
             this.usingTable = true;
-            ChaptersUI.setVisibileUI(this.usingTable);
+            ChapterUrlsUI.setVisibileUI(this.usingTable);
         } catch (err) {
             ErrorLog.showErrorMessage(err);
         }
@@ -601,14 +601,14 @@ class ChaptersUI {
     /** @private */
     toggleShowUrlsForChapterRanges() {
         let chapters = [...this.parser.getPagesToFetch().values()];
-        this.toggleShowUrlsForChapterRange(ChaptersUI.getRangeStartChapterSelect(), chapters);
-        this.toggleShowUrlsForChapterRange(ChaptersUI.getRangeEndChapterSelect(), chapters);
+        this.toggleShowUrlsForChapterRange(ChapterUrlsUI.getRangeStartChapterSelect(), chapters);
+        this.toggleShowUrlsForChapterRange(ChapterUrlsUI.getRangeEndChapterSelect(), chapters);
         this.showHideChapterUrlsColumn();
     }
     
     showHideChapterUrlsColumn() {
         let hidden = !document.getElementById("showChapterUrlsCheckbox").checked;
-        let table = ChaptersUI.getChapterUrlsTable();
+        let table = ChapterUrlsUI.getChapterUrlsTable();
         for (let t of table.querySelectorAll("th:nth-of-type(3), td:nth-of-type(3)")) {
             t.hidden = hidden;
         }
@@ -616,11 +616,11 @@ class ChaptersUI {
 
     toggleShowUrlsForChapterRange(select, chapters) {
         select.onchange = null;
-        let memberForTextOption = ChaptersUI.textToShowInRange();
+        let memberForTextOption = ChapterUrlsUI.textToShowInRange();
         for (let o of [...select.querySelectorAll("Option")]) {
             o.text = chapters[o.index][memberForTextOption];
         }
-        select.onchange = ChaptersUI.onRangeChanged;
+        select.onchange = ChapterUrlsUI.onRangeChanged;
     }
 
     /** 
@@ -628,8 +628,8 @@ class ChaptersUI {
     */
     setEditInputMode() {
         this.usingTable = false;
-        ChaptersUI.setVisibileUI(this.usingTable);
-        let input = ChaptersUI.getEditChaptersUrlsInput();
+        ChapterUrlsUI.setVisibileUI(this.usingTable);
+        let input = ChapterUrlsUI.getEditChaptersUrlsInput();
         input.rows = Math.max(this.parser.getPagesToFetch().size, 20);
         input.value = this.chaptersToHTML([...this.parser.getPagesToFetch().values()]);
     }
@@ -653,10 +653,10 @@ class ChaptersUI {
     /** @private */
     static updateRange(startRowIndex, endRowIndex, state) {
         let direction = startRowIndex < endRowIndex ? 1 : -1;
-        let linkTable = ChaptersUI.getChapterUrlsTable();
+        let linkTable = ChapterUrlsUI.getChapterUrlsTable();
         for (let rowIndex = startRowIndex; rowIndex !== endRowIndex; rowIndex += direction) {
             let row = linkTable.rows[rowIndex];
-            ChaptersUI.setRowCheckboxState(row, state);
+            ChapterUrlsUI.setRowCheckboxState(row, state);
         }
     }
 
@@ -670,19 +670,19 @@ class ChaptersUI {
 
     /** @private */
     static tellUserAboutShiftClick(event, row) {
-        if (event.shiftKey || (ChaptersUI.lastSelectedRow === null)) {
+        if (event.shiftKey || (ChapterUrlsUI.lastSelectedRow === null)) {
             return;
         }
-        if (ChaptersUI.ConsecutiveRowClicks == 5) {
+        if (ChapterUrlsUI.ConsecutiveRowClicks == 5) {
             return;
         }
-        let distance = Math.abs(row.rowIndex - ChaptersUI.lastSelectedRow);
+        let distance = Math.abs(row.rowIndex - ChapterUrlsUI.lastSelectedRow);
         if (distance !== 1) {
-            ChaptersUI.ConsecutiveRowClicks = 0;
+            ChapterUrlsUI.ConsecutiveRowClicks = 0;
             return;
         }
-        ++ChaptersUI.ConsecutiveRowClicks;
-        if (ChaptersUI.ConsecutiveRowClicks == 5) {
+        ++ChapterUrlsUI.ConsecutiveRowClicks;
+        if (ChapterUrlsUI.ConsecutiveRowClicks == 5) {
             alert(chrome.i18n.getMessage("__MSG_Shift_Click__"));
         }
     }
@@ -691,10 +691,10 @@ class ChaptersUI {
         filterTermsFrequency: {},
         chapterList: {},
         init() {
-            let rc = new ChaptersUI.RangeCalculator();
+            let rc = new ChapterUrlsUI.RangeCalculator();
             let filterTermsFrequency = {};
             let constantTerms = false; // To become a collection of all terms used in every link.
-            const chapterList = ChaptersUI.getTableRowsWithChapters().filter(item => rc.rowInRange(item)).map(item => {
+            const chapterList = ChapterUrlsUI.getTableRowsWithChapters().filter(item => rc.rowInRange(item)).map(item => {
                 let filterObj =
                     {
                         row: item,
@@ -737,7 +737,7 @@ class ChaptersUI {
             this.chapterList = chapterList;
         },
         Filter() {
-            let rc = new ChaptersUI.RangeCalculator();
+            let rc = new ChapterUrlsUI.RangeCalculator();
             let formResults = Object.fromEntries(new FormData(document.getElementById("sbFiltersForm")));
             let formKeys = Object.keys(formResults);
             formResults = formKeys.filter(key => key.indexOf("Hidden") === -1)
@@ -760,7 +760,7 @@ class ChaptersUI {
                 excludeChaps = new RegExp(formResults.filter(item => item.searchType == -1).map(item => item.value).join("|"), "i");
             }
 
-            ChaptersUI.Filters.chapterList.forEach(item =>{
+            ChapterUrlsUI.Filters.chapterList.forEach(item =>{
                 let showChapter = rc.rowInRange(item.row);
                 if (includeChaps)
                 {
@@ -770,10 +770,10 @@ class ChaptersUI {
                 {
                     showChapter = showChapter && !excludeChaps.test(item.valueString);
                 }
-                ChaptersUI.setRowCheckboxState(item.row, showChapter);
+                ChapterUrlsUI.setRowCheckboxState(item.row, showChapter);
                 item.row.hidden = !showChapter;
             });
-            document.getElementById("spanChapterCount").textContent = ChaptersUI.Filters.chapterList.filter(item => !item.row.hidden).length;
+            document.getElementById("spanChapterCount").textContent = ChapterUrlsUI.Filters.chapterList.filter(item => !item.row.hidden).length;
         },
         generateFiltersTable() {
             let retVal = document.createElement("table");
@@ -797,7 +797,7 @@ class ChaptersUI {
                     event.target.classList.add("exclude");
                 }
 
-                ChaptersUI.Filters.Filter();
+                ChapterUrlsUI.Filters.Filter();
             };
 
             let row = document.createElement("tr");
@@ -814,7 +814,7 @@ class ChaptersUI {
                     return;
                 }
                 event.target.parentElement.nextElementSibling.firstChild.disabled = !event.target.checked;
-                ChaptersUI.Filters.Filter();
+                ChapterUrlsUI.Filters.Filter();
             };
             col.appendChild(el);
             row.appendChild(col);
@@ -823,7 +823,7 @@ class ChaptersUI {
             el.type = "text";
             el.disabled = true;
             el.id = checkboxId + "Text";
-            el.onchange = function(event) { event.target.nextElementSibling.value = event.target.value; ChaptersUI.Filters.Filter(); };
+            el.onchange = function(event) { event.target.nextElementSibling.value = event.target.value; ChapterUrlsUI.Filters.Filter(); };
             col.appendChild(el);
             el = document.createElement("input");
             el.type = "hidden";
@@ -834,7 +834,7 @@ class ChaptersUI {
 
             retVal.appendChild(row);
 
-            ChaptersUI.Filters.filterTermsFrequency.forEach((value, id) => {
+            ChapterUrlsUI.Filters.filterTermsFrequency.forEach((value, id) => {
                 row = document.createElement("tr");
                 col = document.createElement("td");
                 col.setAttribute("width", "10px");
@@ -871,11 +871,11 @@ class ChaptersUI {
         }
     };
 }
-ChaptersUI.RangeCalculator = class {
+ChapterUrlsUI.RangeCalculator = class {
     constructor()
     {
-        this.startIndex = ChaptersUI.selectionToRowIndex(ChaptersUI.getRangeStartChapterSelect());
-        this.endIndex = ChaptersUI.selectionToRowIndex(ChaptersUI.getRangeEndChapterSelect());
+        this.startIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeStartChapterSelect());
+        this.endIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeEndChapterSelect());
     }
     rowInRange(row) {
         let index = row.rowIndex;
@@ -884,16 +884,16 @@ ChaptersUI.RangeCalculator = class {
 };
 
 
-ChaptersUI.CHAPTER_STATUS_NONE = 0;
-ChaptersUI.CHAPTER_STATUS_DOWNLOADING = 1;
-ChaptersUI.CHAPTER_STATUS_DOWNLOADED = 2;
-ChaptersUI.CHAPTER_STATUS_SLEEPING = 3;
-ChaptersUI.TooltipForState = [
+ChapterUrlsUI.CHAPTER_STATUS_NONE = 0;
+ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING = 1;
+ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED = 2;
+ChapterUrlsUI.CHAPTER_STATUS_SLEEPING = 3;
+ChapterUrlsUI.TooltipForState = [
     chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
     chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloading__"),
     chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
     chrome.i18n.getMessage("__MSG_Tooltip_chapter_sleeping__")
 ];
 
-ChaptersUI.lastSelectedRow = null;
-ChaptersUI.ConsecutiveRowClicks = 0;
+ChapterUrlsUI.lastSelectedRow = null;
+ChapterUrlsUI.ConsecutiveRowClicks = 0;

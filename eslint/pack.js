@@ -190,7 +190,7 @@ var packNonManifestExtensionFiles = function(zip, packedFileName) {
         }).then(function () {
             return addCssFileToZip(zip, "default.css");
         }).then(function () {
-            return addCssFileToZip(zip, "chaptersUI.css");
+            return addCssFileToZip(zip, "chapterUrlsUI.css");
         }).then(function () {
             return addCssFileToZip(zip, "modals.css");
         }).then(function () {

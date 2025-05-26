@@ -435,7 +435,7 @@ class ChapterCache {
                     await this.clearAll();
                     await this.refreshCacheStats();
                     // Update the chapter table to remove cache indicators
-                    await ChaptersUI.updateDeleteCacheButtonVisibility();
+                    await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
                 } catch (error) {
                     console.error("Failed to clear cache:", error);
                     alert(ChapterCache.CacheText.errorClearCache.replace("$error$", error.message));
@@ -560,12 +560,12 @@ class ChapterCache {
                     
                     // Add cache icon to the row if cacheCol is provided
                     if (cacheCol) {
-                        ChaptersUI.setChapterStatusIcon(cacheCol, ChaptersUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
+                        ChapterUrlsUI.setChapterStatusIcon(cacheCol, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
                     }
                 }
             }
             
-            await ChaptersUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
         } catch (error) {
             console.error("Failed to download chapter:", error);
             alert("Failed to download chapter: " + error.message);
@@ -605,11 +605,11 @@ class ChapterCache {
                 cacheCol.innerHTML = "";
                 
                 // Add download icon since chapter is no longer cached
-                ChaptersUI.setChapterStatusIcon(cacheCol, ChaptersUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+                ChapterUrlsUI.setChapterStatusIcon(cacheCol, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
             }
             
             // Update UI elements
-            await ChaptersUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             
             // Refresh cache stats if ChapterCache has the method
             if (typeof ChapterCache.refreshCacheStats === "function") {
@@ -645,13 +645,13 @@ class ChapterCache {
                     if (cacheCol) {
                         cacheCol.innerHTML = "";
                         // Add download icon since chapter is no longer cached
-                        ChaptersUI.setChapterStatusIcon(cacheCol, ChaptersUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
+                        ChapterUrlsUI.setChapterStatusIcon(cacheCol, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                     }
                 }
             });
             
             // Update delete button visibility
-            await ChaptersUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             
             console.log(`Deleted ${keysToDelete.length} cached chapters`);
         } catch (err) {
@@ -697,7 +697,7 @@ class ChapterCache {
         }
         
         // Update UI to show cached icons
-        await ChaptersUI.updateDeleteCacheButtonVisibility();
+        await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
     }
 
     /**

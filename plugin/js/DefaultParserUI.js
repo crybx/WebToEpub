@@ -137,10 +137,10 @@ class DefaultParserUI {
 
     static setDefaultParserUiVisibility(isVisible) {
         // toggle mode
-        ChaptersUI.setVisibileUI(!isVisible);
+        ChapterUrlsUI.setVisibileUI(!isVisible);
         if (isVisible) {
-            ChaptersUI.getEditChaptersUrlsInput().hidden = true;
-            ChaptersUI.modifyApplyChangesButtons(button => button.hidden = true);
+            ChapterUrlsUI.getEditChaptersUrlsInput().hidden = true;
+            ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = true);
             document.getElementById("editURLsHint").hidden = true;
         }
         document.getElementById("defaultParserSection").hidden = !isVisible;

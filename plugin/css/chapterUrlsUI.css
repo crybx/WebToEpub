@@ -1,5 +1,6 @@
 #chapterUrlsTable,
 table.chapterList {
+    border-collapse: collapse;
     width: 100%;
 }
 
@@ -25,7 +26,7 @@ table.chapterList {
 
 .tooltip-wrapper .tooltipText {
     visibility: hidden;
-    background-color: #808080;
+    background-color: #555555;
     color: white;
     text-align: center;
     padding: 5px;
@@ -35,6 +36,7 @@ table.chapterList {
     min-width: 120px;
     max-width: 200px;
     font-weight: normal;
+    margin: 2px;
 }
 
 .tooltip-wrapper:hover .tooltipText {
@@ -59,10 +61,17 @@ table.chapterList {
     min-width: 180px;
 }
 
+#chapterSelectInfo svg {
+    height: 16px;
+    width: 16px;
+    color: #808080;
+}
+
+#deleteAllCachedChapters svg {
+    color: #555555;
+}
+
 #chapterUrlsTable input[type=text] {
-    width: 101.5%;
-    position: relative;
-    left: -16px;
     max-width: 580px;
 }
 
@@ -72,20 +81,15 @@ table.chapterList {
     padding: 0;
 }
 
-#chapterUrlsTable > tr > td:first-child, #chapterUrlsTable > tbody > tr > td:nth-child(2) {
-    width: 3px;
+th.chapterStatusColumn {
+    text-align: left;
 }
 
-.chapterStatusColumn {
+td.chapterStatusColumn {
     text-align: left;
     height: 20px;
-    width: 36px;
     display: flex;
     align-items: center;
-}
-
-th.chapterStatusColumn {
-    margin-left: 1px;
 }
 
 .chapterStatusColumn svg {

@@ -923,15 +923,15 @@ class Library {
             }
         };
         
-        // Store the parser globally for ChaptersUI to access
+        // Store the parser globally for ChapterUrlsUI to access
         window.parser = libraryParser;
         
-        // Use existing ChaptersUI to display chapters
-        let chaptersUI = new ChaptersUI(libraryParser);
-        chaptersUI.populateChapterUrlsTable(bookData.chapters);
+        // Use existing ChapterUrlsUI to display chapters
+        let chapterUrlsUI = new ChapterUrlsUI(libraryParser);
+        chapterUrlsUI.populateChapterUrlsTable(bookData.chapters);
         
         // Connect button handlers for the library chapters
-        chaptersUI.connectButtonHandlers();
+        chapterUrlsUI.connectButtonHandlers();
     }
 
     /**
