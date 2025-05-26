@@ -1097,4 +1097,222 @@ class Library {
             DivObjectInject.appendChild(tag);
         }
     }
+
+    /**
+     * Extract book data (chapters and metadata) from stored Library EPUB
+     * @param {string} bookId - The Library book ID
+     * @returns {Object} Object with chapters array and metadata
+     */
+    static async extractBookData(bookId) {
+        try {
+            // Get the stored EPUB data
+            let epubBase64 = await Library.LibGetFromStorage("LibEpub" + bookId);
+            if (!epubBase64) {
+                throw new Error("Book not found in library");
+            }
+
+            // Read the EPUB ZIP file
+            let epubReader = new zip.Data64URIReader(epubBase64);
+            let epubZip = new zip.ZipReader(epubReader, {useWebWorkers: false});
+            let epubContent = await epubZip.getEntries();
+            epubContent = epubContent.filter(a => !a.directory);
+
+            // Get book metadata
+            let metadata = await Library.extractBookMetadata(epubContent, bookId);
+            
+            // Get chapter list from content.opf
+            let chapters = await Library.extractChapterList(epubContent, bookId);
+
+            await epubZip.close();
+
+            return {
+                metadata: metadata,
+                chapters: chapters
+            };
+        } catch (error) {
+            console.error("Error extracting book data:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Extract metadata from EPUB content
+     * @param {Array} epubContent - EPUB file entries
+     * @param {string} bookId - The Library book ID
+     * @returns {Object} Book metadata
+     */
+    static async extractBookMetadata(epubContent, bookId) {
+        try {
+            // Get stored metadata
+            let title = await Library.LibGetFromStorage("LibFilename" + bookId) || "Unknown Title";
+            let storyUrl = await Library.LibGetFromStorage("LibStoryURL" + bookId) || "";
+            
+            // Try to get additional metadata from content.opf
+            let opfFile = epubContent.find(entry => entry.filename === "EPUB/content.opf");
+            if (opfFile) {
+                let opfContent = await opfFile.getData(new zip.TextWriter());
+                
+                // Extract author if available
+                let authorMatch = opfContent.match(/<dc:creator[^>]*>([^<]+)<\/dc:creator>/);
+                let author = authorMatch ? authorMatch[1] : "Unknown Author";
+                
+                // Extract title from OPF if different
+                let titleMatch = opfContent.match(/<dc:title[^>]*>([^<]+)<\/dc:title>/);
+                if (titleMatch && titleMatch[1]) {
+                    title = titleMatch[1];
+                }
+
+                return {
+                    title: title.replace(".epub", ""),
+                    author: author,
+                    sourceUrl: storyUrl
+                };
+            }
+
+            return {
+                title: title.replace(".epub", ""),
+                author: "Unknown Author", 
+                sourceUrl: storyUrl
+            };
+        } catch (error) {
+            console.error("Error extracting metadata:", error);
+            return {
+                title: "Unknown Title",
+                author: "Unknown Author",
+                sourceUrl: ""
+            };
+        }
+    }
+
+    /**
+     * Extract chapter list from EPUB content
+     * @param {Array} epubContent - EPUB file entries  
+     * @param {string} bookId - The Library book ID
+     * @returns {Array} Array of chapter objects for UI
+     */
+    static async extractChapterList(epubContent, bookId) {
+        try {
+            // Get content.opf to find chapter order
+            let opfFile = epubContent.find(entry => entry.filename === "EPUB/content.opf");
+            if (!opfFile) {
+                throw new Error("content.opf not found");
+            }
+
+            let opfContent = await opfFile.getData(new zip.TextWriter());
+            
+            // Extract chapter files from spine
+            let spineMatches = opfContent.match(/<spine[^>]*>(.*?)<\/spine>/s);
+            if (!spineMatches) {
+                throw new Error("spine not found in content.opf");
+            }
+
+            let itemrefMatches = spineMatches[1].match(/<itemref[^>]*idref="([^"]+)"/g);
+            if (!itemrefMatches) {
+                throw new Error("No chapters found in spine");
+            }
+
+            // Get manifest to map idrefs to filenames
+            let manifestMatches = opfContent.match(/<manifest[^>]*>(.*?)<\/manifest>/s);
+            let manifest = {};
+            if (manifestMatches) {
+                let itemMatches = manifestMatches[1].match(/<item[^>]*id="([^"]+)"[^>]*href="([^"]+)"/g);
+                if (itemMatches) {
+                    itemMatches.forEach(match => {
+                        let idMatch = match.match(/id="([^"]+)"/);
+                        let hrefMatch = match.match(/href="([^"]+)"/);
+                        if (idMatch && hrefMatch) {
+                            manifest[idMatch[1]] = hrefMatch[1];
+                        }
+                    });
+                }
+            }
+
+            // Build chapter list
+            let chapters = [];
+            for (let i = 0; i < itemrefMatches.length; i++) {
+                let idrefMatch = itemrefMatches[i].match(/idref="([^"]+)"/);
+                if (!idrefMatch) continue;
+
+                let idref = idrefMatch[1];
+                let href = manifest[idref];
+                if (!href) continue;
+
+                // Skip cover and non-chapter files
+                if (href.includes("Cover") || href.includes("nav.xhtml") || href.includes("toc")) {
+                    continue;
+                }
+
+                let fullPath = "EPUB/text/" + href;
+                let chapterFile = epubContent.find(entry => entry.filename === fullPath);
+                if (!chapterFile) continue;
+
+                // Try to extract chapter title from the file
+                let chapterContent = await chapterFile.getData(new zip.TextWriter());
+                let titleMatch = chapterContent.match(/<title[^>]*>([^<]+)<\/title>/) || 
+                                chapterContent.match(/<h[1-6][^>]*>([^<]+)<\/h[1-6]>/);
+                
+                let title = titleMatch ? titleMatch[1] : `Chapter ${i + 1}`;
+
+                chapters.push({
+                    sourceUrl: `library://${bookId}/${i}`,
+                    title: title,
+                    libraryBookId: bookId,
+                    libraryChapterIndex: i,
+                    libraryFilePath: fullPath
+                });
+            }
+
+            return chapters;
+        } catch (error) {
+            console.error("Error extracting chapter list:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get individual chapter content from Library EPUB
+     * @param {string} bookId - The Library book ID
+     * @param {number} chapterIndex - The chapter index
+     * @returns {Element} Chapter content as DOM element
+     */
+    static async getChapterContent(bookId, chapterIndex) {
+        try {
+            // First extract book data to get chapter info
+            let bookData = await Library.extractBookData(bookId);
+            let chapter = bookData.chapters[chapterIndex];
+            if (!chapter) {
+                throw new Error("Chapter not found");
+            }
+
+            // Get the EPUB content again 
+            let epubBase64 = await Library.LibGetFromStorage("LibEpub" + bookId);
+            let epubReader = new zip.Data64URIReader(epubBase64);
+            let epubZip = new zip.ZipReader(epubReader, {useWebWorkers: false});
+            let epubContent = await epubZip.getEntries();
+            epubContent = epubContent.filter(a => !a.directory);
+
+            // Find and read the specific chapter file
+            let chapterFile = epubContent.find(entry => entry.filename === chapter.libraryFilePath);
+            if (!chapterFile) {
+                throw new Error("Chapter file not found in EPUB");
+            }
+
+            let chapterContent = await chapterFile.getData(new zip.TextWriter());
+            await epubZip.close();
+
+            // Parse the HTML content and extract the body
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(chapterContent, "application/xhtml+xml");
+            let body = doc.querySelector("body");
+            
+            if (!body) {
+                throw new Error("No body content found in chapter");
+            }
+
+            return body;
+        } catch (error) {
+            console.error("Error getting chapter content:", error);
+            throw error;
+        }
+    }
 }
