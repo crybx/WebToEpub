@@ -192,7 +192,7 @@
 		"description": "Label on button to remove all changes to stylesheet and set to default value"
 	},
 	"__MSG_button_Reverse_Chapter_Urls_Order__": {
-		"message": "Reverse Chapter URLs Order",
+		"message": "Reverse Chapter Order",
 		"description": "Label on button to change order of chapters from last to first"
 	},
 	"__MSG_button_Select_All__": {

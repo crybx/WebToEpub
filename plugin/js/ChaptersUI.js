@@ -58,7 +58,9 @@ class ChaptersUI {
         
         // Set up delete cache handler
         let deleteButton = document.getElementById("deleteAllCachedChapters");
-        deleteButton.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
+        if (deleteButton.children.length === 0) {
+            deleteButton.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
+        }
         let deleteWrapper = deleteButton.parentElement;
         deleteWrapper.onclick = () => ChapterCache.deleteAllCachedChapters(chapters);
         this.showHideChapterUrlsColumn();
