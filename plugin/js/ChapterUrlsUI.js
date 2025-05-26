@@ -89,8 +89,7 @@ class ChapterUrlsUI {
 
     static showChapterStatus(row, state, sourceUrl = "", title = "") {
         if (row != null) {
-            let chapterStatusColumn = row.querySelector(".chapterStatusColumn");
-            ChapterUrlsUI.setChapterStatusIcon(chapterStatusColumn, state, sourceUrl, title);
+            ChapterUrlsUI.setChapterStatusVisuals(row, state, sourceUrl, title);
         }
     }
 
@@ -223,7 +222,7 @@ class ChapterUrlsUI {
 
     /** @private */
     static setRowCheckboxState(row, checked) {
-        let input = row.querySelector("input[type=\"checkbox\"]");
+        let input = row.querySelector(".chapterSelectCheckbox");
         if (input.checked !== checked) {
             input.checked = checked;
             input.onclick();
@@ -246,6 +245,7 @@ class ChapterUrlsUI {
         const col = document.createElement("td");
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
+        checkbox.classList.add("chapterSelectCheckbox");
         checkbox.checked = chapter.isIncludeable;
         checkbox.onclick = function(event) { 
             chapter.isIncludeable = checkbox.checked;
@@ -283,17 +283,14 @@ class ChapterUrlsUI {
         try {
             let cachedContent = await ChapterCache.get(sourceUrl);
             if (cachedContent) {
-                let col = row.querySelector(".chapterStatusColumn");
-                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
             } else {
-                let col = row.querySelector(".chapterStatusColumn");
-                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
             }
         } catch (err) {
             console.error("Error restoring chapter status content:", err);
             // Fallback to download icon
-            let col = row.querySelector(".chapterStatusColumn");
-            ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
         }
     }
 
@@ -305,7 +302,6 @@ class ChapterUrlsUI {
         let input = document.createElement("input");
         input.type = "text";
         input.value = chapter.title;
-        input.className = "fullWidth";
         input.addEventListener("blur", function() { chapter.title = input.value; },  true);
         col.appendChild(input);
         row.appendChild(col);
@@ -350,13 +346,11 @@ class ChapterUrlsUI {
         return ChapterCache.get(chapter.sourceUrl).then(async cachedContent => {
             if (cachedContent) {
                 // Chapter is cached - show eye icon
-                let col = row.querySelector(".chapterStatusColumn");
-                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
                 return true;
             } else {
                 // Chapter is not cached - show download icon
-                let col = row.querySelector(".chapterStatusColumn");
-                ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                 return false;
             }
         }).catch(err => {
@@ -379,9 +373,11 @@ class ChapterUrlsUI {
 
     /**
     * @private
-    * Add more actions menu (three dots) next to cache icon
+    * Add more actions menu (three dots) next to chapter status icon
     */
-    static addMoreActionsMenu(col, sourceUrl, title) {
+    static addMoreActionsMenu(row, sourceUrl, title) {
+        let col = row.querySelector(".chapterStatusColumn");
+        if (!col) return;
         // Create more actions wrapper
         let moreWrapper = document.createElement("div");
         moreWrapper.className = "more-actions-wrapper clickable-icon";
@@ -403,7 +399,7 @@ class ChapterUrlsUI {
         refreshItem.appendChild(refreshText);
         refreshItem.onclick = async (e) => {
             e.stopPropagation();
-            await ChapterCache.refreshChapter(sourceUrl, title, col);
+            await ChapterCache.refreshChapter(sourceUrl, title, row);
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
@@ -417,7 +413,7 @@ class ChapterUrlsUI {
         deleteItem.appendChild(deleteText);
         deleteItem.onclick = async (e) => {
             e.stopPropagation();
-            await ChapterCache.deleteSingleChapter(sourceUrl, title, col);
+            await ChapterCache.deleteSingleChapter(sourceUrl, title, row);
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
@@ -492,7 +488,10 @@ class ChapterUrlsUI {
         return SvgIcons.createSvgElement(svgConstants[state]);
     }
 
-    static setChapterStatusIcon(column, state, sourceUrl, title) {
+    static setChapterStatusVisuals(row, state, sourceUrl, title) {
+        if (!row) return;
+
+        let column = row.querySelector(".chapterStatusColumn");
         if (!column) return;
 
         column.innerHTML = "";
@@ -510,18 +509,28 @@ class ChapterUrlsUI {
         wrapper.appendChild(tooltip);
         column.appendChild(wrapper);
         
+        // Handle greenBox class for checkbox in row
+        let checkbox = row.querySelector(".chapterSelectCheckbox");
+        if (checkbox) {
+            if (state === ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED) {
+                checkbox.classList.add("greenBox");
+            } else {
+                checkbox.classList.remove("greenBox");
+            }
+        }
+        
         // Apply state-specific behavior and styling
         switch (state) {
             case ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
                 wrapper.className += " clickable-icon";
                 wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-                ChapterUrlsUI.addMoreActionsMenu(column, sourceUrl, title);
+                ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
                 break;
 
             case ChapterUrlsUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
                 wrapper.className += " clickable-icon";
                 wrapper.onclick = async () => {
-                    await ChapterCache.downloadChapter(sourceUrl, title, column);
+                    await ChapterCache.downloadChapter(sourceUrl, title, row);
                 };
                 break;
         }
@@ -673,7 +682,7 @@ class ChapterUrlsUI {
         if (event.shiftKey || (ChapterUrlsUI.lastSelectedRow === null)) {
             return;
         }
-        if (ChapterUrlsUI.ConsecutiveRowClicks == 5) {
+        if (ChapterUrlsUI.ConsecutiveRowClicks === 5) {
             return;
         }
         let distance = Math.abs(row.rowIndex - ChapterUrlsUI.lastSelectedRow);
@@ -682,7 +691,8 @@ class ChapterUrlsUI {
             return;
         }
         ++ChapterUrlsUI.ConsecutiveRowClicks;
-        if (ChapterUrlsUI.ConsecutiveRowClicks == 5) {
+        if (ChapterUrlsUI.ConsecutiveRowClicks === 5) {
+            // TODO: make this not an alert, it's annoying
             alert(chrome.i18n.getMessage("__MSG_Shift_Click__"));
         }
     }

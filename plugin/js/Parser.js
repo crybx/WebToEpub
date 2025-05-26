@@ -129,14 +129,13 @@ class Parser {
             ErrorLog.showErrorMessage(errorMsg);
         }
         
-        // Cache the processed content (uses persistent or session storage based on settings)
+        // Cache the processed content (uses session, persistent or library book storage based on settings)
         if (webPage.sourceUrl) {
             // Fire and forget - don't wait for cache write
             ChapterCache.set(webPage.sourceUrl, content).then(async () => {
-                // Update UI to show cache icon
+                // Update UI with the visual changes to the chapter's status
                 if (webPage.row) {
-                    let col = webPage.row.querySelector(".chapterStatusColumn");
-                    ChapterUrlsUI.setChapterStatusIcon(col, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
+                    ChapterUrlsUI.setChapterStatusVisuals(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, webPage.sourceUrl, webPage.title);
                 }
             }).catch(e => 
                 console.error("Failed to cache chapter:", e)

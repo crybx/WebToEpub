@@ -195,7 +195,7 @@ class ChapterCache {
                             keysToRemove.push(key);
                         }
                     } catch (e) {
-                        // If can't parse, remove it
+                        // If it can't parse, remove it
                         keysToRemove.push(key);
                     }
                 }
@@ -522,7 +522,7 @@ class ChapterCache {
     /**
     * Download a chapter and cache it
     */
-    static async downloadChapter(sourceUrl, title, cacheCol) {
+    static async downloadChapter(sourceUrl, title, row) {
         try {
             // Find the parser and webPage for this URL
             let parser = ChapterCache.getCurrentParser();
@@ -543,25 +543,19 @@ class ChapterCache {
                 throw new Error(`WebPage not found for URL: ${sourceUrl}`);
             }
             
-            // Ensure webPage has parser reference (may be missing in some cases)
+            // Ensure webPage has parser reference (it may be missing in some cases)
             if (!webPage.parser) {
                 webPage.parser = parser;
             }
             
             // Trigger the download using the existing download system
-            console.log(`Downloading chapter: ${title} from ${sourceUrl}`);
             await parser.fetchWebPageContent(webPage);
             
             // Process and cache the downloaded content (this step is normally done during EPUB creation)
             if (webPage.rawDom && !webPage.error) {
                 let content = parser.convertRawDomToContent(webPage);
-                if (content) {
-                    console.log(`Successfully downloaded and cached chapter: ${title}`);
-                    
-                    // Add cache icon to the row if cacheCol is provided
-                    if (cacheCol) {
-                        ChapterUrlsUI.setChapterStatusIcon(cacheCol, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
-                    }
+                if (content && row) {
+                    ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
                 }
             }
             
@@ -575,18 +569,16 @@ class ChapterCache {
     /**
     * Refresh a cached chapter (delete and redownload)
     */
-    static async refreshChapter(sourceUrl, title, cacheCol) {
+    static async refreshChapter(sourceUrl, title, row) {
         try {
             // Delete the cached chapter first
             await ChapterCache.deleteChapter(sourceUrl);
-            
-            // Remove the cache icons from the specific column immediately
-            if (cacheCol) {
-                cacheCol.innerHTML = "";
-            }
+
+            // Remove the chapter status icons for the row immediately
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
             
             // Download the chapter again using the shared download logic
-            await ChapterCache.downloadChapter(sourceUrl, title, cacheCol);
+            await ChapterCache.downloadChapter(sourceUrl, title, row);
         } catch (error) {
             console.error("Failed to refresh chapter:", error);
             alert("Failed to refresh chapter: " + error.message);
@@ -596,16 +588,15 @@ class ChapterCache {
     /**
     * Delete a single cached chapter and update UI
     */
-    static async deleteSingleChapter(sourceUrl, title, cacheCol) {
+    static async deleteSingleChapter(sourceUrl, title, row) {
         try {
             await ChapterCache.deleteChapter(sourceUrl);
             
-            // Remove the cache icons from the specific column
-            if (cacheCol) {
-                cacheCol.innerHTML = "";
-                
-                // Add download icon since chapter is no longer cached
-                ChapterUrlsUI.setChapterStatusIcon(cacheCol, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+            // Add download icon since chapter is no longer cached
+            if (row) {
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
+            } else {
+                console.log("no row");
             }
             
             // Update UI elements
@@ -641,12 +632,8 @@ class ChapterCache {
             // Update UI - remove all cache icons and add download icons
             chapters.forEach(chapter => {
                 if (chapter.row) {
-                    let cacheCol = chapter.row.querySelector(".chapterStatusColumn");
-                    if (cacheCol) {
-                        cacheCol.innerHTML = "";
-                        // Add download icon since chapter is no longer cached
-                        ChapterUrlsUI.setChapterStatusIcon(cacheCol, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
-                    }
+                    // Add download icon since chapter is no longer cached
+                    ChapterUrlsUI.setChapterStatusVisuals(chapter.row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                 }
             });
             
