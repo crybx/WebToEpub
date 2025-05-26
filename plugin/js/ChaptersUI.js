@@ -58,6 +58,7 @@ class ChaptersUI {
         
         // Set up delete cache handler
         let deleteButton = document.getElementById("deleteAllCachedChapters");
+        deleteButton.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
         let deleteWrapper = deleteButton.parentElement;
         deleteWrapper.onclick = () => ChapterCache.deleteAllCachedChapters(chapters);
         this.showHideChapterUrlsColumn();
@@ -86,12 +87,12 @@ class ChaptersUI {
     }
 
 
-    static resetChapterStatusIcons() {
+    static async resetChapterStatusIcons() {
         let linksTable = ChaptersUI.getChapterUrlsTable();
         
         for (let chapterStatusColumn of linksTable.querySelectorAll(".chapterStatusColumn")) {
             // Restore normal chapter status content
-            ChaptersUI.restoreChapterStatus(chapterStatusColumn);
+            await ChaptersUI.restoreChapterStatus(chapterStatusColumn);
         }
     }
 
@@ -368,7 +369,6 @@ class ChaptersUI {
         }
     }
 
-
     /**
     * @private
     * Add more actions menu (three dots) next to cache icon
@@ -378,24 +378,19 @@ class ChaptersUI {
         let moreWrapper = document.createElement("div");
         moreWrapper.className = "more-actions-wrapper clickable-icon";
         
-        // Create three dots icon
-        let moreIcon = document.createElement("img");
-        moreIcon.src = "images/ThreeDotsVertical.svg";
+        // Create three dots icon (inline SVG for color control)
+        let moreIcon = SvgIcons.createSvgElement(SvgIcons.THREE_DOTS_VERTICAL);
         
         // Create dropdown menu
         let menu = document.createElement("div");
         menu.className = "more-actions-menu";
         
-        // Refresh menu item
+        // REFRESH CHAPTER option
         let refreshItem = document.createElement("div");
         refreshItem.className = "menu-item";
-        
-        let refreshIcon = document.createElement("img");
-        refreshIcon.src = "images/ArrowClockwise.svg";
-        
+        let refreshIcon = SvgIcons.createSvgElement(SvgIcons.ARROW_CLOCKWISE);
         let refreshText = document.createElement("span");
         refreshText.textContent = ChapterCache.CacheText.menuRefreshChapter;
-        
         refreshItem.appendChild(refreshIcon);
         refreshItem.appendChild(refreshText);
         refreshItem.onclick = async (e) => {
@@ -404,16 +399,12 @@ class ChaptersUI {
             ChaptersUI.hideMoreActionsMenu(menu);
         };
         
-        // Delete menu item
+        // DELETE CHAPTER option
         let deleteItem = document.createElement("div");
         deleteItem.className = "menu-item";
-        
-        let deleteIcon = document.createElement("img");
-        deleteIcon.src = "images/Trash3Fill.svg";
-        
+        let deleteIcon = SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL);
         let deleteText = document.createElement("span");
         deleteText.textContent = ChapterCache.CacheText.menuDeleteChapter;
-        
         deleteItem.appendChild(deleteIcon);
         deleteItem.appendChild(deleteText);
         deleteItem.onclick = async (e) => {
@@ -422,17 +413,12 @@ class ChaptersUI {
             ChaptersUI.hideMoreActionsMenu(menu);
         };
         
-        // Add items to menu
-        // Download menu item
+        // DOWNLOAD HTML FILE option
         let downloadItem = document.createElement("div");
         downloadItem.className = "menu-item";
-        
-        let downloadIcon = document.createElement("img");
-        downloadIcon.src = "images/Download.svg";
-        
+        let downloadIcon = SvgIcons.createSvgElement(SvgIcons.DOWNLOAD);
         let downloadText = document.createElement("span");
         downloadText.textContent = ChapterCache.CacheText.menuDownloadChapter;
-        
         downloadItem.appendChild(downloadIcon);
         downloadItem.appendChild(downloadText);
         downloadItem.onclick = async (e) => {
@@ -443,8 +429,8 @@ class ChaptersUI {
         
         // Add items to menu
         menu.appendChild(refreshItem);
-        menu.appendChild(downloadItem);
         menu.appendChild(deleteItem);
+        menu.appendChild(downloadItem);
         
         // Add click handler to show/hide menu
         moreWrapper.onclick = (e) => {
@@ -485,49 +471,51 @@ class ChaptersUI {
     /**
      * @public
      * Unified method to set chapter status icon based on state
-     * Handles all chapter states: cached, uncached, downloading, sleeping
+     * Handles chapter states: cached, uncached, downloading, sleeping
      */
+    static createIconElement(state) {
+        const svgConstants = {
+            [ChaptersUI.CHAPTER_STATUS_NONE]: SvgIcons.DOWNLOAD,
+            [ChaptersUI.CHAPTER_STATUS_DOWNLOADING]: SvgIcons.CHAPTER_STATE_DOWNLOADING,
+            [ChaptersUI.CHAPTER_STATUS_DOWNLOADED]: SvgIcons.EYE_FILL,
+            [ChaptersUI.CHAPTER_STATUS_SLEEPING]: SvgIcons.CHAPTER_STATE_SLEEPING
+        };
+        
+        return SvgIcons.createSvgElement(svgConstants[state]);
+    }
+
     static setChapterStatusIcon(column, state, sourceUrl, title) {
         if (!column) return;
-        
-        // Clear existing content
+
         column.innerHTML = "";
-        
-        // Create common DOM elements
+
         let wrapper = document.createElement("div");
         wrapper.className = "tooltip-wrapper";
         
-        let img = document.createElement("img");
-        img.src = ChaptersUI.ImageForState[state];
+        let iconElement = ChaptersUI.createIconElement(state);
         
         let tooltip = document.createElement("span");
         tooltip.className = "tooltipText";
         tooltip.textContent = ChaptersUI.TooltipForState[state];
-        
-        // Assemble components
-        wrapper.appendChild(img);
+
+        wrapper.appendChild(iconElement);
         wrapper.appendChild(tooltip);
         column.appendChild(wrapper);
         
         // Apply state-specific behavior and styling
         switch (state) {
-        case ChaptersUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
-            wrapper.className += " clickable-icon";
-            wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-            ChaptersUI.addMoreActionsMenu(column, sourceUrl, title);
-            break;
-            
-        case ChaptersUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
-            wrapper.className += " clickable-icon";
-            wrapper.onclick = async () => {
-                await ChapterCache.downloadChapter(sourceUrl, title, column);
-            };
-            break;
-            
-        case ChaptersUI.CHAPTER_STATUS_DOWNLOADING: // Currently downloading - show downloading icon  
-        case ChaptersUI.CHAPTER_STATUS_SLEEPING: // Waiting between downloads - show sleeping icon
-            // Non-clickable, just tooltip wrapper (no additional classes needed)
-            break;
+            case ChaptersUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
+                wrapper.className += " clickable-icon";
+                wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
+                ChaptersUI.addMoreActionsMenu(column, sourceUrl, title);
+                break;
+
+            case ChaptersUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
+                wrapper.className += " clickable-icon";
+                wrapper.onclick = async () => {
+                    await ChapterCache.downloadChapter(sourceUrl, title, column);
+                };
+                break;
         }
     }
 
@@ -892,12 +880,6 @@ ChaptersUI.CHAPTER_STATUS_NONE = 0;
 ChaptersUI.CHAPTER_STATUS_DOWNLOADING = 1;
 ChaptersUI.CHAPTER_STATUS_DOWNLOADED = 2;
 ChaptersUI.CHAPTER_STATUS_SLEEPING = 3;
-ChaptersUI.ImageForState = [
-    "images/Download.svg",
-    "images/ChapterStateDownloading.svg",
-    "images/EyeFill.svg",
-    "images/ChapterStateSleeping.svg"
-];
 ChaptersUI.TooltipForState = [
     chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
     chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloading__"),

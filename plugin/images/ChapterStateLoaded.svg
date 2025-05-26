@@ -1,8 +1,0 @@
-<svg version="1.1"
-     baseProfile="full"
-     width="32" height="32"
-     stroke-width="2" stroke="green"
-     xmlns="http://www.w3.org/2000/svg">
-  <line x1="10" y1="23" x2="15" y2="28" />
-  <line x1="15" y1="28" x2="23" y2="4" />
-</svg>

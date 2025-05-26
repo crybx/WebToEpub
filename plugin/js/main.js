@@ -146,7 +146,7 @@ const main = (function() {
         }
 
         ChapterUrlsUI.limitNumOfChapterS(userPreferences.maxChaptersPerEpub.value);
-        ChapterUrlsUI.resetChapterStatusIcons();
+        await ChapterUrlsUI.resetChapterStatusIcons();
         ErrorLog.clearHistory();
         window.workInProgress = true;
         main.getPackEpubButton().disabled = true;
@@ -190,20 +190,9 @@ const main = (function() {
         });
     }
 
-    function replaceLibAddToLibrary() {
-        let el = document.getElementById("LibAddToLibrary");
-        el.hidden = !el.hidden;
-        el = document.getElementById("LibPauseToLibrary");
-        el.hidden = !el.hidden;
-    }
-
-    function pauseToLibarary() {
-        util.sleepControler.abort();
-    }
-
     async function downloadChapters() {
         ChapterUrlsUI.limitNumOfChapterS(userPreferences.maxChaptersPerEpub.value);
-        ChapterUrlsUI.resetChapterStatusIcons();
+        await ChapterUrlsUI.resetChapterStatusIcons();
         ErrorLog.clearHistory();
         window.workInProgress = true;
         main.getPackEpubButton().disabled = true;
