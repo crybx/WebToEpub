@@ -9,8 +9,22 @@ class ChapterViewer {
      */
     static async viewChapter(sourceUrl, title) {
         try {
-            let cachedContent = await ChapterCache.get(sourceUrl);
-            if (cachedContent) {
+            let chapterContent = null;
+            
+            // Check if this is a library chapter or a chapter from a library book
+            if (sourceUrl.startsWith("library://")) {
+                chapterContent = await ChapterViewer.getLibraryChapterContent(sourceUrl);
+            } else {
+                // Try to get from cache for regular web chapters
+                chapterContent = await ChapterCache.get(sourceUrl);
+                
+                // If not in cache, check if this might be a library chapter with original URL
+                if (!chapterContent && window.parser && window.parser.constructor.name === "LibraryParser") {
+                    chapterContent = await ChapterViewer.getLibraryChapterByOriginalUrl(sourceUrl);
+                }
+            }
+            
+            if (chapterContent) {
                 // Show the viewer
                 let viewer = document.getElementById("chapterViewer");
                 let contentDiv = document.getElementById("chapterViewerContent");
@@ -23,7 +37,7 @@ class ChapterViewer {
                 titleElement.textContent = title;
                 
                 // Add chapter content
-                contentDiv.appendChild(cachedContent.cloneNode(true));
+                contentDiv.appendChild(chapterContent.cloneNode(true));
                 
                 // Apply custom stylesheet if available
                 this.applyCustomStylesheet();
@@ -53,11 +67,17 @@ class ChapterViewer {
                     }
                 };
             } else {
-                alert("Chapter not found");
+                let errorMsg = sourceUrl.startsWith("library://") ? 
+                    "Library chapter not found or failed to load" : 
+                    "Chapter not found in cache";
+                alert(errorMsg);
             }
         } catch (err) {
             console.error("Error viewing chapter:", err);
-            alert("Error loading chapter");
+            let errorMsg = sourceUrl.startsWith("library://") ? 
+                "Error loading library chapter: " + err.message : 
+                "Error loading chapter";
+            alert(errorMsg);
         }
     }
 
@@ -207,5 +227,53 @@ class ChapterViewer {
         });
         
         return filteredDecls.join(";\n  ");
+    }
+
+    /**
+     * Get chapter content from Library EPUB
+     * @param {string} sourceUrl - Library URL in format library://bookId/chapterIndex
+     * @returns {Element} Chapter content DOM element
+     */
+    static async getLibraryChapterContent(sourceUrl) {
+        try {
+            // Parse library URL: library://bookId/chapterIndex
+            let urlParts = sourceUrl.replace("library://", "").split("/");
+            if (urlParts.length !== 2) {
+                throw new Error("Invalid library URL format");
+            }
+            
+            let bookId = urlParts[0];
+            let chapterIndex = parseInt(urlParts[1]);
+            
+            // Get chapter content from Library
+            return await Library.getChapterContent(bookId, chapterIndex);
+        } catch (error) {
+            console.error("Error getting library chapter content:", error);
+            throw new Error("Failed to load library chapter: " + error.message);
+        }
+    }
+
+    /**
+     * Get library chapter content by original URL
+     * @param {string} originalUrl - Original web URL of the chapter
+     * @returns {Element} Chapter content DOM element
+     */
+    static async getLibraryChapterByOriginalUrl(originalUrl) {
+        try {
+            // Get the current parser's chapter list
+            let chapters = Array.from(window.parser.getPagesToFetch().values());
+            
+            // Find the chapter with matching sourceUrl
+            let chapter = chapters.find(ch => ch.sourceUrl === originalUrl);
+            if (!chapter) {
+                throw new Error("Chapter not found in library book");
+            }
+            
+            // Get the content using the library chapter index
+            return await Library.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+        } catch (error) {
+            console.error("Error getting library chapter by original URL:", error);
+            throw new Error("Failed to load library chapter: " + error.message);
+        }
     }
 }

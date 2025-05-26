@@ -63,6 +63,10 @@
 		"message": "Download EPUB",
 		"description": "Label on button to Download EPUB"
 	},
+	"__MSG_button_Lib_Template_Select_Book__": {
+		"message": "Select",
+		"description": "Label on button to Select book for editing in main UI"
+	},
 	"__MSG_button_Lib_Template_Add_Chapter_from_different_EPUB__": {
 		"message": "Add Chapter from different EPUB",
 		"description": "Label on button to Add Chapter from different EPUB"

@@ -334,6 +334,7 @@ class Library {
         let LibTemplateSearchNewChapter = document.getElementById("LibTemplateSearchNewChapter").innerHTML;
         let LibTemplateUpdateNewChapter = document.getElementById("LibTemplateUpdateNewChapter").innerHTML;
         let LibTemplateDownload = document.getElementById("LibTemplateDownload").innerHTML;
+        let LibTemplateSelectBook = document.getElementById("LibTemplateSelectBook").innerHTML;
         let LibTemplateNewChapter = document.getElementById("LibTemplateNewChapter").innerHTML;
         let LibTemplateURL = document.getElementById("LibTemplateURL").innerHTML;
         let LibTemplateFilename = document.getElementById("LibTemplateFilename").innerHTML;
@@ -422,6 +423,7 @@ class Library {
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDeleteEpub"+CurrentLibKeys[i]+"'>"+LibTemplateDeleteEpub+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDownload"+CurrentLibKeys[i]+"'>"+LibTemplateDownload+"</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibSelectBook"+CurrentLibKeys[i]+"'>"+LibTemplateSelectBook+"</button>";
                 LibRenderString += "<span style='padding: 1em; font-size: 1.2em; color: Chartreuse;' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "</td>";
@@ -479,6 +481,7 @@ class Library {
                 document.getElementById("LibDeleteEpub"+CurrentLibKeys[i]).addEventListener("click", function() {Library.LibDeleteEpub(this);});
                 document.getElementById("LibUpdateNewChapter"+CurrentLibKeys[i]).addEventListener("click", function() {Library.LibUpdateNewChapter(this);});
                 document.getElementById("LibDownload"+CurrentLibKeys[i]).addEventListener("click", function() {Library.LibDownload(this);});
+                document.getElementById("LibSelectBook"+CurrentLibKeys[i]).addEventListener("click", function() {Library.LibSelectBook(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("change", function() {Library.LibSaveTextURLChange(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusin", function() {Library.LibShowTextURLWarning(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusout", function() {Library.LibHideTextURLWarning(this);});
@@ -835,6 +838,117 @@ class Library {
                 ErrorLog.showErrorMessage(e);
             });
         });
+    }
+
+    /**
+     * Select Library book for editing in main UI
+     * @param {HTMLElement} objbtn - The select button element
+     */
+    static async LibSelectBook(objbtn) {
+        try {
+            let bookId = objbtn.dataset.libepubid;
+            
+            // Extract book data from stored EPUB
+            let bookData = await Library.extractBookData(bookId);
+            
+            // Populate main UI with book data
+            Library.populateMainUIWithBookData(bookData);
+            
+            // Switch to main tab/section
+            Library.switchToMainUI();
+            
+        } catch (error) {
+            console.error("Error selecting library book:", error);
+            ErrorLog.showErrorMessage("Failed to load library book: " + error.message);
+        }
+    }
+
+    /**
+     * Populate main UI with library book data
+     * @param {Object} bookData - Extracted book data with metadata and chapters
+     */
+    static populateMainUIWithBookData(bookData) {
+        // Populate metadata fields
+        if (bookData.metadata.sourceUrl) {
+            document.getElementById("startingUrlInput").value = bookData.metadata.sourceUrl;
+        }
+        if (bookData.metadata.title) {
+            document.getElementById("titleInput").value = bookData.metadata.title;
+        }
+        if (bookData.metadata.author) {
+            document.getElementById("authorInput").value = bookData.metadata.author;
+        }
+        
+        // Create a mock parser to work with existing UI
+        let libraryParser = {
+            getPagesToFetch: () => new Map(bookData.chapters.map((ch, i) => [i, ch])),
+            setPagesToFetch: (chapters) => {
+                // Store updated chapter list if needed
+            },
+            getRateLimit: () => 0, // Library chapters don't need rate limiting
+            constructor: { name: "LibraryParser" },
+            
+            // Mock state.webPages property for cache checking
+            state: {
+                webPages: new Map(bookData.chapters.map((ch, i) => [i, {...ch, isIncludeable: true}]))
+            },
+            
+            // Mock fetchWebPageContent for download functionality
+            async fetchWebPageContent(sourceUrl) {
+                try {
+                    // Ensure sourceUrl is a string
+                    let urlString = typeof sourceUrl === 'string' ? sourceUrl : sourceUrl?.sourceUrl || String(sourceUrl);
+                    
+                    // Check if this is a library chapter
+                    if (urlString.startsWith("library://")) {
+                        // Parse library URL: library://bookId/chapterIndex
+                        let urlParts = urlString.replace("library://", "").split("/");
+                        let bookId = urlParts[0];
+                        let chapterIndex = parseInt(urlParts[1]);
+                        
+                        // Get chapter content from Library
+                        return await Library.getChapterContent(bookId, chapterIndex);
+                    } else {
+                        // For original URLs, find the matching library chapter
+                        let chapter = bookData.chapters.find(ch => ch.sourceUrl === urlString);
+                        if (chapter) {
+                            return await Library.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+                        }
+                        throw new Error("Chapter not found in library book");
+                    }
+                } catch (error) {
+                    console.error("Error fetching library chapter content:", error);
+                    throw error;
+                }
+            }
+        };
+        
+        // Store the parser globally for ChaptersUI to access
+        window.parser = libraryParser;
+        
+        // Use existing ChaptersUI to display chapters
+        let chaptersUI = new ChaptersUI(libraryParser);
+        chaptersUI.populateChapterUrlsTable(bookData.chapters);
+        
+        // Connect button handlers for the library chapters
+        chaptersUI.connectButtonHandlers();
+    }
+
+    /**
+     * Switch to main UI section
+     */
+    static switchToMainUI() {
+        // Hide library section if visible
+        let libraryButton = document.getElementById("libButton");
+        if (libraryButton && document.getElementById("librarySection").style.display !== "none") {
+            libraryButton.click();
+        }
+        
+        // Ensure input section is visible
+        let inputSection = document.getElementById("inputSection");
+        if (inputSection) {
+            inputSection.style.display = "block";
+        }
     }
 
     static LibDownload(objbtn) {
@@ -1200,6 +1314,19 @@ class Library {
 
             let opfContent = await opfFile.getData(new zip.TextWriter());
             
+            // Extract original source URLs from dc:source elements
+            let sourceUrls = {};
+            let sourceMatches = opfContent.match(/<dc:source[^>]*id="([^"]+)"[^>]*>([^<]+)<\/dc:source>/g);
+            if (sourceMatches) {
+                sourceMatches.forEach(match => {
+                    let idMatch = match.match(/id="([^"]+)"/);
+                    let urlMatch = match.match(/>([^<]+)<\/dc:source>/);
+                    if (idMatch && urlMatch) {
+                        sourceUrls[idMatch[1]] = urlMatch[1];
+                    }
+                });
+            }
+            
             // Extract chapter files from spine
             let spineMatches = opfContent.match(/<spine[^>]*>(.*?)<\/spine>/s);
             if (!spineMatches) {
@@ -1215,7 +1342,7 @@ class Library {
             let manifestMatches = opfContent.match(/<manifest[^>]*>(.*?)<\/manifest>/s);
             let manifest = {};
             if (manifestMatches) {
-                let itemMatches = manifestMatches[1].match(/<item[^>]*id="([^"]+)"[^>]*href="([^"]+)"/g);
+                let itemMatches = manifestMatches[1].match(/<item[^>]*>/g);
                 if (itemMatches) {
                     itemMatches.forEach(match => {
                         let idMatch = match.match(/id="([^"]+)"/);
@@ -1229,6 +1356,8 @@ class Library {
 
             // Build chapter list
             let chapters = [];
+            let chapterIndex = 0;
+            
             for (let i = 0; i < itemrefMatches.length; i++) {
                 let idrefMatch = itemrefMatches[i].match(/idref="([^"]+)"/);
                 if (!idrefMatch) continue;
@@ -1242,24 +1371,31 @@ class Library {
                     continue;
                 }
 
-                let fullPath = "EPUB/text/" + href;
+                let fullPath = "EPUB/" + href;
                 let chapterFile = epubContent.find(entry => entry.filename === fullPath);
                 if (!chapterFile) continue;
-
+                
                 // Try to extract chapter title from the file
                 let chapterContent = await chapterFile.getData(new zip.TextWriter());
                 let titleMatch = chapterContent.match(/<title[^>]*>([^<]+)<\/title>/) || 
                                 chapterContent.match(/<h[1-6][^>]*>([^<]+)<\/h[1-6]>/);
                 
-                let title = titleMatch ? titleMatch[1] : `Chapter ${i + 1}`;
+                let title = titleMatch ? titleMatch[1] : `Chapter ${chapterIndex + 1}`;
 
+                // Use original source URL if available, otherwise use library URL
+                // The source URLs are keyed by "id.{idref}" format
+                let sourceUrlKey = `id.${idref}`;
+                let sourceUrl = sourceUrls[sourceUrlKey] || `library://${bookId}/${chapterIndex}`;
+                
                 chapters.push({
-                    sourceUrl: `library://${bookId}/${i}`,
+                    sourceUrl: sourceUrl,
                     title: title,
                     libraryBookId: bookId,
-                    libraryChapterIndex: i,
+                    libraryChapterIndex: chapterIndex,
                     libraryFilePath: fullPath
                 });
+                
+                chapterIndex++;
             }
 
             return chapters;
