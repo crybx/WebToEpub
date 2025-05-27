@@ -404,6 +404,20 @@ class ChapterUrlsUI {
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
+        // OPEN CHAPTER URL option
+        let openUrlItem = document.createElement("div");
+        openUrlItem.className = "menu-item";
+        let openUrlIcon = SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT);
+        let openUrlText = document.createElement("span");
+        openUrlText.textContent = "Open Chapter URL";
+        openUrlItem.appendChild(openUrlIcon);
+        openUrlItem.appendChild(openUrlText);
+        openUrlItem.onclick = (e) => {
+            e.stopPropagation();
+            window.open(sourceUrl, "_blank");
+            ChapterUrlsUI.hideMoreActionsMenu(menu);
+        };
+        
         // DELETE CHAPTER option
         let deleteItem = document.createElement("div");
         deleteItem.className = "menu-item";
@@ -434,6 +448,7 @@ class ChapterUrlsUI {
         
         // Add items to menu
         menu.appendChild(refreshItem);
+        menu.appendChild(openUrlItem);
         menu.appendChild(deleteItem);
         menu.appendChild(downloadItem);
         
