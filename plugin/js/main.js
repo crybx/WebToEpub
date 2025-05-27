@@ -133,8 +133,14 @@ const main = (function() {
     function setProcessingButtonsState(disabled) {
         window.workInProgress = disabled;
         main.getPackEpubButton().disabled = disabled;
-        document.getElementById("LibAddToLibrary").disabled = disabled;
         document.getElementById("downloadChaptersButton").disabled = disabled;
+        let addLib = document.getElementById("LibPauseToLibrary");
+        addLib.disabled = disabled;
+        addLib.hidden = !disabled;
+        let pause = document.getElementById("LibPauseToLibrary");
+        pause.disabled = !disabled;
+        pause.hidden = disabled;
+
         window.workInProgress = disabled;
     }
 
@@ -203,7 +209,7 @@ const main = (function() {
         ErrorLog.clearHistory();
         setProcessingButtonsState(true);
         parser.onStartCollecting();
-        
+
         await ChapterCache.downloadChaptersToCache().then(function() {
             setProcessingButtonsState(false);
             parser.updateReadingList();
@@ -215,6 +221,9 @@ const main = (function() {
         });
     }
 
+    function pauseToLibarary(){
+        util.sleepControler.abort();
+    }
 
     function epubVersionFromPreferences() {
         return userPreferences.createEpub3.value ?
@@ -306,7 +315,7 @@ const main = (function() {
             ErrorLog.showErrorMessage(chrome.i18n.getMessage("noParserFound"));
             return false;
         }
-        
+
         // Make parser globally accessible for refresh functionality
         window.parser = parser;
         getLoadAndAnalyseButton().hidden = true;
@@ -356,7 +365,7 @@ const main = (function() {
         let modal = document.getElementById("cacheOptionsModal");
         modal.style.display = "flex";
         document.body.classList.add("modal-open");
-        
+
         // Set up event handlers first
         ChapterCache.setupCacheEventHandlers();
 
@@ -549,7 +558,7 @@ const main = (function() {
     function updateSidebarButtons() {
         let sidebar = document.getElementById("sbOptions");
         let openSidebarButton = document.getElementById("openSidebarButton");
-        
+
         if (sidebar.classList.contains("sidebarOpen")) {
             // Sidebar is open - hide the top-right open button (close button is in sidebar)
             openSidebarButton.hidden = true;
@@ -605,21 +614,21 @@ const main = (function() {
             let modal = document.getElementById("coverImageModal");
             let fullSizeImg = document.getElementById("fullSizeCoverImg");
             let modalTitle = modal.querySelector(".modal-title");
-            
+
             // Set loading title first
             modalTitle.textContent = "Cover Image (Loading...)";
-            
+
             fullSizeImg.src = coverImg.src;
             modal.style.display = "flex";
             document.body.classList.add("modal-open");
-            
+
             // Update title with dimensions once image loads
             fullSizeImg.onload = function() {
                 // Extract file extension from URL
                 let url = new URL(this.src);
                 let pathname = url.pathname;
                 let extension = 'unknown';
-                
+
                 // Check if pathname has a dot and extract extension
                 if (pathname.includes('.')) {
                     let possibleExt = pathname.split('.').pop().toLowerCase();
@@ -628,7 +637,7 @@ const main = (function() {
                         extension = possibleExt;
                     }
                 }
-                
+
                 // If still unknown, check query parameters for image URLs (like wsrv.nl)
                 if (extension === 'unknown' && url.searchParams.has('url')) {
                     let embeddedUrl = url.searchParams.get('url');
@@ -639,14 +648,14 @@ const main = (function() {
                         }
                     }
                 }
-                
+
                 modalTitle.textContent = `Cover Image (${this.naturalWidth}px × ${this.naturalHeight}px, ${extension})`;
             };
-            
+
             fullSizeImg.onerror = function() {
                 modalTitle.textContent = "Cover Image (Error loading)";
             };
-            
+
             // Close on background click
             modal.onclick = (e) => {
                 if (e.target === modal) {
@@ -698,11 +707,11 @@ const main = (function() {
         document.getElementById("openSidebarButton").onclick = () => sbFiltersShow();
         document.getElementById("sbClose").onclick = () => sbHide();
         document.getElementById("viewReadingListButton").onclick = () => showReadingList();
-        
+
         // Cover image modal handlers
         document.getElementById("sampleCoverImg").onclick = onCoverImageClick;
         document.getElementById("closeCoverImage").onclick = closeCoverImageModal;
-        
+
         window.addEventListener("beforeunload", onUnloadEvent);
     }
 
@@ -772,13 +781,13 @@ const main = (function() {
         if (viewFiltersIcon) {
             viewFiltersIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILTER));
         }
-        
+
         // Initialize the sidebar close icon
         let sbCloseIcon = document.getElementById("sbCloseIcon");
         if (sbCloseIcon) {
             sbCloseIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.ARROW_BAR_RIGHT));
         }
-        
+
         // Initialize the sidebar open icon (flipped version)
         let openSidebarIcon = document.getElementById("openSidebarIcon");
         if (openSidebarIcon) {

@@ -11,6 +11,7 @@ class LibraryStorage {
      * Add EPUB to library, merging with existing if found
      */
     static async LibAddToLibrary(AddEpub, fileName, startingUrlInput, overwriteExisting, backgroundDownload, userPreferences) {
+        LibraryUI.LibShowLoadingText();
         if (!document.getElementById("includeInReadingListCheckbox")?.checked) {
             document.getElementById("includeInReadingListCheckbox")?.click();
         }

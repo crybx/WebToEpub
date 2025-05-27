@@ -619,7 +619,7 @@
 		"description": "Default UUID value to use when one is not supplied"
 	},
 	"errorEditMetadata": {
-		"message": "An error occurd during the editing of the Metadata. Couldn't find the string to replace in  EPUB/content.opf",
+		"message": "An error occurred during the editing of the Metadata. Couldn't find the string to replace in  EPUB/content.opf",
 		"description": "Error message when regex can't find the string to replace in EPUB/content.opf"
 	},
 	"errorAddToLibraryLibraryAddPageWithChapters": {
