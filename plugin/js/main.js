@@ -482,7 +482,7 @@ const main = (function() {
         // Set up trash icon tooltip with localized text
         let deleteTooltip = document.getElementById("deleteAllTooltip");
         if (deleteTooltip) {
-            deleteTooltip.textContent = ChapterCache.CacheText.tooltipDeleteAllCached;
+            deleteTooltip.textContent = ChapterUrlsUI.UIText.tooltipDeleteAllCached;
         }
     }
 

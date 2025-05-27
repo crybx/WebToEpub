@@ -842,9 +842,17 @@
 		"message": "Download Chapter",
 		"description": "Tooltip text for the download chapter icon"
 	},
+	"__MSG_tooltip_Chapter_Selection__": {
+		"message": "Selected chapters will be included for actions: Pack EPUB, Download Chapters, or Add to Library",
+		"description": "Tooltip text explaining what selected chapters are used for"
+	},
 	"__MSG_menu_Refresh_Chapter__": {
 		"message": "Refresh Chapter",
 		"description": "Menu option to delete and redownload a cached chapter"
+	},
+	"__MSG_menu_Open_Chapter_URL__": {
+		"message": "Open Chapter URL",
+		"description": "Menu option to open the chapter URL in a new tab"
 	},
 	"__MSG_menu_Delete_Chapter__": {
 		"message": "Delete Chapter",

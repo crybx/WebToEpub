@@ -556,6 +556,10 @@
 		"message": "Скачать главу",
 		"description": "Tooltip text for the download chapter icon"
 	},
+	"__MSG_tooltip_Chapter_Selection__": {
+		"message": "Выбранные главы будут включены в действия: Создать EPUB, Скачать главы или Добавить в библиотеку",
+		"description": "Tooltip text explaining what selected chapters are used for"
+	},
 	"__MSG_tooltip_Refresh_Chapter__": {
 		"message": "Обновить главу",
 		"description": "Tooltip for refresh chapter menu option"
@@ -563,6 +567,10 @@
 	"__MSG_tooltip_Delete_Chapter__": {
 		"message": "Удалить главу",
 		"description": "Tooltip for delete chapter menu option"
+	},
+	"__MSG_menu_Open_Chapter_URL__": {
+		"message": "Открыть ссылку на главу",
+		"description": "Menu option to open the chapter URL in a new tab"
 	},
 	"__MSG_menu_Download_Chapter__": {
 		"message": "Скачать HTML файл",

@@ -13,19 +13,13 @@ class ChapterCache {
     static SESSION_MAX_ENTRIES = 3000; // Maximum entries to keep in session storage
     static SESSION_MIN_AGE_HOURS = 2; // Minimum age before entries can be cleaned up
 
-    // Localized text strings for cache UI
+    // Localized text strings for cache functionality
     static CacheText = {
         buttonEnabled: chrome.i18n.getMessage("__MSG_button_cache_status_Enabled__"),
         buttonDisabled: chrome.i18n.getMessage("__MSG_button_cache_status_Disabled__"),
         toggleOn: chrome.i18n.getMessage("__MSG_toggle_state_On__"),
         toggleOff: chrome.i18n.getMessage("__MSG_toggle_state_Off__"),
         statusError: chrome.i18n.getMessage("__MSG_status_Error__"),
-        tooltipViewChapter: chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
-        tooltipDeleteAllCached: chrome.i18n.getMessage("__MSG_tooltip_Delete_All_Cached__"),
-        tooltipDownloadChapter: chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
-        menuRefreshChapter: chrome.i18n.getMessage("__MSG_menu_Refresh_Chapter__"),
-        menuDeleteChapter: chrome.i18n.getMessage("__MSG_menu_Delete_Chapter__"),
-        menuDownloadChapter: chrome.i18n.getMessage("__MSG_menu_Download_Chapter__"),
         confirmClearAll: chrome.i18n.getMessage("__MSG_confirm_Clear_All_Cache__"),
         downloadSuccess: chrome.i18n.getMessage("__MSG_download_Success__"),
         downloadError: chrome.i18n.getMessage("__MSG_download_Error__"),

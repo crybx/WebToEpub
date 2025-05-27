@@ -148,14 +148,27 @@ svg {
     background-color: rgba(0, 123, 255, 0.1);
 }
 
-.clickable-icon:hover svg {
+/* Only highlight SVG when directly hovering the clickable icon itself, not child elements */
+.clickable-icon:hover > svg,
+.clickable-icon:hover > span > svg {
     fill: dodgerblue;
     filter: brightness(1.2);
 }
 
-.clickable-icon:active svg {
+.clickable-icon:active > svg,
+.clickable-icon:active > span > svg {
     fill: dodgerblue;
     filter: brightness(0.8);
+}
+
+/* Specific hover effects for menu items */
+.more-actions-menu .menu-item:hover svg {
+    fill: dodgerblue;
+    filter: brightness(1.2);
+}
+
+.more-actions-menu .menu-item:hover span {
+    color: dodgerblue;
 }
 
 /* Tooltip Styles */

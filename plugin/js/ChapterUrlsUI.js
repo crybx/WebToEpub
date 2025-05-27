@@ -2,6 +2,20 @@
 
 /** Class that handles UI for selecting (chapter) URLs to fetch */
 class ChapterUrlsUI {
+    // Localized text strings for chapter UI
+    static UIText = {
+        menuRefreshChapter: chrome.i18n.getMessage("__MSG_menu_Refresh_Chapter__"),
+        menuOpenChapterURL: chrome.i18n.getMessage("__MSG_menu_Open_Chapter_URL__"),
+        menuDeleteChapter: chrome.i18n.getMessage("__MSG_menu_Delete_Chapter__"),
+        menuDownloadChapter: chrome.i18n.getMessage("__MSG_menu_Download_Chapter__"),
+        tooltipDeleteAllCached: chrome.i18n.getMessage("__MSG_tooltip_Delete_All_Cached__"),
+        tooltipDownloadChapter: chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
+        tooltipChapterDownloading: chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloading__"),
+        tooltipViewChapter: chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
+        tooltipChapterSleeping: chrome.i18n.getMessage("__MSG_Tooltip_chapter_sleeping__"),
+        maxChaptersSelected: chrome.i18n.getMessage("__MSG_More_than_max_chapters_selected__"),
+        shiftClickMessage: chrome.i18n.getMessage("__MSG_Shift_Click__")
+    };
     constructor(parser) {
         this.parser = parser;
         ChapterUrlsUI.getPleaseWaitMessageRow().hidden = false;
@@ -116,8 +130,8 @@ class ChapterUrlsUI {
             .filter(c => c.checked)
             .map(c => c.closest(".chapter-row"));
         if (max< selectedRows.length ) {
-            let message = chrome.i18n.getMessage("__MSG_More_than_max_chapters_selected__", 
-                [selectedRows.length, max]);
+            let message = ChapterUrlsUI.UIText.maxChaptersSelected.replace("$1", 
+                selectedRows.length).replace("$2", max);
             if (confirm(message) === false) {
                 for (let row of selectedRows.slice(max)) {
                     ChapterUrlsUI.setRowCheckboxState(row, false);
@@ -395,7 +409,7 @@ class ChapterUrlsUI {
         refreshItem.className = "menu-item";
         let refreshIcon = SvgIcons.createSvgElement(SvgIcons.ARROW_CLOCKWISE);
         let refreshText = document.createElement("span");
-        refreshText.textContent = ChapterCache.CacheText.menuRefreshChapter;
+        refreshText.textContent = ChapterUrlsUI.UIText.menuRefreshChapter;
         refreshItem.appendChild(refreshIcon);
         refreshItem.appendChild(refreshText);
         refreshItem.onclick = async (e) => {
@@ -409,7 +423,7 @@ class ChapterUrlsUI {
         openUrlItem.className = "menu-item";
         let openUrlIcon = SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT);
         let openUrlText = document.createElement("span");
-        openUrlText.textContent = "Open Chapter URL";
+        openUrlText.textContent = ChapterUrlsUI.UIText.menuOpenChapterURL;
         openUrlItem.appendChild(openUrlIcon);
         openUrlItem.appendChild(openUrlText);
         openUrlItem.onclick = (e) => {
@@ -423,7 +437,7 @@ class ChapterUrlsUI {
         deleteItem.className = "menu-item";
         let deleteIcon = SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL);
         let deleteText = document.createElement("span");
-        deleteText.textContent = ChapterCache.CacheText.menuDeleteChapter;
+        deleteText.textContent = ChapterUrlsUI.UIText.menuDeleteChapter;
         deleteItem.appendChild(deleteIcon);
         deleteItem.appendChild(deleteText);
         deleteItem.onclick = async (e) => {
@@ -437,7 +451,7 @@ class ChapterUrlsUI {
         downloadItem.className = "menu-item";
         let downloadIcon = SvgIcons.createSvgElement(SvgIcons.DOWNLOAD);
         let downloadText = document.createElement("span");
-        downloadText.textContent = ChapterCache.CacheText.menuDownloadChapter;
+        downloadText.textContent = ChapterUrlsUI.UIText.menuDownloadChapter;
         downloadItem.appendChild(downloadIcon);
         downloadItem.appendChild(downloadText);
         downloadItem.onclick = async (e) => {
@@ -709,7 +723,7 @@ class ChapterUrlsUI {
         ++ChapterUrlsUI.ConsecutiveRowClicks;
         if (ChapterUrlsUI.ConsecutiveRowClicks === 5) {
             // TODO: make this not an alert, it's annoying
-            alert(chrome.i18n.getMessage("__MSG_Shift_Click__"));
+            alert(ChapterUrlsUI.UIText.shiftClickMessage);
         }
     }
 
@@ -915,10 +929,10 @@ ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING = 1;
 ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED = 2;
 ChapterUrlsUI.CHAPTER_STATUS_SLEEPING = 3;
 ChapterUrlsUI.TooltipForState = [
-    chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
-    chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloading__"),
-    chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
-    chrome.i18n.getMessage("__MSG_Tooltip_chapter_sleeping__")
+    ChapterUrlsUI.UIText.tooltipDownloadChapter,
+    ChapterUrlsUI.UIText.tooltipChapterDownloading,
+    ChapterUrlsUI.UIText.tooltipViewChapter,
+    ChapterUrlsUI.UIText.tooltipChapterSleeping
 ];
 
 ChapterUrlsUI.lastSelectedRow = null;

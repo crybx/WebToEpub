@@ -556,6 +556,10 @@
 		"message": "Завантажити розділ",
 		"description": "Tooltip text for the download chapter icon"
 	},
+	"__MSG_tooltip_Chapter_Selection__": {
+		"message": "Вибрані розділи будуть включені в дії: Створити EPUB, Завантажити розділи або Додати до бібліотеки",
+		"description": "Tooltip text explaining what selected chapters are used for"
+	},
 	"__MSG_tooltip_Refresh_Chapter__": {
 		"message": "Оновити розділ",
 		"description": "Tooltip for refresh chapter menu option"
@@ -563,6 +567,10 @@
 	"__MSG_tooltip_Delete_Chapter__": {
 		"message": "Видалити розділ",
 		"description": "Tooltip for delete chapter menu option"
+	},
+	"__MSG_menu_Open_Chapter_URL__": {
+		"message": "Відкрити посилання на розділ",
+		"description": "Menu option to open the chapter URL in a new tab"
 	},
 	"__MSG_menu_Download_Chapter__": {
 		"message": "Завантажити HTML файл",
