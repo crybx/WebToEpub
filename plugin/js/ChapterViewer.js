@@ -22,6 +22,18 @@ class ChapterViewer {
                 if (!chapterContent && window.parser && window.parser.constructor.name === "LibraryParser") {
                     chapterContent = await ChapterViewer.getLibraryChapterByOriginalUrl(sourceUrl);
                 }
+                
+                // If still no content, check if there's an error message
+                if (!chapterContent) {
+                    let errorMessage = await ChapterCache.getChapterError(sourceUrl);
+                    if (errorMessage) {
+                        // Create error content for display
+                        let errorElement = document.createElement("div");
+                        errorElement.className = "chapter-error";
+                        errorElement.innerHTML = `<h3>Chapter Download Failed</h3><p><strong>Error:</strong> ${errorMessage}</p><p class="error-details">Click the refresh icon in the chapter list to retry downloading this chapter.</p>`;
+                        chapterContent = errorElement;
+                    }
+                }
             }
             
             if (chapterContent) {

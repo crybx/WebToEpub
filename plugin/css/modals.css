@@ -173,3 +173,29 @@
     display: inline-block;
     line-height: 24px;
 }
+
+/* Chapter Error Display */
+.chapter-error {
+    padding: 20px;
+    text-align: center;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    border-radius: 8px;
+    background-color: #f8d7da;
+    margin: 20px;
+}
+
+.chapter-error h3 {
+    margin: 0 0 15px 0;
+    color: #dc3545;
+}
+
+.chapter-error p {
+    margin: 10px 0;
+}
+
+.chapter-error .error-details {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #721c24;
+}

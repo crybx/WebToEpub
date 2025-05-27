@@ -129,6 +129,11 @@
     cursor: pointer;
 }
 
+/* Red checkbox styling for error state rows */
+.error-state input[type=checkbox] {
+    accent-color: #dc3545;
+}
+
 .greenBox {
     accent-color: green;
 }
@@ -190,6 +195,15 @@ svg {
 .more-actions-menu .menu-item:hover svg {
     fill: dodgerblue;
     filter: brightness(1.2);
+}
+
+/* Error state styling */
+.error-state svg {
+    fill: #dc3545;
+}
+
+.error-state:hover svg {
+    fill: #c82333;
 }
 
 .more-actions-menu .menu-item:hover span {

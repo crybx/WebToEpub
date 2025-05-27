@@ -61,7 +61,7 @@ class ChapterUrlsUI {
             ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
             ChapterUrlsUI.appendColumnDataToRow(row, chapter);
-            ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter).then(async () => {
+            ChapterUrlsUI.appendChapterStatusColumnToRow(row, chapter).then(async () => {
                 await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             });
             chapterList.appendChild(row);
@@ -408,19 +408,32 @@ class ChapterUrlsUI {
 
     /**
     * @private
-    * Add view cache button to row if chapter is cached
-    * @returns {Promise<boolean>} true if chapter is cached
+    * Add chapter status column with appropriate icon and functionality:
+    * - Eye icon for cached chapters (clickable to view)
+    * - Download icon for uncached chapters (clickable to download)
+    * - Red eye icon for error chapters (clickable to view error)
+    * Also adds three-dots menu for additional actions
+    * @param {HTMLElement} row - The table row to add the status column to
+    * @param {Object} chapter - Chapter object with sourceUrl and title
+    * @returns {Promise<boolean>} true if chapter is downloaded or has error
     */
-    static async appendViewCacheButtonToRow(row, chapter) {
+    static async appendChapterStatusColumnToRow(row, chapter) {
         let col = document.createElement("div");
         col.className = "chapter-status-column";
         row.appendChild(col);
         
-        // Check if chapter is cached
-        return ChapterCache.get(chapter.sourceUrl).then(async cachedContent => {
+        // Check if chapter is cached or has an error
+        return Promise.all([
+            ChapterCache.get(chapter.sourceUrl),
+            ChapterCache.getChapterError(chapter.sourceUrl)
+        ]).then(async ([cachedContent, errorMessage]) => {
             if (cachedContent) {
                 // Chapter is cached - show eye icon
                 ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+                return true;
+            } else if (errorMessage) {
+                // Chapter has error - show error icon
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, chapter.sourceUrl, chapter.title);
                 return true;
             } else {
                 // Chapter is not cached - show download icon
@@ -571,7 +584,8 @@ class ChapterUrlsUI {
             [ChapterUrlsUI.CHAPTER_STATUS_NONE]: SvgIcons.DOWNLOAD,
             [ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING]: SvgIcons.CHAPTER_STATE_DOWNLOADING,
             [ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED]: SvgIcons.EYE_FILL,
-            [ChapterUrlsUI.CHAPTER_STATUS_SLEEPING]: SvgIcons.CHAPTER_STATE_SLEEPING
+            [ChapterUrlsUI.CHAPTER_STATUS_SLEEPING]: SvgIcons.CHAPTER_STATE_SLEEPING,
+            [ChapterUrlsUI.CHAPTER_STATUS_ERROR]: SvgIcons.EYE_FILL
         };
         
         return SvgIcons.createSvgElement(svgConstants[state]);
@@ -613,6 +627,7 @@ class ChapterUrlsUI {
             case ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
                 wrapper.className += " clickable-icon";
                 wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
+                row.classList.remove("error-state");
                 ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
                 break;
 
@@ -621,6 +636,14 @@ class ChapterUrlsUI {
                 wrapper.onclick = async () => {
                     await ChapterCache.downloadChapter(sourceUrl, title, row);
                 };
+                row.classList.remove("error-state");
+                break;
+
+            case ChapterUrlsUI.CHAPTER_STATUS_ERROR: // Chapter failed to download - show error icon
+                wrapper.className += " clickable-icon error-state";
+                wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
+                row.classList.add("error-state");
+                ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
                 break;
         }
     }
@@ -997,11 +1020,13 @@ ChapterUrlsUI.CHAPTER_STATUS_NONE = 0;
 ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING = 1;
 ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED = 2;
 ChapterUrlsUI.CHAPTER_STATUS_SLEEPING = 3;
+ChapterUrlsUI.CHAPTER_STATUS_ERROR = 4;
 ChapterUrlsUI.TooltipForState = [
     ChapterUrlsUI.UIText.tooltipDownloadChapter,
     ChapterUrlsUI.UIText.tooltipChapterDownloading,
     ChapterUrlsUI.UIText.tooltipViewChapter,
-    ChapterUrlsUI.UIText.tooltipChapterSleeping
+    ChapterUrlsUI.UIText.tooltipChapterSleeping,
+    "Download failed - click to view error"
 ];
 
 ChapterUrlsUI.lastSelectedRow = null;

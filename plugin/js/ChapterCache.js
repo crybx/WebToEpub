@@ -135,6 +135,10 @@ class ChapterCache {
                 let retentionDays = this.getRetentionDays();
                 let ageInDays = (Date.now() - data.timestamp) / (1000 * 60 * 60 * 24);
                 if (ageInDays < retentionDays && data.version === this.CACHE_VERSION) {
+                    // If this is an error entry (no HTML content), return null so error handling can proceed
+                    if (!data.html && data.hasOwnProperty("error")) {
+                        return null;
+                    }
                     // Convert the HTML string back to DOM
                     let doc = new DOMParser().parseFromString(data.html, "text/html");
                     return doc.body.firstChild;
@@ -159,7 +163,8 @@ class ChapterCache {
             let data = {
                 html: html,
                 timestamp: Date.now(),
-                version: this.CACHE_VERSION
+                version: this.CACHE_VERSION,
+                error: null
             };
             
             let storageObject = {};
@@ -262,6 +267,52 @@ class ChapterCache {
         const sizes = ["B", "KB", "MB", "GB"];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    }
+
+    /**
+     * Store an error message for a failed chapter download
+     */
+    static async storeChapterError(sourceUrl, errorMessage) {
+        try {
+            let key = this.getCacheKey(sourceUrl);
+            let data = {
+                html: null,
+                timestamp: Date.now(),
+                version: this.CACHE_VERSION,
+                error: errorMessage
+            };
+            
+            let storageObject = {};
+            storageObject[key] = data;
+            await this.getActiveStorage().set(storageObject);
+        } catch (e) {
+            console.error("Error storing chapter error:", e);
+        }
+    }
+
+    /**
+     * Get error message for a chapter, returns null if no error stored
+     */
+    static async getChapterError(sourceUrl) {
+        try {
+            let key = this.getCacheKey(sourceUrl);
+            let storage = await this.getActiveStorage().get(key);
+            let cached = storage[key];
+            
+            if (cached && cached.hasOwnProperty("error") && cached.error !== null) {
+                // Check if cache is expired using current retention setting
+                let retentionDays = this.getRetentionDays();
+                let ageInDays = (Date.now() - cached.timestamp) / (1000 * 60 * 60 * 24);
+                if (ageInDays < retentionDays && cached.version === this.CACHE_VERSION) {
+                    return cached.error;
+                }
+                // Remove expired cache
+                await this.getActiveStorage().remove(key);
+            }
+        } catch (e) {
+            console.error("Error reading chapter error from cache:", e);
+        }
+        return null;
     }
 
     // Migrate chapters between storage types when cache setting changes
@@ -550,13 +601,23 @@ class ChapterCache {
                 let content = parser.convertRawDomToContent(webPage);
                 if (content && row) {
                     ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
+                } else {
+                    throw new Error("Could not find content element for web page '" + sourceUrl + "'.");
                 }
+            } else {
+                throw new Error(webPage.error || "Failed to fetch web page content");
             }
             
             await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
         } catch (error) {
             console.error("Failed to download chapter:", error);
-            alert("Failed to download chapter: " + error.message);
+            // Store error message in cache
+            await ChapterCache.storeChapterError(sourceUrl, error.message);
+            // Set UI to error state
+            if (row) {
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, sourceUrl, title);
+            }
+            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
         }
     }
 
@@ -737,17 +798,27 @@ class ChapterCache {
             let cachedContent = await ChapterCache.get(sourceUrl);
             if (cachedContent) {
                 content = cachedContent;
-            } else if (webPage.rawDom) {
-                // Use existing content from memory
-                content = parser.convertRawDomToContent(webPage);
             } else {
-                // Need to fetch the content
-                if (!webPage.parser) {
-                    webPage.parser = parser;
-                }
-                await parser.fetchWebPageContent(webPage);
-                if (webPage.rawDom && !webPage.error) {
+                // Check if we have a cached error message
+                let errorMessage = await ChapterCache.getChapterError(sourceUrl);
+                if (errorMessage) {
+                    // Create error content element
+                    let errorElement = document.createElement("div");
+                    errorElement.className = "chapter-error";
+                    errorElement.innerHTML = `<h3>Chapter Download Failed</h3><p><strong>Error:</strong> ${errorMessage}</p><p class="error-details">This chapter could not be downloaded from the source website.</p>`;
+                    content = errorElement;
+                } else if (webPage.rawDom) {
+                    // Use existing content from memory
                     content = parser.convertRawDomToContent(webPage);
+                } else {
+                    // Need to fetch the content
+                    if (!webPage.parser) {
+                        webPage.parser = parser;
+                    }
+                    await parser.fetchWebPageContent(webPage);
+                    if (webPage.rawDom && !webPage.error) {
+                        content = parser.convertRawDomToContent(webPage);
+                    }
                 }
             }
             
@@ -795,17 +866,11 @@ class ChapterCache {
         // Use the content element's HTML directly
         let content = contentElement ? contentElement.outerHTML : "No content available";
         
-        return `<!DOCTYPE html>
-<html lang="en">
+        return `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${ChapterCache.escapeHtml(title)}</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
-        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
-        .chapter-content { max-width: 800px; margin: 0 auto; }
-    </style>
+    <link type="text/css" rel="stylesheet" href="../styles/stylesheet.css"/>
 </head>
 <body>
     <div class="chapter-content">

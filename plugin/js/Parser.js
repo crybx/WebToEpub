@@ -107,6 +107,9 @@ class Parser {
 
     convertRawDomToContent(webPage) {
         let content = this.findContent(webPage.rawDom);
+        if (content == null) {
+            return null;
+        }
         this.customRawDomToContentStep(webPage, content);
         util.decodeCloudflareProtectedEmails(content);
         if (this.userPreferences.removeNextAndPreviousChapterHyperlinks.value) {
@@ -590,6 +593,8 @@ class Parser {
         {
             try {
                 let cachedContent = await ChapterCache.get(webPage.sourceUrl);
+                let cachedError = await ChapterCache.getChapterError(webPage.sourceUrl);
+                
                 if (cachedContent) {
                     // Skip the delay for cached content
                     ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
@@ -603,6 +608,12 @@ class Parser {
                     
                     // The content is already processed, so we just need to handle images
                     return pageParser.fetchImagesUsedInDocument(cachedContent, webPage);
+                } else if (cachedError) {
+                    // Chapter has cached error - set error and skip download
+                    ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
+                    webPage.error = cachedError;
+                    webPage.rawDom = null;
+                    return Promise.resolve();
                 }
             } catch (e) {
                 console.error("Error reading from cache:", e);
