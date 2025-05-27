@@ -44,10 +44,10 @@
     font-weight: bold;
     text-align: center;
     padding: 5px 0;
+}
 
-    .chapter-title-column {
-        padding-left: 25px;
-    }
+.chapter-list-header .chapter-title-column {
+    padding-left: 25px;
 }
 
 .chapter-row {

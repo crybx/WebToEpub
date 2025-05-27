@@ -38,23 +38,23 @@ progress {
     margin: 0 4px;
 }
 
-    progress::-webkit-progress-bar {
-        border: 0;
-        height: 31px;
-        border-radius: 4px;
-    }
+progress::-webkit-progress-bar {
+    border: 0;
+    height: 31px;
+    border-radius: 4px;
+}
 
-    progress::-webkit-progress-value {
-        border: 0;
-        height: 31px;
-        border-radius: 8px;
-    }
+progress::-webkit-progress-value {
+    border: 0;
+    height: 31px;
+    border-radius: 8px;
+}
 
-    progress::-moz-progress-bar {
-        border: 0;
-        height: 31px;
-        border-radius: 4px;
-    }
+progress::-moz-progress-bar {
+    border: 0;
+    height: 31px;
+    border-radius: 4px;
+}
 
 [hidden] {
     display: none;
@@ -88,10 +88,10 @@ button:disabled {
     margin: auto;
     border-radius: 4px;
     position:relative;
+}
 
-    section {
-        padding: 10px;
-    }
+.container section {
+    padding: 10px;
 }
 
 input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
@@ -117,18 +117,18 @@ textarea.allSpace {
     display: flex;
     height: 180px;
     overflow: hidden;
+}
 
-    img {
-        max-width: 100%;
-        max-height: 140px;
-    }
+#inputSection img {
+    max-width: 100%;
+    max-height: 140px;
+}
 
-    .coverImageInput {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: end;
-    }
+#inputSection .coverImageInput {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: end;
 }
 
 #inputSection input {
@@ -158,14 +158,14 @@ button {
     max-height: 30px;
 }
 
-    button:hover {
-        background: #f6f6f6 linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
-    }
+button:hover {
+    background: #f6f6f6 linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
+}
 
-    button:active {
-        position: relative;
-        top: 1px;
-    }
+button:active {
+    position: relative;
+    top: 1px;
+}
 
 .progressSection {
     width: 94%;
@@ -244,51 +244,57 @@ button {
     transition: 0.25s;
 }
 
-    .sidebar.sidebarOpen {
-        width: 30%;
-        min-width: 300px;
-    }
+.sidebar.sidebarOpen {
+    width: 30%;
+    min-width: 300px;
+}
 
-    .sidebar .closebtn {
-        width: calc(100% - 10px);
-        padding-top: 5px;
-        padding-bottom: 5px;
-        border: 2px solid #dcdcdc75;
-        border-radius: 10px;
-        text-align: center;
-    }
-    .sidebar .closebtn:hover {
-        background-color: #cccccc75;
-    }
+.sidebar .closebtn {
+    width: calc(100% - 10px);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 2px solid #dcdcdc75;
+    border-radius: 10px;
+    text-align: center;
+}
 
-    .sidebar th {
-        text-align: center;
-    }
+.sidebar .closebtn:hover {
+    background-color: #cccccc75;
+}
 
-    .sidebar input.exclude {
-        accent-color: #bb0000;
-    }
-    .sidebar input[type=text], .sidebar input[type=url], .sidebar textarea, .sidebar select {
-        padding: 4px;
-        border: 1px #CCC solid;
-        border-radius: 3px;
-        max-width: 100%;
-        min-width: 100px;
-    }
-    .sidebar label {
-        display: block;
-        width: 100%;
-        font-size: 16px;
-        padding-bottom: 5px;
-        user-select: none;
-    }
-    .sidebar tr label:hover {
-        background-color:rgba(40, 40, 40);
-    }
-    #sbFilters {
-        max-height: calc(50% - 30px);
-        overflow-y: scroll;
-    }
-    #sbFilters input[type=text], #sbFilters input[type=url], #sbFilters textarea, #sbFilters select {
-        width: calc(100% - 15px);
-    }
+.sidebar th {
+    text-align: center;
+}
+
+.sidebar input.exclude {
+    accent-color: #bb0000;
+}
+
+.sidebar input[type=text], .sidebar input[type=url], .sidebar textarea, .sidebar select {
+    padding: 4px;
+    border: 1px #CCC solid;
+    border-radius: 3px;
+    max-width: 100%;
+    min-width: 100px;
+}
+
+.sidebar label {
+    display: block;
+    width: 100%;
+    font-size: 16px;
+    padding-bottom: 5px;
+    user-select: none;
+}
+
+.sidebar tr label:hover {
+    background-color:rgba(40, 40, 40);
+}
+
+#sbFilters {
+    max-height: calc(50% - 30px);
+    overflow-y: scroll;
+}
+
+#sbFilters input[type=text], #sbFilters input[type=url], #sbFilters textarea, #sbFilters select {
+    width: calc(100% - 15px);
+}
