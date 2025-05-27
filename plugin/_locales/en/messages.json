@@ -120,8 +120,8 @@
 		"description": "Label on button that copies selected chapter URLs to clipboard"
 	},
 	"__MSG_button_Edit_Chapter_Urls__": {
-		"message": "Edit Chapter URLs",
-		"description": "Label on button to allow manually editing list of URLs to fetch"
+		"message": "Bulk Edit Chapter URLs",
+		"description": "Label on button to allow manually editing in bulk the list of URLs to fetch"
 	},
 	"__MSG_button_error_Cancel__": {
 		"message": "Cancel",

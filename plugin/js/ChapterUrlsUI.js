@@ -46,7 +46,7 @@ class ChapterUrlsUI {
             ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
             ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
-            ChapterUrlsUI.appendColumnDataToRow(row, chapter.sourceUrl);
+            ChapterUrlsUI.appendColumnDataToRow(row, chapter);
             ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter).then(async () => {
                 await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             });
@@ -317,11 +317,18 @@ class ChapterUrlsUI {
     /** 
     * @private
     */
-    static appendColumnDataToRow(row, textData) {
+    static appendColumnDataToRow(row, chapter) {
         let col = document.createElement("div");
         col.className = "chapter-url-column";
-        col.innerText = textData;
-        col.style.whiteSpace = "nowrap";
+        
+        let input = document.createElement("input");
+        input.type = "url";
+        input.value = chapter.sourceUrl;
+        input.addEventListener("blur", function() { 
+            chapter.sourceUrl = input.value; 
+        }, true);
+        
+        col.appendChild(input);
         row.appendChild(col);
         return col;
     }
