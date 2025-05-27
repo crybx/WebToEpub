@@ -35,13 +35,14 @@ class ChapterUrlsUI {
     populateChapterUrlsTable(chapters) {
         ChapterUrlsUI.getPleaseWaitMessageRow().hidden = true;
         ChapterUrlsUI.clearChapterUrlsTable();
-        let linksTable = ChapterUrlsUI.getChapterUrlsTable();
+        let chapterList = ChapterUrlsUI.getChapterUrlsTable();
         let index = 0;
         let rangeStart = ChapterUrlsUI.getRangeStartChapterSelect();
         let rangeEnd = ChapterUrlsUI.getRangeEndChapterSelect();
         let memberForTextOption = ChapterUrlsUI.textToShowInRange();
         chapters.forEach(function(chapter) {
-            let row = document.createElement("tr");
+            let row = document.createElement("div");
+            row.className = "chapter-row";
             ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
             ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
@@ -49,7 +50,7 @@ class ChapterUrlsUI {
             ChapterUrlsUI.appendViewCacheButtonToRow(row, chapter).then(async () => {
                 await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
             });
-            linksTable.appendChild(row);
+            chapterList.appendChild(row);
             ChapterUrlsUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
             ChapterUrlsUI.appendOptionToSelect(rangeEnd, index, chapter, memberForTextOption);
             ++index;
@@ -70,20 +71,20 @@ class ChapterUrlsUI {
         let deleteWrapper = deleteButton.parentElement;
         deleteWrapper.onclick = () => ChapterCache.deleteAllCachedChapters(chapters);
         this.showHideChapterUrlsColumn();
-        ChapterUrlsUI.resizeTitleColumnToFit(linksTable);
     }
 
     showTocProgress(chapters) {
-        let linksTable = ChapterUrlsUI.getChapterUrlsTable();
+        let chapterList = ChapterUrlsUI.getChapterUrlsTable();
         chapters.forEach(function(chapter) {
-            let row = document.createElement("tr");
-            linksTable.appendChild(row);
-            row.appendChild(document.createElement("td"));
-            let col = document.createElement("td");
-            col.className = "disabled";
+            let row = document.createElement("div");
+            row.className = "chapter-row";
+            chapterList.appendChild(row);
+            row.appendChild(document.createElement("div"));
+            let col = document.createElement("div");
+            col.className = "chapter-title-column disabled";
             col.appendChild(document.createTextNode(chapter.title));
             row.appendChild(col);
-            row.appendChild(document.createElement("td"));
+            row.appendChild(document.createElement("div"));
         });
     }
 
@@ -97,7 +98,7 @@ class ChapterUrlsUI {
     static async resetChapterStatusIcons() {
         let linksTable = ChapterUrlsUI.getChapterUrlsTable();
         
-        for (let chapterStatusColumn of linksTable.querySelectorAll(".chapterStatusColumn")) {
+        for (let chapterStatusColumn of linksTable.querySelectorAll(".chapter-status-column")) {
             // Restore normal chapter status content
             await ChapterUrlsUI.restoreChapterStatus(chapterStatusColumn);
         }
@@ -113,7 +114,7 @@ class ChapterUrlsUI {
         let max = util.isNullOrEmpty(maxChapters) ? 10000 : parseInt(maxChapters.replace(",", ""));
         let selectedRows = [...ChapterUrlsUI.getChapterUrlsTable().querySelectorAll("[type=\"checkbox\"]")]
             .filter(c => c.checked)
-            .map(c => c.parentElement.parentElement);
+            .map(c => c.closest(".chapter-row"));
         if (max< selectedRows.length ) {
             let message = chrome.i18n.getMessage("__MSG_More_than_max_chapters_selected__", 
                 [selectedRows.length, max]);
@@ -231,8 +232,7 @@ class ChapterUrlsUI {
 
     static getTableRowsWithChapters() {
         let linksTable = ChapterUrlsUI.getChapterUrlsTable();
-        return [...linksTable.querySelectorAll("tr")]
-            .filter(r => r.querySelector("th") === null);
+        return [...linksTable.querySelectorAll(".chapter-row")];
     }
 
     /**
@@ -242,7 +242,8 @@ class ChapterUrlsUI {
         chapter.isIncludeable = chapter.isIncludeable ?? true;
         chapter.previousDownload = chapter.previousDownload ?? false;
 
-        const col = document.createElement("td");
+        const col = document.createElement("div");
+        col.className = "chapter-checkbox-column";
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.classList.add("chapterSelectCheckbox");
@@ -298,7 +299,8 @@ class ChapterUrlsUI {
     * @private
     */
     static appendInputTextToRow(row, chapter) {
-        let col = document.createElement("td");
+        let col = document.createElement("div");
+        col.className = "chapter-title-column";
         let input = document.createElement("input");
         input.type = "text";
         input.value = chapter.title;
@@ -312,20 +314,12 @@ class ChapterUrlsUI {
         select.add(option);
     }
 
-    /** @private */
-    static resizeTitleColumnToFit(linksTable) {
-        let inputs = [...linksTable.querySelectorAll("input[type=\"text\"]")];
-        let width = inputs.reduce((acc, element) => Math.max(acc, element.value.length), 0);
-        if (0 < width) {
-            inputs.forEach(i => i.size = width); 
-        }
-    }
-
     /** 
     * @private
     */
     static appendColumnDataToRow(row, textData) {
-        let col = document.createElement("td");
+        let col = document.createElement("div");
+        col.className = "chapter-url-column";
         col.innerText = textData;
         col.style.whiteSpace = "nowrap";
         row.appendChild(col);
@@ -338,8 +332,8 @@ class ChapterUrlsUI {
     * @returns {Promise<boolean>} true if chapter is cached
     */
     static async appendViewCacheButtonToRow(row, chapter) {
-        let col = document.createElement("td");
-        col.className = "chapterStatusColumn";
+        let col = document.createElement("div");
+        col.className = "chapter-status-column";
         row.appendChild(col);
         
         // Check if chapter is cached
@@ -376,7 +370,7 @@ class ChapterUrlsUI {
     * Add more actions menu (three dots) next to chapter status icon
     */
     static addMoreActionsMenu(row, sourceUrl, title) {
-        let col = row.querySelector(".chapterStatusColumn");
+        let col = row.querySelector(".chapter-status-column");
         if (!col) return;
         // Create more actions wrapper
         let moreWrapper = document.createElement("div");
@@ -491,7 +485,7 @@ class ChapterUrlsUI {
     static setChapterStatusVisuals(row, state, sourceUrl, title) {
         if (!row) return;
 
-        let column = row.querySelector(".chapterStatusColumn");
+        let column = row.querySelector(".chapter-status-column");
         if (!column) return;
 
         column.innerHTML = "";
@@ -618,7 +612,7 @@ class ChapterUrlsUI {
     showHideChapterUrlsColumn() {
         let hidden = !document.getElementById("showChapterUrlsCheckbox").checked;
         let table = ChapterUrlsUI.getChapterUrlsTable();
-        for (let t of table.querySelectorAll("th:nth-of-type(3), td:nth-of-type(3)")) {
+        for (let t of table.querySelectorAll(".chapter-url-column")) {
             t.hidden = hidden;
         }
     }
@@ -671,7 +665,7 @@ class ChapterUrlsUI {
 
     /** @private */
     static getTargetRow(target) {
-        while ((target.tagName.toLowerCase() !== "tr") && (target.parentElement !== null)) {
+        while (!target.classList.contains("chapter-row") && (target.parentElement !== null)) {
             target = target.parentElement;
         }
         return target;
@@ -708,7 +702,7 @@ class ChapterUrlsUI {
                 let filterObj =
                     {
                         row: item,
-                        values: Array.from(item.querySelectorAll("td")).map(item => item.innerText).join("/").split("/"),
+                        values: Array.from(item.querySelectorAll(".chapter-title-column, .chapter-url-column")).map(item => item.innerText).join("/").split("/"),
                         valueString: ""
                     };
                 filterObj.values.push(item.querySelector("input[type=\"text\"]").value);

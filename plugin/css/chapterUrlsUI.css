@@ -1,117 +1,126 @@
-#chapterUrlsTable {
-    border-collapse: collapse;
+#chaptersSection {
+    padding: 0;
+}
+
+.chapter-section-padding {
+    padding: 0 10px;
+}
+
+.chapter-list {
     width: 100%;
-
-    input[type=text] {
-        width: 100%;
-        max-width: 580px;
-        box-sizing: border-box;
-    }
-
-    input[type=checkbox],
-    svg,
-    .tooltip {
-        float: left;
-    }
-
-    .greenBox {
-        accent-color: green;
-    }
-
-    tbody > tr > th {
-        text-align: center;
-        border-bottom: 1px #CCC solid;
-        padding: 0 2px;
-
-        .tooltip-wrapper {
-            float: left;
-            vertical-align: bottom;
-        }
-    }
-
-    /* This is the all the checkbox cells. */
-    /* This width is because tables suck? */
-    tr > td:first-child {
-        width: 20px;
-    }
-
-    td {
-        padding: 2px;
-    }
-
-    th.chapterStatusColumn {
-        text-align: left;
-    }
-
-    td.chapterStatusColumn {
-        text-align: left;
-        display: flex;
-        align-items: center;
-        /* This is temporary until I replace the table with a flex layout. */
-        margin-right: -10px;
-    }
-
-    svg {
-        width: 16px;
-        height: 16px;
-        vertical-align: bottom;
-    }
-
-    .chapterStatusColumn svg {
-        margin: 2px;
-        transition: filter 0.2s ease;
-    }
+    border-top: 1px solid #ccc;
+    margin-top: 4px;
 }
 
-/* Remove float from chapter status column items since we're using flexbox */
-.chapterStatusColumn .tooltip-wrapper,
-.chapterStatusColumn .more-actions-wrapper {
-    float: none;
-}
-
-/* General tooltip styles */
-.tooltip-wrapper {
-    position: relative;
-    display: inline-block;
-    border-radius: 50%;
-    padding: 2px;
-}
-
-.tooltip-wrapper .tooltipText {
-    visibility: hidden;
-    background-color: #555555;
-    color: white;
+.chapter-list-header {
+    display: flex;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
     text-align: center;
-    padding: 5px;
-    border-radius: 5px;
-    position: absolute;
-    z-index: 1;
-    min-width: 120px;
-    max-width: 200px;
-    font-weight: normal;
+    padding: 5px 0;
+
+    .chapter-title-column {
+        padding-left: 25px;
+    }
+}
+
+.chapter-row {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+    transition: background-color 0.1s ease;
+}
+
+.chapter-row:hover {
+    background-color: #f8f9fa;
+}
+
+.chapter-row:last-child {
+    border-bottom: none;
+}
+
+/* Column Widths and Styling */
+.chapter-checkbox-column {
+    flex: 0 0 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.chapter-title-column {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+}
+
+.chapter-url-column {
+    flex: 0 0 200px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+}
+
+.chapter-url-column:not([hidden]) {
+    display: flex;
+}
+
+.chapter-status-column {
+    flex: 0 0 52px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 0 0 0 4px;
+}
+
+/* Input Styling */
+.chapter-list input[type=text] {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.chapter-list input[type=text]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.chapter-list input[type=checkbox] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.greenBox {
+    accent-color: green;
+}
+
+/* Disabled state for chapters during TOC loading */
+.disabled {
+    opacity: 0.5;
+}
+
+/* SVG Icons */
+svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+.chapter-status-column svg {
     margin: 2px;
-}
-
-.tooltip-wrapper:hover .tooltipText {
-    visibility: visible;
-}
-
-/* Chapter status tooltips appear to the left to avoid covering menu */
-.chapterStatusColumn .tooltip-wrapper .tooltipText {
-    top: -5px;
-    right: 105%;
-    left: auto;
-}
-
-/* Tooltip positioning for delete button - opens above  */
-.chapterStatusColumn .delete-all-tooltip .tooltipText {
-    bottom: 100%;
-    left: 50%;
-    right: auto;
-    top: auto;
-    transform: translateX(-50%);
-    margin-bottom: 5px;
-    min-width: 180px;
+    transition: filter 0.2s ease;
 }
 
 #chapterSelectInfo svg {
@@ -122,11 +131,15 @@
     color: #555555;
 }
 
+/* Clickable Icons */
 .clickable-icon {
     cursor: pointer;
-    border-radius: 50%;
+    border-radius: 4px;
     padding: 2px;
     transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .clickable-icon:hover {
@@ -143,10 +156,50 @@
     filter: brightness(0.8);
 }
 
-/* Basic tooltip wrapper styles */
+/* Tooltip Styles */
 .tooltip-wrapper {
     position: relative;
     display: inline-block;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.tooltip-wrapper .tooltipText {
+    visibility: hidden;
+    background-color: #555555;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 1;
+    min-width: 120px;
+    max-width: 200px;
+    font-weight: normal;
+    margin: 2px;
+}
+
+.tooltip-wrapper:hover .tooltipText {
+    visibility: visible;
+}
+
+/* Chapter status tooltips appear to the left to avoid covering menu */
+.chapter-status-column .tooltip-wrapper .tooltipText {
+    top: -5px;
+    right: 105%;
+    left: auto;
+}
+
+/* Tooltip positioning for delete button - opens above  */
+.chapter-status-column .delete-all-tooltip .tooltipText {
+    bottom: 100%;
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+    min-width: 180px;
+    white-space: normal;
 }
 
 #deleteAllCachedChapters {
@@ -167,45 +220,60 @@
     min-width: 150px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 4px;
     z-index: 1000;
     top: 100%;
     right: 0;
     opacity: 0;
     transform: translateY(-5px);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
 
-    .menu-item {
-        display: flex;
-        align-items: center;
-        padding: 8px 12px;
-        cursor: pointer;
-        border-bottom: 1px solid #eee;
-        transition: background-color 0.2s ease;
+.more-actions-menu .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
 
-        svg {
-            width: 14px;
-            height: 14px;
-            margin-right: 8px;
-        }
+.more-actions-menu .menu-item svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+}
 
-        span {
-            font-size: 14px;
-            color: #333;
-        }
-    }
+.more-actions-menu .menu-item span {
+    font-size: 14px;
+    color: #333;
+}
 
-    .menu-item:hover {
-        background-color: #f5f5f5;
-    }
+.more-actions-menu .menu-item:hover {
+    background-color: #f5f5f5;
+}
 
-    .menu-item:last-child {
-        border-bottom: none;
-    }
+.more-actions-menu .menu-item:last-child {
+    border-bottom: none;
 }
 
 .more-actions-menu.show {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .chapter-url-column {
+        display: none;
+    }
+    
+    .chapter-checkbox-column {
+        flex: 0 0 30px;
+    }
+    
+    .chapter-status-column {
+        flex: 0 0 60px;
+    }
 }

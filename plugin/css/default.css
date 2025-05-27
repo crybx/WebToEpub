@@ -34,14 +34,14 @@ progress {
     width: 56%;
     height: 31px;
     padding: 0;
-    border-radius: 5px;
+    border-radius: 4px;
     margin: 0 4px;
 }
 
     progress::-webkit-progress-bar {
         border: 0;
         height: 31px;
-        border-radius: 5px;
+        border-radius: 4px;
     }
 
     progress::-webkit-progress-value {
@@ -53,7 +53,7 @@ progress {
     progress::-moz-progress-bar {
         border: 0;
         height: 31px;
-        border-radius: 5px;
+        border-radius: 4px;
     }
 
 [hidden] {
@@ -85,10 +85,13 @@ button:disabled {
 .container {
     border: 1px #CCC solid;
     display: table;
-    padding: 10px;
     margin: auto;
-    border-radius: 5px;
+    border-radius: 4px;
     position:relative;
+
+    section {
+        padding: 10px 10px 0 10px;
+    }
 }
 
 input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
