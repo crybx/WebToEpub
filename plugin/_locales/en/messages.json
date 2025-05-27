@@ -252,7 +252,7 @@
 		"description": "Label for checkbox to toggle logic that picks parser to use for a web page to include the Baka-Tsuki Series Page Parser"
 	},
 	"__MSG_label_Chapter_Count__": {
-		"message": "Chapters Count:",
+		"message": "Chapter Count:",
 		"description": "Label for number of chapters in range"
 	},
 	"__MSG_label_Chapters_Page_In_Chapters_List__": {
