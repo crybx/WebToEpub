@@ -57,7 +57,7 @@ progress::-moz-progress-bar {
 }
 
 [hidden] {
-    display: none;
+    display: none !important;
 }
 
 section.minWidth {
@@ -115,33 +115,82 @@ textarea.allSpace {
 
 #inputSection {
     display: flex;
-    height: 180px;
-    overflow: hidden;
 }
 
-#inputSection img {
-    max-width: 100%;
-    max-height: 140px;
-}
-
-#inputSection .coverImageInput {
+#inputSection .form-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: end;
+    flex: 1;
+    gap: 4px;
 }
 
-#inputSection input {
-    width: 69%;
+#inputSection .form-field {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
 }
 
-#inputSection table {
+#inputSection .form-field.checkbox-field {
+    gap: 8px;
+}
+
+#inputSection .field-label {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 12px;
+    text-align: left;
+}
+
+#inputSection .field-input {
+    flex: 1;
+    margin-right: 8px;
+}
+
+#inputSection .field-action {
+    flex-shrink: 0;
+}
+
+#inputSection .field-checkbox {
+    width: 20px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#inputSection .checkbox-label {
+    flex: 1;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#inputSection .cover-image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 4px;
+    max-height: 170px;
+}
+
+#inputSection .cover-image-container button {
     width: 100%;
 }
 
-#inputSection tbody > tr > td:first-child {
-    width: 75px;
+#inputSection .cover-image-container img {
+    max-width: 100%;
+    max-height: 140px;
+    min-width: 100px;
 }
+
+#inputSection .field-input input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#inputSection .field-checkbox input {
+    margin: 0;
+}
+
 
 button {
     box-shadow: inset 0 1px 0 0 #ffffff;

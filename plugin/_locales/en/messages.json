@@ -108,8 +108,8 @@
 		"description": "Label on button to end manually editing list of URLs to fetch"
 	},
 	"__MSG_button_Clear_Url__": {
-		"message": "Clear URL",
-		"description": "Label on button to erase the Cover Image URL text"
+		"message": "Clear Cover",
+		"description": "Label on button to erase the Cover URL text"
 	},
 	"__MSG_button_Close_ReadingList__": {
 		"message": "Close",
@@ -272,7 +272,7 @@
 		"description": "Label for checkbox to toggle between picking cover image from list or with a URL"
 	},
 	"__MSG_label_Cover_Image_URL__": {
-		"message": "Cover Image URL:",
+		"message": "Cover URL",
 		"description": "Label for input to give cover image as URL"
 	},
 	"__MSG_label_Create_Epub_3__": {

@@ -86,62 +86,85 @@
             </div>
         </section>
         <section id="inputSection">
-            <table id="inputTable">
-                <tr>
-                    <td>__MSG_label_Starting_URL__</td>
-                    <td>
+            <div class="form-container">
+                <div class="form-field">
+                    <label class="field-label i18n" for="startingUrlInput">__MSG_label_Starting_URL__</label>
+                    <div class="field-input">
                         <input id="startingUrlInput" type="url" name="startingUrlInput" />
-                    </td>
-                    <td>
+                    </div>
+                    <div class="field-action">
                         <button id="loadAndAnalyseButton">__MSG_button_load_and_analyse__</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>__MSG_label_Title__</td>
-                    <td><input id="titleInput" type="text" name="titleInput" /></td>
-                </tr>
-                <tr>
-                    <td>__MSG_label_Author__</td>
-                    <td><input id="authorInput" type="text" name="authorInput" /></td>
-                </tr>
-                <tr>
-                    <td>__MSG_label_Language__</td>
-                    <td><input id="languageInput" type="text" name="languageInput" /></td>
-                </tr>
-                <tr>
-                    <td>__MSG_label_Filename__</td>
-                    <td><input id="fileNameInput" type="text" name="fileNameInput" /></td>
-                </tr>
-                <tr id="removeAuthorNotesRow" hidden="true">
-                    <td><input id="removeAuthorNotesCheckbox" type="checkbox" name="removeAuthorNotesCheckbox" value="false"></td>
-                    <td>__MSG_label_Remove_Author_Notes__</td>
-                </tr>
-                <tr id="removeChapterNumberRow" hidden="true">
-                    <td><input id="removeChapterNumberCheckbox" type="checkbox" name="removeChapterNumberCheckbox" value="false"></td>
-                    <td>__MSG_label_Remove_Chapter_Number__</td>
-                </tr>
-                <tr id="removeOriginalRow" hidden="true">
-                    <td><input id="removeOriginalCheckbox" type="checkbox" name="removeOriginalCheckbox" value="true"></td>
-                    <td>__MSG_label_Remove_Original__</td>
-                </tr>
-                <tr id="selectTranslationAiRow" hidden="true">
-                    <td><input id="selectTranslationAiCheckbox" type="checkbox" name="selectTranslationAiCheckbox" value="false"></td>
-                    <td>__MSG_label_Select_Translation_Google__</td>
-                </tr>
-                <tr id="removeTranslatedRow" hidden="true">
-                    <td><input id="removeTranslatedCheckbox" type="checkbox" name="removeTranslatedCheckbox" value="false"></td>
-                    <td>__MSG_label_Remove_Translated__</td>
-                </tr>
-                <tr  id="passwordRow" hidden="true">
-                    <td>__MSG_label_Password__</td>
-                    <td><input id="passwordInput" type="text" name="passwordInput" /></td>
-                </tr>
-                <tr id="coverUrlSection">
-                    <td>__MSG_label_Cover_Image_URL__</td>
-                    <td><input id="coverImageUrlInput" type="text" name="coverImageUrlInput"></td>
-                </tr>
-            </table>
-            <div class="coverImageInput">
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label class="field-label i18n" for="titleInput">__MSG_label_Title__</label>
+                    <div class="field-input">
+                        <input id="titleInput" type="text" name="titleInput" />
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label class="field-label i18n" for="authorInput">__MSG_label_Author__</label>
+                    <div class="field-input">
+                        <input id="authorInput" type="text" name="authorInput" />
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label class="field-label i18n" for="languageInput">__MSG_label_Language__</label>
+                    <div class="field-input">
+                        <input id="languageInput" type="text" name="languageInput" />
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label class="field-label i18n" for="fileNameInput">__MSG_label_Filename__</label>
+                    <div class="field-input">
+                        <input id="fileNameInput" type="text" name="fileNameInput" />
+                    </div>
+                </div>
+
+                <div class="form-field" id="coverUrlSection">
+                    <label class="field-label i18n" for="coverImageUrlInput">__MSG_label_Cover_Image_URL__</label>
+                    <div class="field-input">
+                        <input id="coverImageUrlInput" type="text" name="coverImageUrlInput">
+                    </div>
+                </div>
+                <div class="form-field" id="passwordRow" hidden="true">
+                    <label class="field-label i18n" for="passwordInput">__MSG_label_Password__</label>
+                    <div class="field-input">
+                        <input id="passwordInput" type="text" name="passwordInput" />
+                    </div>
+                </div>
+                <div class="form-field checkbox-field" id="removeAuthorNotesRow" hidden="true">
+                    <div class="field-checkbox">
+                        <input id="removeAuthorNotesCheckbox" type="checkbox" name="removeAuthorNotesCheckbox" value="false">
+                    </div>
+                    <label class="checkbox-label i18n" for="removeAuthorNotesCheckbox">__MSG_label_Remove_Author_Notes__</label>
+                </div>
+                <div class="form-field checkbox-field" id="removeChapterNumberRow" hidden="true">
+                    <div class="field-checkbox">
+                        <input id="removeChapterNumberCheckbox" type="checkbox" name="removeChapterNumberCheckbox" value="false">
+                    </div>
+                    <label class="checkbox-label i18n" for="removeChapterNumberCheckbox">__MSG_label_Remove_Chapter_Number__</label>
+                </div>
+                <div class="form-field checkbox-field" id="removeOriginalRow" hidden="true">
+                    <div class="field-checkbox">
+                        <input id="removeOriginalCheckbox" type="checkbox" name="removeOriginalCheckbox" value="true">
+                    </div>
+                    <label class="checkbox-label i18n" for="removeOriginalCheckbox">__MSG_label_Remove_Original__</label>
+                </div>
+                <div class="form-field checkbox-field" id="selectTranslationAiRow" hidden="true">
+                    <div class="field-checkbox">
+                        <input id="selectTranslationAiCheckbox" type="checkbox" name="selectTranslationAiCheckbox" value="false">
+                    </div>
+                    <label class="checkbox-label i18n" for="selectTranslationAiCheckbox">__MSG_label_Select_Translation_Google__</label>
+                </div>
+                <div class="form-field checkbox-field" id="removeTranslatedRow" hidden="true">
+                    <div class="field-checkbox">
+                        <input id="removeTranslatedCheckbox" type="checkbox" name="removeTranslatedCheckbox" value="false">
+                    </div>
+                    <label class="checkbox-label i18n" for="removeTranslatedCheckbox">__MSG_label_Remove_Translated__</label>
+                </div>
+            </div>
+            <div class="cover-image-container">
               <img id="sampleCoverImg" />
               <button id="clearCoverImageUrlButton">__MSG_button_Clear_Url__</button>
             </div>
