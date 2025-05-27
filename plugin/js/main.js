@@ -578,6 +578,67 @@ const main = (function() {
         }
     }
 
+    function onCoverImageClick() {
+        let coverImg = document.getElementById("sampleCoverImg");
+        if (coverImg.src && coverImg.src !== "") {
+            let modal = document.getElementById("coverImageModal");
+            let fullSizeImg = document.getElementById("fullSizeCoverImg");
+            let modalTitle = modal.querySelector(".modal-title");
+            
+            // Set loading title first
+            modalTitle.textContent = "Cover Image (Loading...)";
+            
+            fullSizeImg.src = coverImg.src;
+            modal.style.display = "flex";
+            
+            // Update title with dimensions once image loads
+            fullSizeImg.onload = function() {
+                // Extract file extension from URL
+                let url = new URL(this.src);
+                let pathname = url.pathname;
+                let extension = 'unknown';
+                
+                // Check if pathname has a dot and extract extension
+                if (pathname.includes('.')) {
+                    let possibleExt = pathname.split('.').pop().toLowerCase();
+                    // Validate it's a reasonable image extension
+                    if (possibleExt && possibleExt.length <= 4 && /^[a-z0-9]+$/.test(possibleExt)) {
+                        extension = possibleExt;
+                    }
+                }
+                
+                // If still unknown, check query parameters for image URLs (like wsrv.nl)
+                if (extension === 'unknown' && url.searchParams.has('url')) {
+                    let embeddedUrl = url.searchParams.get('url');
+                    if (embeddedUrl && embeddedUrl.includes('.')) {
+                        let possibleExt = embeddedUrl.split('.').pop().toLowerCase();
+                        if (possibleExt && possibleExt.length <= 4 && /^[a-z0-9]+$/.test(possibleExt)) {
+                            extension = possibleExt;
+                        }
+                    }
+                }
+                
+                modalTitle.textContent = `Cover Image (${this.naturalWidth}px × ${this.naturalHeight}px, ${extension})`;
+            };
+            
+            fullSizeImg.onerror = function() {
+                modalTitle.textContent = "Cover Image (Error loading)";
+            };
+            
+            // Close on background click
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    closeCoverImageModal();
+                }
+            };
+        }
+    }
+
+    function closeCoverImageModal() {
+        let modal = document.getElementById("coverImageModal");
+        modal.style.display = "none";
+    }
+
     function addEventHandlers() {
         getPackEpubButton().onclick = fetchContentAndPackEpub;
         document.getElementById("downloadChaptersButton").onclick = downloadChapters;
@@ -606,6 +667,11 @@ const main = (function() {
         document.getElementById("viewFiltersButton").onclick = () => sbFiltersShow();
         document.getElementById("sbClose").onclick = () => sbHide();
         document.getElementById("viewReadingListButton").onclick = () => showReadingList();
+        
+        // Cover image modal handlers
+        document.getElementById("sampleCoverImg").onclick = onCoverImageClick;
+        document.getElementById("closeCoverImage").onclick = closeCoverImageModal;
+        
         window.addEventListener("beforeunload", onUnloadEvent);
     }
 

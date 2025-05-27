@@ -28,7 +28,7 @@
     position: relative;
     background-color: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
-    padding: 15px 20px;
+    padding: 5px 10px;
     border-radius: 8px 8px 0 0;
     flex-shrink: 0;
     display: flex;
@@ -38,7 +38,7 @@
 
 .modal-title {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     color: #333;
     flex-grow: 1;
     padding-right: 20px;
@@ -55,12 +55,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 4px;
     color: #666;
+    box-shadow: none;
 }
 
 .modal-close:hover {
-    color: dodgerblue;
+    color: dodgerblue !important;
+    background: rgba(30, 144, 255, 0.1) !important;
+}
+
+.modal-close:active {
+    color: dodgerblue !important;
+    background: rgba(30, 144, 255, 0.2) !important;
 }
 
 /* Specific Modal Implementations */
@@ -165,6 +172,47 @@
 #clearAllCacheButton {
     margin-left: 10px;
     vertical-align: middle;
+}
+
+/* Cover Image Modal specific sizing */
+#coverImageModal .modal-container {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    min-height: 200px;
+    border-radius: 0;
+}
+
+#coverImageModal .modal-title-bar {
+    padding: 5px 15px;
+    height: 20px;
+    border-bottom: none;
+}
+
+#coverImageModal .modal-title {
+    font-size: 12px;
+}
+
+
+#coverImageModal .modal-close {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+}
+
+.cover-modal-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.cover-modal-content img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 /* Ensure all spans in the cache table are properly aligned */
