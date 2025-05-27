@@ -37,8 +37,7 @@ class ChapterUrlsUI {
     }
 
     connectButtonHandlers() {
-        document.getElementById("selectAllUrlsButton").onclick = ChapterUrlsUI.setAllUrlsSelectState.bind(null, true);
-        document.getElementById("unselectAllUrlsButton").onclick = ChapterUrlsUI.setAllUrlsSelectState.bind(null, false);
+        document.getElementById("selectAllUrlsCheckbox").onclick = ChapterUrlsUI.handleSelectAllCheckbox.bind(this);
         document.getElementById("reverseChapterUrlsOrderButton").onclick = this.reverseUrls.bind(this);
         document.getElementById("editChaptersUrlsButton").onclick = this.setEditInputMode.bind(this);
         document.getElementById("copyUrlsToClipboardButton").onclick = this.copyUrlsToClipboard.bind(this);
@@ -57,6 +56,7 @@ class ChapterUrlsUI {
         chapters.forEach(function(chapter) {
             let row = document.createElement("div");
             row.className = "chapter-row";
+            row.rowIndex = index;  // Set rowIndex for shift-click range selection
             ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
             ChapterUrlsUI.appendInputTextToRow(row, chapter);
             chapter.row = row;
@@ -85,6 +85,9 @@ class ChapterUrlsUI {
         let deleteWrapper = deleteButton.parentElement;
         deleteWrapper.onclick = () => ChapterCache.deleteAllCachedChapters(chapters);
         this.showHideChapterUrlsColumn();
+        
+        // Update select all checkbox state after populating table
+        ChapterUrlsUI.updateSelectAllCheckboxState();
     }
 
     showTocProgress(chapters) {
@@ -228,11 +231,62 @@ class ChapterUrlsUI {
 
     /** @private */
     static setAllUrlsSelectState(select) {
+        // Set flag to prevent recursive updates
+        ChapterUrlsUI._updatingSelectAll = true;
+        
         for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
             ChapterUrlsUI.setRowCheckboxState(row, select);
             row.hidden = false;
         }
         ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
+        
+        // Update select all checkbox state and clear flag
+        ChapterUrlsUI._updatingSelectAll = false;
+        ChapterUrlsUI.updateSelectAllCheckboxState();
+    }
+
+    /** Handle the select all checkbox click */
+    static handleSelectAllCheckbox() {
+        const selectAllCheckbox = document.getElementById("selectAllUrlsCheckbox");
+        const newState = selectAllCheckbox.checked;
+        
+        // Set flag to prevent recursive updates
+        ChapterUrlsUI._updatingSelectAll = true;
+        
+        // Set all chapter checkboxes to the new state
+        for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
+            ChapterUrlsUI.setRowCheckboxState(row, newState);
+            row.hidden = false;
+        }
+        ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
+        
+        // Clear flag
+        ChapterUrlsUI._updatingSelectAll = false;
+    }
+
+    /** Update the select all checkbox state based on individual checkbox states */
+    static updateSelectAllCheckboxState() {
+        const selectAllCheckbox = document.getElementById("selectAllUrlsCheckbox");
+        if (!selectAllCheckbox) return;
+        
+        const allCheckboxes = [...document.querySelectorAll(".chapterSelectCheckbox")];
+        if (allCheckboxes.length === 0) return;
+        
+        const checkedCount = allCheckboxes.filter(cb => cb.checked).length;
+        
+        if (checkedCount === 0) {
+            // All unchecked
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        } else if (checkedCount === allCheckboxes.length) {
+            // All checked
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else {
+            // Some checked (indeterminate state)
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+        }
     }
 
     /** @private */
@@ -272,6 +326,11 @@ class ChapterUrlsUI {
                 ChapterUrlsUI.updateRange(ChapterUrlsUI.lastSelectedRow, row.rowIndex, checkbox.checked);
             } else {
                 ChapterUrlsUI.lastSelectedRow = row.rowIndex;
+            }
+            
+            // Update the select all checkbox state (only if not in bulk update mode)
+            if (!ChapterUrlsUI._updatingSelectAll) {
+                ChapterUrlsUI.updateSelectAllCheckboxState();
             }
         };
         col.appendChild(checkbox);
@@ -692,11 +751,21 @@ class ChapterUrlsUI {
     /** @private */
     static updateRange(startRowIndex, endRowIndex, state) {
         let direction = startRowIndex < endRowIndex ? 1 : -1;
-        let linkTable = ChapterUrlsUI.getChapterUrlsTable();
+        let allRows = ChapterUrlsUI.getTableRowsWithChapters();
+        
+        // Set flag to prevent individual checkbox updates during bulk update
+        ChapterUrlsUI._updatingSelectAll = true;
+        
         for (let rowIndex = startRowIndex; rowIndex !== endRowIndex; rowIndex += direction) {
-            let row = linkTable.rows[rowIndex];
-            ChapterUrlsUI.setRowCheckboxState(row, state);
+            if (rowIndex >= 0 && rowIndex < allRows.length) {
+                let row = allRows[rowIndex];
+                ChapterUrlsUI.setRowCheckboxState(row, state);
+            }
         }
+        
+        // Clear flag and update select all checkbox state
+        ChapterUrlsUI._updatingSelectAll = false;
+        ChapterUrlsUI.updateSelectAllCheckboxState();
     }
 
     /** @private */

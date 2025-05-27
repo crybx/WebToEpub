@@ -2,6 +2,31 @@
     padding: 0;
 }
 
+/* Select All Checkbox Styling */
+#selectAllUrlsCheckbox + span {
+    margin-left: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Make indeterminate state look unchecked */
+#selectAllUrlsCheckbox:indeterminate {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 13px;
+    height: 13px;
+    border: 2px solid #666;
+    background-color: white;
+    position: relative;
+    cursor: pointer;
+}
+
+#selectAllUrlsCheckbox:indeterminate:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 1px;
+}
+
 .chapter-section-padding {
     padding: 0 10px;
 }
