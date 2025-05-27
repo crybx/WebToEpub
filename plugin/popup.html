@@ -138,344 +138,348 @@
                 </tr>
                 <tr id="coverUrlSection">
                     <td>__MSG_label_Cover_Image_URL__</td>
-                    <td colspan="2">
-                        <input id="coverImageUrlInput" style="width: 68%;" type="text" name="coverImageUrlInput">
-                        <button id="clearCoverImageUrlButton">__MSG_button_Clear_Url__</button>
-                    </td>
-                    <td rowspan="2">   <img id="sampleCoverImg" /></td>
+                    <td><input id="coverImageUrlInput" type="text" name="coverImageUrlInput"></td>
                 </tr>
             </table>
-
-            <div class="progressSection">
-                <div class="progressBarRow">
-                    <progress id="fetchProgress" value=" 0" max="1"></progress>
-                    <span id="progressString"></span>
-                </div>
-                <div class="progressButtonRow">
-                    <button id="packEpubButton" class="expandedButton">__MSG_button_Pack_EPUB__</button>
-                    <button id="downloadChaptersButton" class="expandedButton">__MSG_button_Download_Chapters__</button>
-                    <button data-libclick="yes" id="LibAddToLibrary" class="expandedButton">Add to Library</button>
-                </div>
+            <div class="coverImageInput">
+              <img id="sampleCoverImg" />
+              <button id="clearCoverImageUrlButton">__MSG_button_Clear_Url__</button>
             </div>
-            <div class="HiddenButtonSection">
-                <button id="hiddenBibButton">__MSG_button_Lib_Library__</button>
-                <button id="advancedOptionsButton">__MSG_button_Advanced_Options__</button>
-                <button id="cacheOptionsButton">__MSG_button_Cache_Options__</button>
-            </div>
-            <section id="hiddenBibSection" hidden="true">
-                <div id="LibraryTemplate" hidden="true">
-                    <br>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td id="LibTemplateLibraryUses">Library uses: </td>
-                                <td colspan="2"><button id="LibTemplateUpdateAll">__MSG_button_Lib_Template_Update_All__</button></td>
-                                <td colspan="2"><button id="LibTemplateClearLibrary">__MSG_button_Lib_Template_Clear_Library__</button></td>
-                                <td colspan="2"><button id="LibTemplateExportLibrary">__MSG_button_Lib_Template_Export_Library__</button></td>
-                                <td colspan="2"><button id="LibTemplateImportEpubButton">__MSG_button_Lib_Template_Import_Library__</button></td>
-                                <td colspan="2"><button id="LibTemplateAddListToLibrary">__MSG_button_Lib_Template_Add_List_To_Library__</button></td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateUploadEpubFileLabel">__MSG_label_Lib_Template_Upload_Epub_File_Label__</td>
-                                <button id="LibTemplateUploadEpubButton">__MSG_button_Lib_Template_Upload_Epub__</button>
-                                <input type="file" data-libepubid="LibEpubNew" id="LibEpubNewUpload">
-                            </tr>
-                            <tr>
-                                <td style="height: 115.5px; width: 106.5px;" rowspan="4">
-                                    <img src="">
-                                </td>
-                                <td colspan="2">
-                                    <button id="LibTemplateDeleteEpub">__MSG_button_Lib_Template_Delete_EPUB__</button>
-                                    <button id="LibTemplateSearchNewChapter">__MSG_button_Lib_Template_Search_new_Chapters__</button>
-                                    <button id="LibTemplateUpdateNewChapter">__MSG_button_Lib_Template_Update_new_Chapters__</button>
-                                    <button id="LibTemplateDownload">__MSG_button_Lib_Template_Download_EPUB__</button>
-                                    <button id="LibTemplateSelectBook">__MSG_button_Lib_Template_Select_Book__</button>
-                                    <label style="cursor: pointer;">
-                                        <button id="LibTemplateMergeUploadButton" style="pointer-events: none;">__MSG_button_Lib_Template_Add_Chapter_from_different_EPUB__</button>
-                                        <button id="LibTemplateEditMetadataButton">__MSG_button_Lib_Template_Edit_Metadata__</button>
-                                    </label>
-                                    <input type="file">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateNewChapter">__MSG_label_Lib_Template_New_Chapter__</td><td style="padding:0;">
-                                <td id="LibTemplateURL">__MSG_label_Lib_Template_Story_URL__</td><td style="padding:0;">
-                                    <table style="border-spacing:0;">
-                                        <tbody id="LibTemplateURLWarning">
-                                            <tr>
-                                                <td id="LibTemplateWarningURLChange">__MSG_label_Lib_Template_Warning_URL_Change__</td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody>
-                                            <tr>
-                                                <td style="padding:0;">
-                                                    <input type="url" value="Library template">
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateFilename">__MSG_label_Lib_Template_Filename__</td>
-                                <td>
-                                    <input type="text" value="Library template">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateMetadataSave">__MSG_label_Metadata_Save__</td>
-                            </tr>
-                            <tr>
-                            <tr>
-                                <td id="LibTemplateMetadataTitle">__MSG_label_Title__</td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateMetadataAuthor">__MSG_label_Author__</td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateMetadataLanguage">__MSG_label_Language__</td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateMetadataSubject">__MSG_label_Metadata_subject__</td>
-                            </tr>
-                            <tr>
-                                <td id="LibTemplateMetadataDescription">__MSG_label_Metadata_description__</td>
-                                <td id="LibTemplateWarningInProgress">__MSG_label_Lib_Warning_In_Progress___</td>
-                                </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <table>
-                    <tr>
-                        <td><input id="LibShowAdvancedOptionsCheckbox" type="checkbox" name="LibShowAdvancedOptionsCheckbox" checked="false"></td>
-                        <td><p>__MSG_label_Lib_Show_Advanced_Library_Options__</p></td>
-                    </tr>
-                    <tr id="LibShowCompactViewRow" hidden="true">
-                        <td><input id="LibShowCompactViewCheckbox" type="checkbox" name="LibShowCompactViewCheckbox" checked="false"></td>
-                        <td><p>__MSG_label_Lib_Compact_View__</p></td>
-                    </tr>
-                    <tr id="LibDownloadEpubAfterUpdateRow" hidden="true">
-                        <td><input id="LibDownloadEpubAfterUpdateCheckbox" type="checkbox" name="LibDownloadEpubAfterUpdateCheckbox" checked="true"></td>
-                        <td><p>__MSG_label_Lib_Download_Epub_After_Update__</p></td>
-                    </tr>
-                </table>
-                <div id="LibRenderResult">
-                </div>
-            </section>
-
-            <section id="advancedOptionsSection" hidden="true">
-                <table id="AdditionalMetadatatable">
-                    <tr>
-                        <td>__MSG_label_Metadata_URL__</td>
-                        <td><input id="metadataUrlInput" type="text" name="metadataUrlInput" />
-                        <button id="loadMetadataButton">__MSG_button_load_Metadata__</button></td>
-                    </tr>
-                    <tr>
-                        <td><input id="noAdditionalMetadataCheckbox" type="checkbox" name="noAdditionalMetadataCheckbox" checked="true"></td>
-                        <td>__MSG_label_no_additional_metadata__</td>
-                    </tr>
-                    <tr>
-                        <td><input id="autosearchmetadataCheckbox" type="checkbox" name="autosearchmetadataCheckbox" value="true"></td>
-                        <td>__MSG_label_auto_search_metadata__</td>
-                    </tr>
-                    <tr>
-                        <td><input id="lesstagsCheckbox" type="checkbox" name="lesstagsCheckbox" value="true"></td>
-                        <td>__MSG_label_less_tags__</td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Metadata_subject__</td>
-                        <td><textarea rows="2" cols="60" id="subjectInput" type="text" name="subjectInput"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Metadata_description__</td>
-                        <td><textarea rows="2" cols="60" id="descriptionInput" type="text" name="descriptionInput"></textarea></td>
-                    </tr>
-                    <tr id="seriesRow">
-                        <td>__MSG_label_Series__</td>
-                        <td><input id="seriesNameInput" type="text" name="titleInput" /></td>
-                    </tr>
-                    <tr id="volumeRow">
-                        <td>__MSG_label_Volume__</td>
-                        <td><input id="seriesIndexInput" type="text" name="titleInput" /></td>
-                    </tr>
-                </table>
-                <table id="advancedOptionsTable">
-                    <tr>
-                        <td><input id="ShowMoreMetadataOptionsCheckbox" type="checkbox" name="ShowMoreMetadataOptionsCheckbox" value="true"></td>
-                        <td>__MSG_label_Show_More_Metadata_Options__</td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Custom_Filename__</td>
-                        <td><input id="CustomFilenameInput" type="text" name="CustomFilenameInput"></td>
-                        <td><button id="CustomFilenameHelpButton">__MSG_button_Help__</button></td>
-                    </tr>
-                    <tr id="translatorRow" hidden="true">
-                        <td>__MSG_label_Translator__</td>
-                        <td><input id="translatorInput" type="text" name="translatorInput" size="80" /></td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Theme__</td>
-                        <td>
-                            <select id="themeColorTag">
-                                <option class="i18n" value="LightMode">__MSG_option_ID_Theme_Always_Light__</option>
-                                <option class="i18n" value="DarkMode">__MSG_option_ID_Theme_Always_Dark__</option>
-                                <option class="i18n" selected="true" value="">__MSG_option_ID_Theme_OS_Selection__</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr id="fileAuthorAsRow" hidden="true">
-                        <td>__MSG_label_File_Author_as__</td>
-                        <td><input id="fileAuthorAsInput" type="text" name="fileAuthorAsInput" size="80"></td>
-                    </tr>
-                    <tr id="styleSheetRow">
-                        <td>__MSG_label_Stylesheet__</td>
-                        <td><textarea id="stylesheetInput" rows="6" cols="60"></textarea></td>
-                    </tr>
-                    <tr id="stylesheetToDefaultRow">
-                        <td></td>
-                        <td><button id="stylesheetToDefaultButton">__MSG_button_Reset_stylesheet__</button></td>
-                    </tr>
-                    <tr id="skipImagesRow">
-                        <td><input id="skipImagesCheckbox" type="checkbox" name="skipImagesCheckbox" value="true"></td>
-                        <td>__MSG_label_Skip_Images__</td>
-                    </tr>
-                    <tr id="includeImageSourceUrlRow">
-                        <td><input id="includeImageSourceUrlCheckboxInput" type="checkbox" name="includeImageSourceUrlCheckboxInput" value="true"></td>
-                        <td>__MSG_label_Include_URL_of_Images__</td>
-                    </tr>
-                    <tr id="highestResolutionImageRow" hidden="true">
-                        <td><input id="higestResolutionImagesCheckboxInput" type="checkbox" name="higestResolutionImagesCheckboxInput" value="true"></td>
-                        <td>__MSG_label_Fetch_Highest_Resolution_Images__</td>
-                    </tr>
-                    <tr id="compressImagesRow">
-                        <td><input id="compressImagesCheckbox" type="checkbox" name="compressImagesCheckbox" value="false"></td>
-                        <td>
-                            <table>
-                                <tr>
-                                    <td>__MSG_label_Compress_Images__</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input id="compressImagesMaxResolutionTag" type="number" name="compressImagesMaxResolutionTag" style="width: 61px;" value="1080" min="100">
-                        </td>
-                        <td>__MSG_label_Compress_Images_Resolution__</td>
-                    </tr>
-                    <tr id="unSuperScriptAlternateTranslations" hidden="true">
-                        <td><input id="unSuperScriptCheckboxInput" type="checkbox" name="unSuperScriptCheckboxInput" value="true"></td>
-                        <td>__MSG_label_Remove_Superscript_From_Alternate_Translations__</td>
-                    </tr>
-                    <tr id="useSvgForImages">
-                        <td><input id="useSvgForImagesInput" type="checkbox" name="useSvgForImagesInput" value="true"></td>
-                        <td>__MSG_label_Use_SVG_for_Images__</td>
-                    </tr>
-                    <tr id="removeNextAndPreviousChapterHyperlinks">
-                        <td><input id="removeNextAndPreviousChapterHyperlinksInput" type="checkbox" name="removeNextAndPreviousChapterHyperlinksInput" value="true"></td>
-                        <td>__MSG_label_Remove_Next_and_Previous_Chapter_Hyperlinks__</td>
-                    </tr>
-                    <tr id="advancedOptionsVisibleByDefaultRow">
-                        <td><input id="advancedOptionsVisibleByDefaultCheckbox" type="checkbox" name="advancedOptionsVisibleByDefaultCheckbox" value="true"></td>
-                        <td>__MSG_label_Advanced_Options_Visible_By_Default__</td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Manually_Select_Parser__</td>
-                        <td>
-                            <select id="manuallySelectParserTag" />
-                        </td>
-                    </tr>
-                    <tr id="resetRow">
-                        <td></td>
-                        <td><button id="resetButton">__MSG_button_Reset__</button></td>
-                    </tr>
-                    <tr id="noDownloadPopupFileRow">
-                        <td><input id="noDownloadPopupCheckbox" type="checkbox" name="noDownloadPopupCheckbox" value="false"></td>
-                        <td>__MSG_label_No_Download_Popup__</td>
-                    </tr>
-                    <tr id="writeErrorHistoryToFileRow">
-                        <td><input id="writeErrorHistoryToFileCheckbox" type="checkbox" name="writeErrorHistoryToFileCheckbox" value="false"></td>
-                        <td>__MSG_label_Write_Error_History_To_File__</td>
-                    </tr>
-                    <tr id="createEpub3FileRow">
-                        <td><input id="createEpub3Checkbox" type="checkbox" name="createEpub3Checkbox" value="false"></td>
-                        <td>__MSG_label_Create_Epub_3__</td>
-                    </tr>
-                    <tr id="useFullTitleAsFileName">
-                        <td><input id="useFullTitleAsFileNameCheckbox" type="checkbox" name="useFullTitleAsFileNameCheckbox" value="false"></td>
-                        <td>__MSG_label_Use_Full_Title_As_File_Name__</td>
-                    </tr>
-                    <tr id="overwriteEpubWhenDuplicateFilename">
-                        <td><input id="overwriteEpubWhenDuplicateFilenameCheckbox" type="checkbox" name="overwriteEpubWhenDuplicateFilenameCheckbox" value="false"></td>
-                        <td>__MSG_label_Overwrite_Epub_When_Filename_Duplicte__</td>
-                    </tr>
-                    <tr id="addInformationPageToEpub">
-                        <td><input id="addInformationPageToEpubCheckbox" type="checkbox" name="addInformationPageToEpubCheckbox" value="true"></td>
-                        <td>__MSG_label_Add_Information_Page_To_Epub__</td>
-                    </tr>
-                    <tr id="chaptersPageInChapterListRow">
-                        <td><input id="chaptersPageInChapterListCheckbox" type="checkbox" name="chaptersPageInChapterListbox" value="false"></td>
-                        <td>__MSG_label_Chapters_Page_In_Chapters_List__</td>
-                    </tr>
-                    <tr id="autoParserSelectIncludesBTSeriesPageRow">
-                        <td><input id="autoParserSelectIncludesBTSeriesPageCheckbox" type="checkbox" name="autoParserSelectIncludesBTSeriesPage" value="false"></td>
-                        <td>__MSG_label_Auto_Parser_Select_Includes_Baka_Tsuki_Series_Page_Parser__</td>
-                        <td><button id="seriesPageHelpButton">__MSG_button_Help__</button></td>
-                    </tr>
-                    <tr id="skipChaptersThatFailFetch">
-                        <td><input id="skipChaptersThatFailFetchCheckbox" type="checkbox" name="skipChaptersThatFailFetchCheckbox" value="false"></td>
-                        <td>__MSG_label_Skip_Chapters_That_Fail_Fetch__</td>
-                    </tr>
-                    <tr id="maxChaptersPerEpub">
-                        <td>
-                            <select id="maxChaptersPerEpubTag">
-                                <option value="100">100</option>
-                                <option value="200">200</option>
-                                <option value="500">500</option>
-                                <option value="1,000">1,000</option>
-                                <option value="2,000">2,000</option>
-                                <option value="5,000">5,000</option>
-                                <option value="10,000" selected>10,000</option>
-                            </select>
-                        </td>
-                        <td>__MSG_label_Max_chapters_per_epub__</td>
-                    </tr>
-                    <tr id="manualDelayPerChapter">
-                        <td>
-                            <input id="manualDelayPerChapterTag" type="number" name="manualDelayPerChapterTag" style="width: 61px;">
-                        </td>
-                        <td>__MSG_label_Manual_Delay_Per_Chapter__</td>
-                    </tr>
-                    <tr id="overrideParserDelayWithManualDelay">
-                        <td><input id="overrideMinimumDelayCheckbox" type="checkbox" name="overrideMinimumDelayCheckbox" value="false"></td>
-                        <td>__MSG_label_Override_Default_Minimum_Delay__</td>
-                    </tr>
-                    <tr id="IncludeInReadingListRow">
-                        <td><input id="includeInReadingListCheckbox" type="checkbox" name="includeInReadingListCheckbox" value="false"></td>
-                        <td>__MSG_label_Include_in_Reading_List__</td>
-                    </tr>
-                    <tr id="viewReadingListRow">
-                        <td></td>
-                        <td><button id="viewReadingListButton">__MSG_button_View_Reading_List__</button></td>
-                    </tr>
-                    <tr id="developerStuffRow">
-                        <td>__MSG_label_Developer_Stuff__</td>
-                        <td>
-                            <input id="diagnosticsCheckBoxInput" type="checkbox" name="diagnosticsCheckBoxInput" value="false">
-                            <button id="reloadButton" hidden="true">__MSG_button_Reload__</button>
-                        </td>
-                    </tr>
-                    <tr id="writeOptionsRow">
-                        <td></td>
-                        <td><button id="writeOptionsButton">__MSG_button_Write_Options_to_file__</button></td>
-                    </tr>
-                    <tr id="readOptionsRow">
-                        <td>__MSG_label_Read_Options_from_file__</td>
-                        <td><input id="readOptionsInput" type="file" name="readOptionsInput"></td>
-                    </tr>
-                </table>
-            </section>
         </section>
+        <div class="progressSection">
+            <div class="progressBarRow">
+                <progress id="fetchProgress" value=" 0" max="1"></progress>
+                <span id="progressString"></span>
+            </div>
+            <div class="progressButtonRow">
+                <button id="packEpubButton" class="expandedButton">__MSG_button_Pack_EPUB__</button>
+                <button id="downloadChaptersButton" class="expandedButton">__MSG_button_Download_Chapters__</button>
+                <button data-libclick="yes" id="LibAddToLibrary" class="expandedButton">Add to Library</button>
+            </div>
+        </div>
+        <div class="HiddenButtonSection">
+            <button id="hiddenBibButton">__MSG_button_Lib_Library__</button>
+            <button id="advancedOptionsButton">__MSG_button_Advanced_Options__</button>
+            <button id="cacheOptionsButton">__MSG_button_Cache_Options__</button>
+        </div>
+
+        <!-- Hidden Section - Library -->
+        <section id="hiddenBibSection" hidden="true">
+            <div id="LibraryTemplate" hidden="true">
+                <br>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td id="LibTemplateLibraryUses">Library uses: </td>
+                            <td colspan="2"><button id="LibTemplateUpdateAll">__MSG_button_Lib_Template_Update_All__</button></td>
+                            <td colspan="2"><button id="LibTemplateClearLibrary">__MSG_button_Lib_Template_Clear_Library__</button></td>
+                            <td colspan="2"><button id="LibTemplateExportLibrary">__MSG_button_Lib_Template_Export_Library__</button></td>
+                            <td colspan="2"><button id="LibTemplateImportEpubButton">__MSG_button_Lib_Template_Import_Library__</button></td>
+                            <td colspan="2"><button id="LibTemplateAddListToLibrary">__MSG_button_Lib_Template_Add_List_To_Library__</button></td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateUploadEpubFileLabel">__MSG_label_Lib_Template_Upload_Epub_File_Label__</td>
+                            <button id="LibTemplateUploadEpubButton">__MSG_button_Lib_Template_Upload_Epub__</button>
+                            <input type="file" data-libepubid="LibEpubNew" id="LibEpubNewUpload">
+                        </tr>
+                        <tr>
+                            <td style="height: 115.5px; width: 106.5px;" rowspan="4">
+                                <img src="">
+                            </td>
+                            <td colspan="2">
+                                <button id="LibTemplateDeleteEpub">__MSG_button_Lib_Template_Delete_EPUB__</button>
+                                <button id="LibTemplateSearchNewChapter">__MSG_button_Lib_Template_Search_new_Chapters__</button>
+                                <button id="LibTemplateUpdateNewChapter">__MSG_button_Lib_Template_Update_new_Chapters__</button>
+                                <button id="LibTemplateDownload">__MSG_button_Lib_Template_Download_EPUB__</button>
+                                <button id="LibTemplateSelectBook">__MSG_button_Lib_Template_Select_Book__</button>
+                                <label style="cursor: pointer;">
+                                    <button id="LibTemplateMergeUploadButton" style="pointer-events: none;">__MSG_button_Lib_Template_Add_Chapter_from_different_EPUB__</button>
+                                    <button id="LibTemplateEditMetadataButton">__MSG_button_Lib_Template_Edit_Metadata__</button>
+                                </label>
+                                <input type="file">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateNewChapter">__MSG_label_Lib_Template_New_Chapter__</td><td style="padding:0;">
+                            <td id="LibTemplateURL">__MSG_label_Lib_Template_Story_URL__</td><td style="padding:0;">
+                                <table style="border-spacing:0;">
+                                    <tbody id="LibTemplateURLWarning">
+                                        <tr>
+                                            <td id="LibTemplateWarningURLChange">__MSG_label_Lib_Template_Warning_URL_Change__</td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding:0;">
+                                                <input type="url" value="Library template">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateFilename">__MSG_label_Lib_Template_Filename__</td>
+                            <td>
+                                <input type="text" value="Library template">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateMetadataSave">__MSG_label_Metadata_Save__</td>
+                        </tr>
+                        <tr>
+                        <tr>
+                            <td id="LibTemplateMetadataTitle">__MSG_label_Title__</td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateMetadataAuthor">__MSG_label_Author__</td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateMetadataLanguage">__MSG_label_Language__</td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateMetadataSubject">__MSG_label_Metadata_subject__</td>
+                        </tr>
+                        <tr>
+                            <td id="LibTemplateMetadataDescription">__MSG_label_Metadata_description__</td>
+                            <td id="LibTemplateWarningInProgress">__MSG_label_Lib_Warning_In_Progress___</td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+            <table>
+                <tr>
+                    <td><input id="LibShowAdvancedOptionsCheckbox" type="checkbox" name="LibShowAdvancedOptionsCheckbox" checked="false"></td>
+                    <td><p>__MSG_label_Lib_Show_Advanced_Library_Options__</p></td>
+                </tr>
+                <tr id="LibShowCompactViewRow" hidden="true">
+                    <td><input id="LibShowCompactViewCheckbox" type="checkbox" name="LibShowCompactViewCheckbox" checked="false"></td>
+                    <td><p>__MSG_label_Lib_Compact_View__</p></td>
+                </tr>
+                <tr id="LibDownloadEpubAfterUpdateRow" hidden="true">
+                    <td><input id="LibDownloadEpubAfterUpdateCheckbox" type="checkbox" name="LibDownloadEpubAfterUpdateCheckbox" checked="true"></td>
+                    <td><p>__MSG_label_Lib_Download_Epub_After_Update__</p></td>
+                </tr>
+            </table>
+            <div id="LibRenderResult">
+            </div>
+        </section>
+
+        <!-- Hidden Section - Advanced Options -->
+        <section id="advancedOptionsSection" hidden="true">
+            <table id="AdditionalMetadatatable">
+                <tr>
+                    <td>__MSG_label_Metadata_URL__</td>
+                    <td><input id="metadataUrlInput" type="text" name="metadataUrlInput" />
+                    <button id="loadMetadataButton">__MSG_button_load_Metadata__</button></td>
+                </tr>
+                <tr>
+                    <td><input id="noAdditionalMetadataCheckbox" type="checkbox" name="noAdditionalMetadataCheckbox" checked="true"></td>
+                    <td>__MSG_label_no_additional_metadata__</td>
+                </tr>
+                <tr>
+                    <td><input id="autosearchmetadataCheckbox" type="checkbox" name="autosearchmetadataCheckbox" value="true"></td>
+                    <td>__MSG_label_auto_search_metadata__</td>
+                </tr>
+                <tr>
+                    <td><input id="lesstagsCheckbox" type="checkbox" name="lesstagsCheckbox" value="true"></td>
+                    <td>__MSG_label_less_tags__</td>
+                </tr>
+                <tr>
+                    <td>__MSG_label_Metadata_subject__</td>
+                    <td><textarea rows="2" cols="60" id="subjectInput" type="text" name="subjectInput"></textarea></td>
+                </tr>
+                <tr>
+                    <td>__MSG_label_Metadata_description__</td>
+                    <td><textarea rows="2" cols="60" id="descriptionInput" type="text" name="descriptionInput"></textarea></td>
+                </tr>
+                <tr id="seriesRow">
+                    <td>__MSG_label_Series__</td>
+                    <td><input id="seriesNameInput" type="text" name="titleInput" /></td>
+                </tr>
+                <tr id="volumeRow">
+                    <td>__MSG_label_Volume__</td>
+                    <td><input id="seriesIndexInput" type="text" name="titleInput" /></td>
+                </tr>
+            </table>
+            <table id="advancedOptionsTable">
+                <tr>
+                    <td><input id="ShowMoreMetadataOptionsCheckbox" type="checkbox" name="ShowMoreMetadataOptionsCheckbox" value="true"></td>
+                    <td>__MSG_label_Show_More_Metadata_Options__</td>
+                </tr>
+                <tr>
+                    <td>__MSG_label_Custom_Filename__</td>
+                    <td><input id="CustomFilenameInput" type="text" name="CustomFilenameInput"></td>
+                    <td><button id="CustomFilenameHelpButton">__MSG_button_Help__</button></td>
+                </tr>
+                <tr id="translatorRow" hidden="true">
+                    <td>__MSG_label_Translator__</td>
+                    <td><input id="translatorInput" type="text" name="translatorInput" size="80" /></td>
+                </tr>
+                <tr>
+                    <td>__MSG_label_Theme__</td>
+                    <td>
+                        <select id="themeColorTag">
+                            <option class="i18n" value="LightMode">__MSG_option_ID_Theme_Always_Light__</option>
+                            <option class="i18n" value="DarkMode">__MSG_option_ID_Theme_Always_Dark__</option>
+                            <option class="i18n" selected="true" value="">__MSG_option_ID_Theme_OS_Selection__</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="fileAuthorAsRow" hidden="true">
+                    <td>__MSG_label_File_Author_as__</td>
+                    <td><input id="fileAuthorAsInput" type="text" name="fileAuthorAsInput" size="80"></td>
+                </tr>
+                <tr id="styleSheetRow">
+                    <td>__MSG_label_Stylesheet__</td>
+                    <td><textarea id="stylesheetInput" rows="6" cols="60"></textarea></td>
+                </tr>
+                <tr id="stylesheetToDefaultRow">
+                    <td></td>
+                    <td><button id="stylesheetToDefaultButton">__MSG_button_Reset_stylesheet__</button></td>
+                </tr>
+                <tr id="skipImagesRow">
+                    <td><input id="skipImagesCheckbox" type="checkbox" name="skipImagesCheckbox" value="true"></td>
+                    <td>__MSG_label_Skip_Images__</td>
+                </tr>
+                <tr id="includeImageSourceUrlRow">
+                    <td><input id="includeImageSourceUrlCheckboxInput" type="checkbox" name="includeImageSourceUrlCheckboxInput" value="true"></td>
+                    <td>__MSG_label_Include_URL_of_Images__</td>
+                </tr>
+                <tr id="highestResolutionImageRow" hidden="true">
+                    <td><input id="higestResolutionImagesCheckboxInput" type="checkbox" name="higestResolutionImagesCheckboxInput" value="true"></td>
+                    <td>__MSG_label_Fetch_Highest_Resolution_Images__</td>
+                </tr>
+                <tr id="compressImagesRow">
+                  <td><input id="compressImagesCheckbox" type="checkbox" name="compressImagesCheckbox" value="false"></td>
+                  <td>
+                    <table>
+                      <tr>
+                        <td>__MSG_label_Compress_Images__</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input id="compressImagesMaxResolutionTag" type="number" name="compressImagesMaxResolutionTag" style="width: 61px;" value="1080" min="100">
+                  </td>
+                  <td>__MSG_label_Compress_Images_Resolution__</td>
+                </tr>
+                <tr id="unSuperScriptAlternateTranslations" hidden="true">
+                    <td><input id="unSuperScriptCheckboxInput" type="checkbox" name="unSuperScriptCheckboxInput" value="true"></td>
+                    <td>__MSG_label_Remove_Superscript_From_Alternate_Translations__</td>
+                </tr>
+                <tr id="useSvgForImages">
+                    <td><input id="useSvgForImagesInput" type="checkbox" name="useSvgForImagesInput" value="true"></td>
+                    <td>__MSG_label_Use_SVG_for_Images__</td>
+                </tr>
+                <tr id="removeNextAndPreviousChapterHyperlinks">
+                  <td><input id="removeNextAndPreviousChapterHyperlinksInput" type="checkbox" name="removeNextAndPreviousChapterHyperlinksInput" value="true"></td>
+                  <td>__MSG_label_Remove_Next_and_Previous_Chapter_Hyperlinks__</td>
+                </tr>
+                <tr id="advancedOptionsVisibleByDefaultRow">
+                    <td><input id="advancedOptionsVisibleByDefaultCheckbox" type="checkbox" name="advancedOptionsVisibleByDefaultCheckbox" value="true"></td>
+                    <td>__MSG_label_Advanced_Options_Visible_By_Default__</td>
+                </tr>
+                <tr>
+                    <td>__MSG_label_Manually_Select_Parser__</td>
+                    <td>
+                        <select id="manuallySelectParserTag" />
+                    </td>
+                </tr>
+                <tr id="resetRow">
+                    <td></td>
+                    <td><button id="resetButton">__MSG_button_Reset__</button></td>
+                </tr>
+                <tr id="noDownloadPopupFileRow">
+                    <td><input id="noDownloadPopupCheckbox" type="checkbox" name="noDownloadPopupCheckbox" value="false"></td>
+                    <td>__MSG_label_No_Download_Popup__</td>
+                </tr>
+                <tr id="writeErrorHistoryToFileRow">
+                    <td><input id="writeErrorHistoryToFileCheckbox" type="checkbox" name="writeErrorHistoryToFileCheckbox" value="false"></td>
+                    <td>__MSG_label_Write_Error_History_To_File__</td>
+                </tr>
+                <tr id="createEpub3FileRow">
+                    <td><input id="createEpub3Checkbox" type="checkbox" name="createEpub3Checkbox" value="false"></td>
+                    <td>__MSG_label_Create_Epub_3__</td>
+                </tr>
+                <tr id="useFullTitleAsFileName">
+                    <td><input id="useFullTitleAsFileNameCheckbox" type="checkbox" name="useFullTitleAsFileNameCheckbox" value="false"></td>
+                    <td>__MSG_label_Use_Full_Title_As_File_Name__</td>
+                </tr>
+                <tr id="overwriteEpubWhenDuplicateFilename">
+                    <td><input id="overwriteEpubWhenDuplicateFilenameCheckbox" type="checkbox" name="overwriteEpubWhenDuplicateFilenameCheckbox" value="false"></td>
+                    <td>__MSG_label_Overwrite_Epub_When_Filename_Duplicte__</td>
+                </tr>
+                <tr id="addInformationPageToEpub">
+                    <td><input id="addInformationPageToEpubCheckbox" type="checkbox" name="addInformationPageToEpubCheckbox" value="true"></td>
+                    <td>__MSG_label_Add_Information_Page_To_Epub__</td>
+                </tr>
+                <tr id="chaptersPageInChapterListRow">
+                    <td><input id="chaptersPageInChapterListCheckbox" type="checkbox" name="chaptersPageInChapterListbox" value="false"></td>
+                    <td>__MSG_label_Chapters_Page_In_Chapters_List__</td>
+                </tr>
+                <tr id="autoParserSelectIncludesBTSeriesPageRow">
+                    <td><input id="autoParserSelectIncludesBTSeriesPageCheckbox" type="checkbox" name="autoParserSelectIncludesBTSeriesPage" value="false"></td>
+                    <td>__MSG_label_Auto_Parser_Select_Includes_Baka_Tsuki_Series_Page_Parser__</td>
+                    <td><button id="seriesPageHelpButton">__MSG_button_Help__</button></td>
+                </tr>
+                <tr id="skipChaptersThatFailFetch">
+                    <td><input id="skipChaptersThatFailFetchCheckbox" type="checkbox" name="skipChaptersThatFailFetchCheckbox" value="false"></td>
+                    <td>__MSG_label_Skip_Chapters_That_Fail_Fetch__</td>
+                </tr>
+                <tr id="maxChaptersPerEpub">
+                    <td>
+                        <select id="maxChaptersPerEpubTag">
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1,000">1,000</option>
+                            <option value="2,000">2,000</option>
+                            <option value="5,000">5,000</option>
+                            <option value="10,000" selected>10,000</option>
+                        </select>
+                    </td>
+                    <td>__MSG_label_Max_chapters_per_epub__</td>
+                </tr>
+                <tr id="manualDelayPerChapter">
+                    <td>
+                        <input id="manualDelayPerChapterTag" type="number" name="manualDelayPerChapterTag" style="width: 61px;">
+                    </td>
+                    <td>__MSG_label_Manual_Delay_Per_Chapter__</td>
+                </tr>
+                <tr id="overrideParserDelayWithManualDelay">
+                    <td><input id="overrideMinimumDelayCheckbox" type="checkbox" name="overrideMinimumDelayCheckbox" value="false"></td>
+                    <td>__MSG_label_Override_Default_Minimum_Delay__</td>
+                </tr>
+                <tr id="IncludeInReadingListRow">
+                    <td><input id="includeInReadingListCheckbox" type="checkbox" name="includeInReadingListCheckbox" value="false"></td>
+                    <td>__MSG_label_Include_in_Reading_List__</td>
+                </tr>
+                <tr id="viewReadingListRow">
+                    <td></td>
+                    <td><button id="viewReadingListButton">__MSG_button_View_Reading_List__</button></td>
+                </tr>
+                <tr id="developerStuffRow">
+                    <td>__MSG_label_Developer_Stuff__</td>
+                    <td>
+                        <input id="diagnosticsCheckBoxInput" type="checkbox" name="diagnosticsCheckBoxInput" value="false">
+                        <button id="reloadButton" hidden="true">__MSG_button_Reload__</button>
+                    </td>
+                </tr>
+                <tr id="writeOptionsRow">
+                    <td></td>
+                    <td><button id="writeOptionsButton">__MSG_button_Write_Options_to_file__</button></td>
+                </tr>
+                <tr id="readOptionsRow">
+                    <td>__MSG_label_Read_Options_from_file__</td>
+                    <td><input id="readOptionsInput" type="file" name="readOptionsInput"></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Hidden Section - Images -->
         <section id="imageSection" hidden="true">
             <table id="imageOptionsTable">
                 <tr id="duplicateImagesRow">
@@ -491,48 +495,59 @@
                 <table id="imagesTable"></table>
             </div>
         </section>
-        <section id="chaptersSection" class="minWidth">
-            <div id="chapterSelectControlsDiv" class="chapter-section-padding">
-                <table id="rangeSelectTable">
-                    <tr id="rangeStartChapterRow">
-                        <td>__MSG_label_Range_Start_Chapter__</td>
-                        <td><select id="selectRangeStartChapter" /></td>
-                        <td><input id="showChapterUrlsCheckbox" type="checkbox" name="showChapterUrlsCheckbox" value="false"></td>
-                        <td>__MSG_label_Show_Chapter_Urls__</td>
+
+        <!-- Chapter Selection Options Section -->
+        <section id="chapterSelectionOptionsSection">
+          <div id="chapterSelectControlsDiv">
+            <table id="rangeSelectTable">
+              <tr id="rangeStartChapterRow">
+                <td>__MSG_label_Range_Start_Chapter__</td>
+                <td><select id="selectRangeStartChapter" /></td>
+                <td><input id="showChapterUrlsCheckbox" type="checkbox" name="showChapterUrlsCheckbox" value="false"></td>
+                <td>__MSG_label_Show_Chapter_Urls__</td>
+              </tr>
+              <tr id="rangeEndChapterRow">
+                <td>__MSG_label_Range_End_Chapter__</td>
+                <td><select id="selectRangeEndChapter" /></td>
+                <td colspan="2">&nbsp; <button id="viewFiltersButton">__MSG_button_View_Filters__</button></td>
+              </tr>
+              <tr id="rangeChapterCountRow">
+                <td>__MSG_label_Chapter_Count__</td>
+                <td colspan="3">
+                  <table width="100%">
+                    <tr>
+                      <td width="30%"><span id="spanChapterCount" />0</td>
+                      <td width="50%"><span id="spanParserName" /></td>
+                      <td width="20%"><span id="spanDelayMs" />0 ms</td>
                     </tr>
-                    <tr id="rangeEndChapterRow">
-                        <td>__MSG_label_Range_End_Chapter__</td>
-                        <td><select id="selectRangeEndChapter" /></td>
-                        <td colspan="2">&nbsp; <button id="viewFiltersButton">__MSG_button_View_Filters__</button></td>
-                    </tr>
-                    <tr id="rangeChapterCountRow">
-                        <td>__MSG_label_Chapter_Count__</td>
-                        <td colspan="3">
-                            <table width="100%">
-                                <tr>
-                                    <td width="30%"><span id="spanChapterCount" />0</td>
-                                    <td width="50%"><span id="spanParserName" /></td>
-                                    <td width="20%"><span id="spanDelayMs" />0 ms</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-                <div>
-                    <label>
-                        <input id="selectAllUrlsCheckbox" type="checkbox" />
-                        <span class="i18n">__MSG_button_Select_All__</span>
-                    </label>
-                    <button id="reverseChapterUrlsOrderButton">__MSG_button_Reverse_Chapter_Urls_Order__</button>
-                    <button id="editChaptersUrlsButton">__MSG_button_Edit_Chapter_Urls__</button>
-                    <button id="copyUrlsToClipboardButton">__MSG_button_Copy_Urls_To_Clipboard__</button>
-                </div>
+                  </table>
+                </td>
+              </tr>
+            </table>
+            <div>
+              <label>
+                <input id="selectAllUrlsCheckbox" type="checkbox" />
+                <span class="i18n">__MSG_button_Select_All__</span>
+              </label>
+              <button id="reverseChapterUrlsOrderButton">__MSG_button_Reverse_Chapter_Urls_Order__</button>
+              <button id="editChaptersUrlsButton">__MSG_button_Edit_Chapter_Urls__</button>
+              <button id="copyUrlsToClipboardButton">__MSG_button_Copy_Urls_To_Clipboard__</button>
             </div>
-            <div class="chapter-section-padding">
-              <button id="applyChangesButton" hidden="true">__MSG_button_Apply_Changes__</button>
-              <p id="editURLsHint" class="i18n" hidden="true">__MSG_label_Edit_URLs_Hint__</p>
-              <div id="findingChapterUrlsMessageRow" class="i18n warning">__MSG_Searching_For_URLs_Please_Wait__</div>
+          </div>
+          <div>
+            <button id="applyChangesButton" hidden="true">__MSG_button_Apply_Changes__</button>
+            <p id="editURLsHint" class="i18n" hidden="true">__MSG_label_Edit_URLs_Hint__</p>
+            <div id="findingChapterUrlsMessageRow" class="i18n warning">__MSG_Searching_For_URLs_Please_Wait__</div>
+          </div>
+          <div>
+            <div>
+              <textarea id="editChaptersUrlsInput" class="allSpace" cols="200" rows="20" hidden="true"></textarea>
             </div>
+            <button id="applyChangesButton2" hidden="true">__MSG_button_Apply_Changes__</button>
+          </div>
+        </section>
+
+        <section id="chapterListSection" class="minWidth">
             <div id="chapterUrlsTable" class="chapter-list">
                 <div class="chapter-list-header">
                     <div class="chapter-checkbox-column">
@@ -551,16 +566,10 @@
                     </div>
                 </div>
             </div>
-            <div class="chapter-section-padding">
-              <div>
-                <textarea id="editChaptersUrlsInput" class="allSpace" cols="200" rows="20" hidden="true"></textarea>
-              </div>
-              <button id="applyChangesButton2" hidden="true">__MSG_button_Apply_Changes__</button>
-            </div>
         </section>
     </div>
 
-    <!-- Cached Chapter Viewer -->
+    <!-- Chapter Viewer Modal -->
     <div id="chapterViewer" class="modal-backdrop">
         <div class="modal-container">
             <div id="chapterViewerTitleBar" class="modal-title-bar">

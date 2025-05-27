@@ -90,7 +90,7 @@ button:disabled {
     position:relative;
 
     section {
-        padding: 10px 10px 0 10px;
+        padding: 10px;
     }
 }
 
@@ -111,6 +111,24 @@ textarea.allSpace {
     height: 100%;
     box-sizing: border-box;
     max-width: none;
+}
+
+#inputSection {
+    display: flex;
+    height: 180px;
+    overflow: hidden;
+
+    img {
+        max-width: 100%;
+        max-height: 140px;
+    }
+
+    .coverImageInput {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: end;
+    }
 }
 
 #inputSection input {
