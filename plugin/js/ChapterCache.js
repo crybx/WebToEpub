@@ -753,7 +753,7 @@ class ChapterCache {
             }
             
             // Get all chapter URLs from the current page
-            let webPages = [...parser.state.webPages.values()].filter(c => c.isIncludeable);
+            let webPages = [...parser.state.webPages.values()];
             
             // Check if any of these chapters are cached
             for (let webPage of webPages) {
