@@ -180,7 +180,8 @@ svg {
 
 /* Only highlight SVG when directly hovering the clickable icon itself, not child elements */
 .clickable-icon:hover > svg,
-.clickable-icon:hover > span > svg {
+.clickable-icon:hover > span > svg,
+.more-actions-menu .menu-item:hover svg {
     fill: dodgerblue;
     filter: brightness(1.2);
 }
@@ -191,19 +192,21 @@ svg {
     filter: brightness(0.8);
 }
 
-/* Specific hover effects for menu items */
-.more-actions-menu .menu-item:hover svg {
-    fill: dodgerblue;
-    filter: brightness(1.2);
-}
-
 /* Error state styling */
-.error-state svg {
+.error-state .chapter-status-icon,
+.error-state:hover .chapter-status-icon,
+.error-state:hover .menu-icon,
+.error-state .more-actions-menu .menu-item:hover svg {
     fill: #dc3545;
 }
 
-.error-state:hover svg {
-    fill: #c82333;
+.error-state .clickable-icon:hover,
+.error-state .more-actions-menu .menu-item:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.error-state .more-actions-menu .menu-item:hover span {
+    color: #dc3545;
 }
 
 .more-actions-menu .menu-item:hover span {
@@ -304,7 +307,7 @@ svg {
 }
 
 .more-actions-menu .menu-item:hover {
-    background-color: #f5f5f5;
+    background-color: rgba(0, 123, 255, 0.1);
 }
 
 .more-actions-menu .menu-item:last-child {

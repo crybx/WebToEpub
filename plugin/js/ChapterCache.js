@@ -610,7 +610,7 @@ class ChapterCache {
             
             await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
         } catch (error) {
-            console.error("Failed to download chapter:", error);
+            console.log("Failed to download chapter:", error);
             // Store error message in cache
             await ChapterCache.storeChapterError(sourceUrl, error.message);
             // Set UI to error state
