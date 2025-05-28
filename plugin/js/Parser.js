@@ -637,13 +637,33 @@ class Parser {
                 throw new Error(errorMsg);
             }
             return pageParser.fetchImagesUsedInDocument(content, webPage);
-        }).catch(function(error) {
+        }).catch(async function(error) {
+            // Always cache the error and update UI regardless of skipChaptersThatFailFetch setting
+            webPage.error = error;
+            
+            try {
+                await ChapterCache.storeChapterError(webPage.sourceUrl, error.message);
+                // Update UI to show error state
+                let row = ChapterUrlsUI.findRowBySourceUrl(webPage.sourceUrl);
+                if (row) {
+                    ChapterUrlsUI.setChapterStatusVisuals(
+                        row, 
+                        ChapterUrlsUI.CHAPTER_STATUS_ERROR, 
+                        webPage.sourceUrl, 
+                        webPage.title
+                    );
+                }
+            } catch (cacheError) {
+                console.log("Failed to cache error:", cacheError);
+            }
+            
+            // The preference only controls whether to continue or halt the operation
             if (that.userPreferences.skipChaptersThatFailFetch.value) {
+                // Log error and continue with other chapters
                 ErrorLog.log(error);
-                webPage.error = error;
             } else {
                 webPage.isIncludeable = false;
-                throw error;
+                throw error; // Halt collecting chapters (error is logged by higher level handler)
             }
         }); 
     }

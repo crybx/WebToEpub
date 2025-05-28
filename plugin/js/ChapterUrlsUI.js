@@ -594,6 +594,20 @@ class ChapterUrlsUI {
         return iconElement;
     }
 
+    /**
+     * Find a chapter row by sourceUrl
+     */
+    static findRowBySourceUrl(sourceUrl) {
+        const rows = document.querySelectorAll('.chapter-row');
+        for (let row of rows) {
+            const urlInput = row.querySelector('input[type="url"]');
+            if (urlInput && urlInput.value === sourceUrl) {
+                return row;
+            }
+        }
+        return null;
+    }
+
     static setChapterStatusVisuals(row, state, sourceUrl, title) {
         if (!row) return;
 
