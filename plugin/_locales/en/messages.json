@@ -279,6 +279,10 @@
 		"message": "Create EPUB 3",
 		"description": "Label for checkbox to choose between EPUB 2 and 3"
 	},
+	"__MSG_label_EPUB_Internal_Structure__": {
+		"message": "EPUB Internal Structure",
+		"description": "Label for dropdown to choose EPUB internal folder structure"
+	},
 	"__MSG_label_File_Author_as__": {
 		"message": "File Author as",
 		"description": "Label in front of input for author's name should be filed (in Advanced settings)."

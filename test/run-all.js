@@ -15,17 +15,37 @@ async function runTest(testFile) {
         console.log('='.repeat(80));
         
         const testPath = path.join(__dirname, testFile);
+        let output = '';
+        
         const child = spawn('node', [testPath], {
-            stdio: 'inherit'
+            stdio: ['inherit', 'pipe', 'inherit']
+        });
+        
+        // Capture stdout to extract test counts
+        child.stdout.on('data', (data) => {
+            const chunk = data.toString();
+            output += chunk;
+            process.stdout.write(chunk); // Still display output in real-time
         });
         
         child.on('close', (code) => {
-            resolve(code === 0);
+            // Extract test counts from output
+            const totalMatch = output.match(/Total: (\d+)/);
+            const passedMatch = output.match(/Passed: (\d+)/);
+            const failedMatch = output.match(/Failed: (\d+)/);
+            
+            const counts = {
+                total: totalMatch ? parseInt(totalMatch[1]) : 0,
+                passed: passedMatch ? parseInt(passedMatch[1]) : 0,
+                failed: failedMatch ? parseInt(failedMatch[1]) : 0
+            };
+            
+            resolve({ success: code === 0, counts });
         });
         
         child.on('error', (error) => {
             console.error(`Failed to start test ${testFile}:`, error);
-            resolve(false);
+            resolve({ success: false, counts: { total: 0, passed: 0, failed: 1 } });
         });
     });
 }
@@ -48,42 +68,38 @@ async function main() {
     
     let allPassed = true;
     const results = [];
+    let totalCounts = { total: 0, passed: 0, failed: 0 };
     
     for (const test of tests) {
-        const passed = await runTest(test);
-        results.push({ test, passed });
-        allPassed = allPassed && passed;
+        const result = await runTest(test);
+        results.push({ test, passed: result.success, counts: result.counts });
+        allPassed = allPassed && result.success;
+        
+        // Aggregate counts
+        totalCounts.total += result.counts.total;
+        totalCounts.passed += result.counts.passed;
+        totalCounts.failed += result.counts.failed;
     }
-    
+
     // Summary
     console.log(`\n${'='.repeat(80)}`);
     console.log('FINAL SUMMARY');
     console.log('='.repeat(80));
-    
+
     for (const result of results) {
         const status = result.passed ? '✅ PASSED' : '❌ FAILED';
         console.log(`${status} - ${result.test}`);
     }
-    
+
     console.log('='.repeat(80));
-    
+    console.log(`📊: TEST TOTALS: ${totalCounts.total} tests, ${totalCounts.passed} passed, ${totalCounts.failed} failed`);
+
     if (allPassed) {
-        console.log('🎉 ALL TESTS PASSED!');
-        console.log('');
-        console.log('✅ Core functionality is working');
-        console.log('✅ EPUB structure preferences are validated');
-        console.log('✅ Both OEBPS and EPUB formats work correctly');
-        console.log('✅ Changes like commit dd599b4 will not break functionality');
-        console.log('✅ Test framework is reliable');
-        console.log('');
-        console.log('This codebase is ready for EPUB structure preference implementation!');
+        console.log('🎉: ALL TESTS PASSED!');
     } else {
-        console.log('❌ SOME TESTS FAILED!');
-        console.log('');
-        console.log('Please review the failed tests above.');
-        console.log('The codebase may have issues that need to be addressed.');
+        console.log('❌: SOME TESTS FAILED! Please review the failed tests above.');
     }
-    
+
     console.log('='.repeat(80));
     process.exit(allPassed ? 0 : 1);
 }

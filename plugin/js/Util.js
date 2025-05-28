@@ -52,7 +52,7 @@ const util = (function() {
     function populateHead(doc, head) {
         let style = doc.createElementNS(XMLNS, "link");
         head.appendChild(style);
-        style.setAttribute("href", makeRelative(styleSheetFileName()));
+        style.setAttribute("href", makeRelative(getEpubStructure().stylesheet));
         style.setAttribute("type", "text/css");
         style.setAttribute("rel", "stylesheet");
     }
@@ -95,9 +95,11 @@ const util = (function() {
         return div;
     }
 
-    // assumes we're making link from file in EPUB\text to EPUB\images
+    // assumes we're making link from file in text directory to images/styles
     function makeRelative(href) {
-        return ".." + href.substring(4);
+        let paths = getEpubStructure();
+        let contentDirLength = paths.contentDir.length;
+        return ".." + href.substring(contentDirLength);
     }
 
     function resolveRelativeUrl(baseUrl, relativeUrl) {
@@ -848,10 +850,6 @@ const util = (function() {
         return dom;
     }
 
-    function styleSheetFileName() {
-        return "EPUB/styles/stylesheet.css";
-    }
-
     function extractUrlFromBackgroundImage(element) {
         const background = element?.style?.backgroundImage;
         return background?.substring(5, background.length - 2) ?? null;
@@ -1071,6 +1069,14 @@ const util = (function() {
             : sanitize(dirty).body.firstChild;
     }
 
+    function getEpubStructure(preferenceValue) {
+        // If no preference value provided, get it from UserPreferences
+        if (preferenceValue === undefined) {
+            preferenceValue = UserPreferences.getPreferenceValue("epubInternalStructure");
+        }
+        return (preferenceValue === "EPUB") ? EPUB_STRUCTURE_EPUB : EPUB_STRUCTURE_OEBPS;
+    }
+
     // Define constants
     const XMLNS = "http://www.w3.org/1999/xhtml";
 
@@ -1138,11 +1144,62 @@ const util = (function() {
         "WaZqlQ==": ["image/x-cmu-raster"]
     };
 
+    const EPUB_STRUCTURE_OEBPS = {
+        contentDir: "OEBPS",
+        textDir: "OEBPS/Text",
+        imagesDir: "OEBPS/Images",
+        stylesDir: "OEBPS/Styles",
+        navFile: "OEBPS/toc.xhtml",
+        // Relative paths for content (used in manifests/TOC)
+        textDirRel: "Text",
+        imagesDirRel: "Images",
+        stylesDirRel: "Styles",
+        // Computed paths for convenience
+        contentOpf: "OEBPS/content.opf",
+        tocNcx: "OEBPS/toc.ncx",
+        coverXhtml: "OEBPS/Text/Cover.xhtml",
+        stylesheet: "OEBPS/Styles/stylesheet.css",
+        textDirPattern: "OEBPS/Text/",
+        imagesDirPattern: "OEBPS/Images/",
+        stylesDirPattern: "OEBPS/Styles/",
+        // Relative paths with separators
+        relativeImagePath: "../Images/",
+        relativeStylePath: "../Styles/",
+        relativeTextPath: "../Text/"
+    };
+
+    const EPUB_STRUCTURE_EPUB = {
+        contentDir: "EPUB",
+        textDir: "EPUB/text",
+        imagesDir: "EPUB/images",
+        stylesDir: "EPUB/styles",
+        navFile: "EPUB/nav.xhtml",
+        // Relative paths for content (used in manifests/TOC)
+        textDirRel: "text",
+        imagesDirRel: "images",
+        stylesDirRel: "styles",
+        // Computed paths for convenience
+        contentOpf: "EPUB/content.opf",
+        tocNcx: "EPUB/toc.ncx",
+        coverXhtml: "EPUB/text/Cover.xhtml",
+        stylesheet: "EPUB/styles/stylesheet.css",
+        textDirPattern: "EPUB/text/",
+        imagesDirPattern: "EPUB/images/",
+        stylesDirPattern: "EPUB/styles/",
+        // Relative paths with separators
+        relativeImagePath: "../images/",
+        relativeStylePath: "../styles/",
+        relativeTextPath: "../text/"
+    };
+
     return {
         XMLNS: XMLNS,
         INLINE_ELEMENTS: INLINE_ELEMENTS,
         BLOCK_ELEMENTS: BLOCK_ELEMENTS,
         HEADER_TAGS: HEADER_TAGS,
+        EPUB_STRUCTURE_OEBPS: EPUB_STRUCTURE_OEBPS,
+        EPUB_STRUCTURE_EPUB: EPUB_STRUCTURE_EPUB,
+
         sleep: sleep,
         sleepController: sleepController,
         randomInteger: randomInteger,
@@ -1218,7 +1275,6 @@ const util = (function() {
         getElements: getElements,
         moveIfParent: moveIfParent,
         safeForFileName: safeForFileName,
-        styleSheetFileName: styleSheetFileName,
         isStringWhiteSpace: isStringWhiteSpace,
         isElementWhiteSpace: isElementWhiteSpace,
         isHeaderTag: isHeaderTag,
@@ -1245,6 +1301,7 @@ const util = (function() {
         replaceSemanticInlineStylesWithTags: replaceSemanticInlineStylesWithTags,
         wrapInnerContentInTag: wrapInnerContentInTag,
         getDefaultExtensionByMime: getDefaultExtensionByMime,
-        detectMimeType: detectMimeType
+        detectMimeType: detectMimeType,
+        getEpubStructure: getEpubStructure
     };
 })();

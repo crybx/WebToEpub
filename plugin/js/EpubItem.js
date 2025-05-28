@@ -24,7 +24,8 @@ class EpubItem {
     // name of the item in the zip.
     getZipHref() {
         let that = this;
-        return util.makeStorageFileName("OEBPS/Text/", that.index, that.chapterTitle, "xhtml");
+        let paths = util.getEpubStructure();
+        return util.makeStorageFileName(paths.textDirPattern, that.index, that.chapterTitle, "xhtml");
     }
 
     getId() {
@@ -185,8 +186,9 @@ class ImageInfo extends EpubItem {
 
     getZipHref() {
         let that = this;
+        let paths = util.getEpubStructure();
         let suffix = util.getDefaultExtensionByMime(that.mediaType) || that.findImageSuffix(that.wrappingUrl);
-        return util.makeStorageFileName("OEBPS/Images/", that.index, that.getImageName(that.wrappingUrl), suffix);
+        return util.makeStorageFileName(paths.imagesDirPattern, that.index, that.getImageName(that.wrappingUrl), suffix);
     }
 
     getBase64(maxLength) {

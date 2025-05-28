@@ -95,14 +95,35 @@ global.NodeFilter = {
     SHOW_TEXT: 0x4
 };
 
+// Polyfill innerText for JSDOM (since it doesn't support it properly)
+function addInnerTextPolyfill(window) {
+    Object.defineProperty(window.Element.prototype, 'innerText', {
+        get() {
+            // Simple approximation of innerText behavior
+            // This removes hidden elements and collapses whitespace like browsers do
+            return this.textContent.replace(/\s+/g, ' ').trim();
+        },
+        set(value) {
+            this.textContent = value;
+        }
+    });
+}
+
 // Create a test utils object for creating DOM
 global.TestUtils = {
     makeDomWithBody(bodyHtml) {
         const testDom = new JSDOM(`<!DOCTYPE html><html><head></head><body>${bodyHtml}</body></html>`, {
             url: 'http://localhost'
         });
+        
+        // Add innerText polyfill to this DOM instance
+        addInnerTextPolyfill(testDom.window);
+        
         return testDom.window.document;
     }
 };
+
+// Also add innerText polyfill to the main window
+addInnerTextPolyfill(dom.window);
 
 module.exports = { dom };

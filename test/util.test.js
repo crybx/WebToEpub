@@ -9,13 +9,63 @@
 require('./node-setup');
 require('./test-framework');
 
+// Add missing DOM elements that UserPreferences expects
+const themeColorTag = document.createElement("select");
+themeColorTag.id = "themeColorTag";
+document.body.appendChild(themeColorTag);
+
 // Load the source files
 const fs = require('fs');
 const path = require('path');
 
+// Mock EpubMetaInfo (required by some Util.js functions)
+global.EpubMetaInfo = {
+    getDefaultStyleSheet: () => "/* Default CSS */"
+};
+
+// Mock ReadingList (required by UserPreferences)
+global.ReadingList = class ReadingList {
+    static storageName = "readingList";
+    
+    constructor() {
+        this.data = [];
+    }
+    
+    toJson() {
+        return JSON.stringify(this.data);
+    }
+    
+    static fromJson(json) {
+        const instance = new ReadingList();
+        instance.data = JSON.parse(json);
+        return instance;
+    }
+    
+    getEpub(url) {
+        return null; // Mock implementation
+    }
+    
+    readFromLocalStorage() {
+        // Mock implementation
+    }
+};
+
+// Load UserPreferences.js first (required by Util.js)
+const userPrefsPath = path.join(__dirname, '../plugin/js/UserPreferences.js');
+const userPrefsCode = fs.readFileSync(userPrefsPath, 'utf8');
+
 // Load Util.js
 const utilPath = path.join(__dirname, '../plugin/js/Util.js');
 const utilCode = fs.readFileSync(utilPath, 'utf8');
+
+// Execute UserPreferences.js first
+try {
+    const modifiedUserPrefsCode = userPrefsCode.replace('class UserPreferences', 'global.UserPreferences = class UserPreferences');
+    eval(modifiedUserPrefsCode);
+    console.log('UserPreferences loaded successfully');
+} catch (error) {
+    console.error('Failed to load UserPreferences:', error.message);
+}
 
 // Execute Util.js in our environment and capture the util object
 try {
@@ -60,21 +110,9 @@ test("removeEmptyDivElements", function (assert) {
         "<div><img src=\"http://dumy.com/img.jpg\"></div>"
     );
     let content = dom.body;
-    
-    // Test that the function runs without error
-    try {
-        util.removeEmptyDivElements(content);
-        assert.ok(true, "removeEmptyDivElements executed without error");
-    } catch (error) {
-        assert.fail(`removeEmptyDivElements should not throw error: ${error.message}`);
-    }
-    
-    // Should still have the divs with content
-    assert.ok(content.querySelector("h1"), "Should keep div with h1");
-    assert.ok(content.querySelector("img"), "Should keep div with img");
-    
-    // Note: In JSDOM environment, empty div removal may not work exactly like in browser
-    // but the function should execute without errors
+    util.removeEmptyDivElements(content);
+
+    assert.equal(content.innerHTML, "<div><h1>H1</h1></div><div><img src=\"http://dumy.com/img.jpg\"></div>");
 });
 
 test("removeScriptableElements", function (assert) {
@@ -107,9 +145,9 @@ test("makeStorageFileName", function (assert) {
     assert.equal(result3, "OEBPS/Images/0005_cover.jpg", "Simple filename should work exactly");
 });
 
-test("styleSheetFileName", function (assert) {
+test("stylesheet path from constants", function (assert) {
     // This should return the current structure path
-    const filename = util.styleSheetFileName();
+    const filename = util.getEpubStructure().stylesheet;
     assert.ok(filename.includes("stylesheet.css"), "Should contain stylesheet.css");
     assert.ok(filename.includes("OEBPS") || filename.includes("EPUB"), "Should contain OEBPS or EPUB directory");
 });

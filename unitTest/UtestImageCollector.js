@@ -7,7 +7,7 @@ QUnit.test("ImageInfo.ctor", function (assert) {
     let imageInfo = new ImageInfo("http://www.baka-tsuki.org/WebToEpub.jpg", 0, null);
     assert.equal(imageInfo.wrappingUrl, "http://www.baka-tsuki.org/WebToEpub.jpg");
     assert.equal(imageInfo.sourceUrl, null);
-    assert.equal(imageInfo.getZipHref(), "EPUB/images/0000_WebToEpub.jpg");
+    assert.equal(imageInfo.getZipHref(), "OEBPS/Images/0000_WebToEpub.jpg");
     assert.equal(imageInfo.getId(), "image0000");
 });
 
@@ -70,7 +70,7 @@ QUnit.test("findImagesUsedInDocument", function (assert) {
     imageCollector.findImagesUsedInDocument(dom.body);
     assert.equal(imageCollector.imageInfoList.length, 3);
     let imageInfo = imageCollector.imageInfoByUrl("https://www.baka-tsuki.org/project/index.php?title=File:BTS_vol_01_000a.jpg");
-    assert.equal(imageInfo.getZipHref(), "EPUB/images/0000_BTS_vol_01_000a.jpg");
+    assert.equal(imageInfo.getZipHref(), "OEBPS/Images/0000_BTS_vol_01_000a.jpg");
 
     // test adding a new cover 
     imageCollector.setCoverImageUrl("http://test.com/dummy.jpg");
