@@ -162,8 +162,8 @@ class ChapterUrlsUI {
  
     /** @private */
     static onRangeChanged() {
-        let startIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeStartChapterSelect());
-        let endIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeEndChapterSelect());
+        let startIndex = ChapterUrlsUI.getRangeStartChapterSelect().selectedIndex;
+        let endIndex = ChapterUrlsUI.getRangeEndChapterSelect().selectedIndex;
         let rc = new ChapterUrlsUI.RangeCalculator();
 
         for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
@@ -172,11 +172,6 @@ class ChapterUrlsUI {
             row.hidden = !inRange;
         }
         ChapterUrlsUI.setChapterCount(startIndex, endIndex);
-    }
-
-    static selectionToRowIndex(selectElement) {
-        let selectedIndex = selectElement.selectedIndex;
-        return selectedIndex + 1;
     }
 
     /** @private */
@@ -253,12 +248,13 @@ class ChapterUrlsUI {
         // Set flag to prevent recursive updates
         ChapterUrlsUI._updatingSelectAll = true;
         
-        // Set all chapter checkboxes to the new state
+        // Only affect chapters in the current range
+        let rc = new ChapterUrlsUI.RangeCalculator();
         for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
-            ChapterUrlsUI.setRowCheckboxState(row, newState);
-            row.hidden = false;
+            if (rc.rowInRange(row)) {
+                ChapterUrlsUI.setRowCheckboxState(row, newState);
+            }
         }
-        ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
         
         // Clear flag
         ChapterUrlsUI._updatingSelectAll = false;
@@ -1023,8 +1019,8 @@ class ChapterUrlsUI {
 ChapterUrlsUI.RangeCalculator = class {
     constructor()
     {
-        this.startIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeStartChapterSelect());
-        this.endIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeEndChapterSelect());
+        this.startIndex = ChapterUrlsUI.getRangeStartChapterSelect().selectedIndex;
+        this.endIndex = ChapterUrlsUI.getRangeEndChapterSelect().selectedIndex;
     }
     rowInRange(row) {
         let index = row.rowIndex;
