@@ -266,7 +266,11 @@ class ChapterCache {
         const k = 1024;
         const sizes = ["B", "KB", "MB", "GB"];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+        const value = bytes / Math.pow(k, i);
+        
+        // Round KB to nearest whole number, keep 2 decimal places for larger units
+        const decimals = (sizes[i] === "KB") ? 0 : 2;
+        return parseFloat(value.toFixed(decimals)) + " " + sizes[i];
     }
 
     /**

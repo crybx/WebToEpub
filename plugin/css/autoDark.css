@@ -4,12 +4,31 @@
         color: #eee;
     }
 
-    input, button, select, progress, textarea {
+    input, select, progress, textarea {
         background: #2b2b2b;
         color: #eee;
     }
 
+    button {
+        background: #1e1e1e !important;
+        color: #eee !important;
+        border: 1px solid #555 !important;
+    }
+
     button:hover {
-        color: #222222;
+        background: #262626 !important;
+        color: #fff !important;
+    }
+
+    /* Sidebar dark mode styling */
+    .sidebar {
+        background-color: rgb(40, 40, 40) !important;
+        color: #eee !important;
+        box-shadow: -4px 0 8px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Sidebar item hover effects for auto dark mode */
+    .sidebar tr label:hover {
+        background-color: rgba(135, 206, 250, 0.15) !important;
     }
 }

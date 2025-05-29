@@ -7,6 +7,15 @@
 "use strict";
 
 class SvgIcons {
+    static ARROW_BAR_RIGHT = `
+<!-- source: https://icons.getbootstrap.com/icons/arrow-bar-right/ -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     fill="currentColor"
+     class="bi bi-arrow-bar-right"
+     viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8m-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5"/>
+</svg>`
+
     static ARROW_CLOCKWISE = `
 <!-- source: https://icons.getbootstrap.com/icons/arrow-clockwise/ -->
 <svg xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +40,8 @@ class SvgIcons {
 <svg version="1.1"
      baseProfile="full"
      viewBox="0 0 32 32"
-     fill="dodgerblue"
+     fill="currentColor"
+     class="downloading-icon"
      xmlns="http://www.w3.org/2000/svg">
   <rect x="12" y="4" width="8" height="12" />
   <polygon points="4 16, 28 16, 16 28, 15 28" />
@@ -58,7 +68,8 @@ class SvgIcons {
     static CHAPTER_STATE_SLEEPING = `
 <svg version="1.1"
      baseProfile="full"
-     stroke-width="2" stroke="#965607"
+     stroke-width="2" stroke="currentColor"
+     class="sleeping-icon"
      viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg">
   <line y2="4.3" x2="15.1" y1="4.3" x1="6.2" />
@@ -85,7 +96,7 @@ class SvgIcons {
     static EYE_FILL = `
 <!-- source: https://icons.getbootstrap.com/icons/eye-fill/ -->
 <svg xmlns="http://www.w3.org/2000/svg"
-     fill="dodgerblue"
+     fill="currentColor"
      class="bi bi-eye-fill"
      viewBox="0 0 16 16">
     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
@@ -109,6 +120,15 @@ class SvgIcons {
      class="bi bi-file-earmark-check-fill"
      viewBox="0 0 16 16">
     <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1m1.354 4.354-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+</svg>`
+
+    static FILTER = `
+<!-- https://icons.getbootstrap.com/icons/filter/ -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     fill="currentColor"
+     class="bi bi-filter"
+     viewBox="0 0 16 16">
+  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
 </svg>`
 
     static INFO_FILL = `

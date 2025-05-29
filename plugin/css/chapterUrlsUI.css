@@ -1,12 +1,23 @@
 #chapterListSection {
     padding: 0;
+    width: 100%;
 }
 
 /* Select All Checkbox Styling */
+#selectAllUrlsCheckbox {
+    width: 12px;
+    height: 12px;
+    margin: 0 0 0 4px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
 #selectAllUrlsCheckbox + span {
     margin-left: 4px;
+    margin-right: 8px;
     cursor: pointer;
     user-select: none;
+    vertical-align: middle;
 }
 
 /* Make indeterminate state look unchecked */
@@ -14,17 +25,18 @@
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    width: 13px;
-    height: 13px;
-    border: 2px solid #666;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #767676;
+    border-radius: 2.5px;
     background-color: white;
     position: relative;
     cursor: pointer;
 }
 
-#selectAllUrlsCheckbox:indeterminate:focus {
-    outline: 2px solid #0066cc;
-    outline-offset: 1px;
+#selectAllUrlsCheckbox:indeterminate:focus,
+#selectAllUrlsCheckbox:indeterminate:hover {
+    border-color: #4f4f4f;
 }
 
 .chapter-section-padding {
@@ -33,26 +45,35 @@
 
 .chapter-list {
     width: 100%;
-    border-top: 1px solid #ccc;
-    margin-top: 4px;
+    border-top: 1px solid var(--border-color, #ccc);
 }
 
 .chapter-list-header {
     display: flex;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #ccc;
+    background-color: var(--header-bg, #f8f9fa);
+    border-bottom: 1px solid var(--border-color, #ccc);
     font-weight: bold;
     text-align: center;
     padding: 5px 0;
 }
 
 .chapter-list-header .chapter-title-column {
-    padding-left: 25px;
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chapter-list-header .chapter-url-column {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .chapter-row {
     display: flex;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-light, #eee);
     align-items: center;
     justify-content: center;
     padding: 4px 0;
@@ -60,7 +81,7 @@
 }
 
 .chapter-row:hover {
-    background-color: #f8f9fa;
+    background-color: var(--row-hover-bg, #f8f9fa);
 }
 
 .chapter-row:last-child {
@@ -83,10 +104,10 @@
 }
 
 .chapter-url-column {
-    flex: 0 0 200px;
+    flex: 1 1 auto;
     align-items: center;
     justify-content: center;
-    padding: 0 8px;
+    padding: 0 0 0 8px;
     font-family: monospace;
     font-size: 12px;
     color: #666;
@@ -111,7 +132,7 @@
     width: 100%;
     max-width: none;
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: 1px solid var(--input-border, #ddd);
     padding: 4px 6px;
     border-radius: 3px;
     font-size: 14px;
@@ -150,17 +171,27 @@ svg {
     vertical-align: middle;
 }
 
+/* Default icon colors */
+.bi-eye-fill,
+.downloading-icon {
+    color: dodgerblue;
+}
+
+.sleeping-icon {
+    color: #965607;
+}
+
 .chapter-status-column svg {
     margin: 2px;
     transition: filter 0.2s ease;
 }
 
 #chapterSelectInfo svg {
-    color: #808080;
+    color: var(--icon-color, #808080);
 }
 
 #deleteAllCachedChapters svg {
-    color: #555555;
+    color: var(--icon-color-dark, #555555);
 }
 
 /* Clickable Icons */
@@ -259,6 +290,38 @@ svg {
     white-space: normal;
 }
 
+/* Tooltip positioning for filter button */
+#viewFiltersButton .tooltipText {
+    bottom: 100%;
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    margin-bottom: 4px;
+    white-space: normal;
+}
+
+/* Top right controls positioning - outside container */
+.top-right-controls {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 1000;
+}
+
+/* Open sidebar button sizing to match close button */
+#openSidebarButton {
+    padding: 6px;
+    border-radius: 4px;
+}
+
+/* Flip the open sidebar icon horizontally and size to match close button */
+#openSidebarIcon svg {
+    transform: scaleX(-1);
+    width: 16px;
+    height: 16px;
+}
+
 #deleteAllCachedChapters {
     display: none;
     transition: filter 0.2s ease;
@@ -332,5 +395,123 @@ svg {
     
     .chapter-status-column {
         flex: 0 0 60px;
+    }
+}
+
+/* Dark mode CSS variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --header-bg: #3a3a3a;
+        --row-hover-bg: #3a3a3a;
+        --icon-color: #b0b0b0;
+        --icon-color-dark: #999999;
+        --modal-bg: #2f2f2f;
+        --modal-title-bg: #3a3a3a;
+        --modal-title-text: #eee;
+        --modal-border: #555;
+        --modal-close-color: #b0b0b0;
+        --border-color: #555;
+        --border-light: #444;
+        --input-border: #555;
+        --button-border: #555;
+        --sidebar-bg: rgb(40, 40, 40);
+        --sidebar-text: #eee;
+    }
+
+    /* Lighter icon effects for dark mode */
+    .clickable-icon:hover {
+        background-color: rgba(135, 206, 250, 0.15) !important;
+    }
+
+    .clickable-icon:hover > svg,
+    .clickable-icon:hover > span > svg,
+    .more-actions-menu .menu-item:hover svg {
+        fill: #87ceeb !important;
+    }
+
+    .clickable-icon:active > svg,
+    .clickable-icon:active > span > svg {
+        fill: #87ceeb !important;
+    }
+
+    .more-actions-menu .menu-item:hover span {
+        color: #87ceeb;
+    }
+
+    /* Override modal close button colors */
+    .modal-close:hover {
+        color: #87ceeb !important;
+        background: rgba(135, 206, 250, 0.15) !important;
+    }
+
+    .modal-close:active {
+        color: #87ceeb !important;
+        background: rgba(135, 206, 250, 0.2) !important;
+    }
+
+    /* Override default icon colors in dark mode */
+    .bi-eye-fill,
+    .downloading-icon {
+        color: #87ceeb;
+    }
+
+    .sleeping-icon {
+        color: #d4a574;
+    }
+
+    /* More actions menu dark mode */
+    .more-actions-menu {
+        background-color: var(--modal-bg, white);
+        border: 1px solid var(--border-color, #ccc);
+    }
+
+    .more-actions-menu .menu-item {
+        border-bottom: 1px solid var(--border-light, #eee);
+    }
+
+    .more-actions-menu .menu-item span {
+        color: var(--modal-title-text, #333);
+    }
+
+    /* Checkbox accent colors for dark mode */
+    /* Default blue for standard checkboxes */
+    input[type=checkbox] {
+        accent-color: #87ceeb;
+    }
+
+    /* More specific overrides */
+    .error-state input[type=checkbox] {
+        accent-color: #f27070 !important;
+    }
+
+    input[type=checkbox].greenBox {
+        accent-color: #90ee90 !important;
+    }
+
+    .sidebar input.exclude {
+        accent-color: #f27070 !important;
+    }
+
+    /* Sidebar item hover effects for dark mode */
+    .sidebar tr label:hover {
+        background-color: rgba(135, 206, 250, 0.15) !important;
+    }
+
+
+    /* Pastel error state styling for dark mode */
+    .error-state .chapter-status-icon,
+    .error-state:hover .chapter-status-icon,
+    .error-state:hover .menu-icon,
+    .error-state .more-actions-menu .menu-item:hover svg {
+        fill: #f27070;
+    }
+
+    .error-state .clickable-icon:hover,
+    .error-state .more-actions-menu .menu-item:hover {
+        background-color: rgba(242, 112, 112, 0.15);
+    }
+
+    .error-state .more-actions-menu .menu-item:hover span {
+        color: #f27070;
     }
 }

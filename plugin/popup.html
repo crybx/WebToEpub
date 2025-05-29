@@ -11,6 +11,14 @@
     <base />
 </head>
 <body>
+
+    <!-- Top right open sidebar button - outside container -->
+    <div class="top-right-controls">
+        <div class="clickable-icon" id="openSidebarButton" hidden="true">
+            <span id="openSidebarIcon"></span>
+        </div>
+    </div>
+
     <div class="container">
         <section id="readingListSection" hidden="true">
             <button id="closeReadingList">__MSG_button_Close_ReadingList__</button>
@@ -169,22 +177,24 @@
               <button id="clearCoverImageUrlButton">__MSG_button_Clear_Url__</button>
             </div>
         </section>
-        <div class="progressSection">
+        <section class="progressSection">
+          <div class="progress-section-wrap">
             <div class="progressBarRow">
-                <progress id="fetchProgress" value=" 0" max="1"></progress>
-                <span id="progressString"></span>
+              <progress id="fetchProgress" value=" 0" max="1"></progress>
+              <span id="progressString"></span>
             </div>
             <div class="progressButtonRow">
-                <button id="packEpubButton" class="expandedButton">__MSG_button_Pack_EPUB__</button>
-                <button id="downloadChaptersButton" class="expandedButton">__MSG_button_Download_Chapters__</button>
-                <button data-libclick="yes" id="LibAddToLibrary" class="expandedButton">Add to Library</button>
+              <button id="packEpubButton" class="expandedButton">__MSG_button_Pack_EPUB__</button>
+              <button id="downloadChaptersButton" class="expandedButton">__MSG_button_Download_Chapters__</button>
+              <button data-libclick="yes" id="LibAddToLibrary" class="expandedButton">Add to Library</button>
             </div>
-        </div>
-        <div class="HiddenButtonSection">
+          </div>
+        </section>
+        <section class="HiddenButtonSection">
             <button id="hiddenBibButton">__MSG_button_Lib_Library__</button>
             <button id="advancedOptionsButton">__MSG_button_Advanced_Options__</button>
             <button id="cacheOptionsButton">__MSG_button_Cache_Options__</button>
-        </div>
+        </section>
 
         <!-- Hidden Section - Library -->
         <section id="hiddenBibSection" hidden="true">
@@ -541,7 +551,12 @@
               <tr id="rangeEndChapterRow">
                 <td>__MSG_label_Range_End_Chapter__</td>
                 <td><select id="selectRangeEndChapter" /></td>
-                <td colspan="2">&nbsp; <button id="viewFiltersButton">__MSG_button_View_Filters__</button></td>
+                <td colspan="2">
+                  <div class="tooltip-wrapper clickable-icon" id="viewFiltersButton">
+                    <span id="viewFiltersIcon"></span>
+                    <span class="tooltipText i18n">__MSG_button_View_Filters__</span>
+                  </div>
+                </td>
               </tr>
               <tr id="rangeChapterCountRow">
                 <td>__MSG_label_Chapter_Count__</td>
@@ -620,32 +635,37 @@
                 <button id="closeCacheOptions" class="modal-close">✕</button>
             </div>
             <div id="cacheOptionsContent">
-                <table id="cacheOptionsTable">
-                    <tr>
-                        <td>__MSG_label_Enable_Chapter_Caching__</td>
-                        <td>
+                <div id="cacheOptionsContainer">
+                    <div class="cache-option-row">
+                        <div class="cache-option-label i18n">__MSG_label_Enable_Chapter_Caching__</div>
+                        <div class="cache-option-value">
                             <input id="enableChapterCachingCheckbox" type="checkbox" name="enableChapterCachingCheckbox" checked="true">
                             <span id="toggleStateText">On</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Cache_Retention_Days__</td>
-                        <td>
+                        </div>
+                    </div>
+                    <div class="cache-option-row">
+                        <div class="cache-option-label i18n">__MSG_label_Cache_Retention_Days__</div>
+                        <div class="cache-option-value">
                             <input id="cacheRetentionDays" type="number" name="cacheRetentionDays" value="30" min="1" max="365">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Cached_Chapter_Count__</td>
-                        <td>
+                        </div>
+                    </div>
+                    <div class="cache-option-row">
+                        <div class="cache-option-label i18n">__MSG_label_Cached_Chapter_Count__</div>
+                        <div class="cache-option-value">
                             <span id="cachedChapterCount">Loading...</span>
-                            <button id="clearAllCacheButton">__MSG_button_Delete_All_Cached_Chapters__</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>__MSG_label_Chapter_Cache_Size__</td>
-                        <td><span id="cacheSize">Loading...</span></td>
-                    </tr>
-                </table>
+                        </div>
+                    </div>
+                    <div class="cache-option-row">
+                        <div class="cache-option-label i18n">__MSG_label_Chapter_Cache_Size__</div>
+                        <div class="cache-option-value"><span id="cacheSize">Loading...</span></div>
+                    </div>
+                    <div class="cache-option-row">
+                        <div class="cache-option-label"></div>
+                        <div class="cache-option-value">
+                            <button id="clearAllCacheButton" class="i18n">__MSG_button_Delete_All_Cached_Chapters__</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -664,7 +684,11 @@
     </div>
 
     <div id="sbOptions" class="sidebar">
-        <div width="100%" id="sbClose" class="closebtn">&#x274c;</div>
+        <div class="sidebar-close-wrapper">
+            <div id="sbClose" class="clickable-icon sidebar-close">
+                <span id="sbCloseIcon"></span>
+            </div>
+        </div>
         <section id="sbFilters" hidden="true">
             <table style="width:100%;">
                 <tr>

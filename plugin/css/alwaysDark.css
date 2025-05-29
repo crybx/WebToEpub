@@ -3,12 +3,128 @@ body {
     color: #eee;
 }
 
-input, button, select, progress, textarea {
+input, select, progress, textarea {
     background: #2b2b2b;
     color: #eee;
 }
 
-button:hover {
-    color: #222222;
+button {
+    background: #1e1e1e !important;
+    color: #eee !important;
+    border: 1px solid #555 !important;
 }
 
+button:hover {
+    background: #262626 !important;
+    color: #fff !important;
+}
+
+/* Dark mode CSS variables for always dark mode */
+:root {
+    --header-bg: #3a3a3a;
+    --row-hover-bg: #3a3a3a;
+    --icon-color: #b0b0b0;
+    --icon-color-dark: #999999;
+    --modal-bg: #2f2f2f;
+    --modal-title-bg: #3a3a3a;
+    --modal-title-text: #eee;
+    --modal-border: #555;
+    --modal-close-color: #b0b0b0;
+    --border-color: #555;
+    --border-light: #444;
+    --input-border: #555;
+    --button-border: #555;
+}
+
+/* Sidebar dark mode styling */
+.sidebar {
+    background-color: rgb(40, 40, 40) !important;
+    color: #eee !important;
+    box-shadow: -4px 0 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Lighter icon effects for always dark mode */
+.clickable-icon:hover > svg,
+.clickable-icon:hover > span > svg,
+.more-actions-menu .menu-item:hover svg,
+.clickable-icon:active > svg,
+.clickable-icon:active > span > svg {
+    fill: #87ceeb !important;
+}
+
+.more-actions-menu .menu-item:hover span,
+.modal-close:hover,
+.modal-close:active {
+    color: #87ceeb !important;
+}
+
+.bi-eye-fill,
+.downloading-icon {
+    color: #87ceeb !important;
+}
+
+/* Override modal close button colors */
+.clickable-icon:hover,
+.modal-close:hover,
+.modal-close:active {
+    background: rgba(135, 206, 250, 0.15) !important;
+}
+
+.sleeping-icon {
+    color: #d4a574 !important;
+}
+
+/* More actions menu always dark mode */
+.more-actions-menu {
+    background-color: var(--modal-bg, white) !important;
+    border: 1px solid var(--border-color, #ccc) !important;
+}
+
+.more-actions-menu .menu-item {
+    border-bottom: 1px solid var(--border-light, #eee) !important;
+}
+
+.more-actions-menu .menu-item span {
+    color: var(--modal-title-text, #333) !important;
+}
+
+/* Checkbox accent colors for always dark mode */
+/* Default blue for standard checkboxes */
+input[type=checkbox] {
+    accent-color: #87ceeb !important;
+}
+
+/* More specific overrides */
+.error-state input[type=checkbox] {
+    accent-color: #f27070 !important;
+}
+
+input[type=checkbox].greenBox {
+    accent-color: #90ee90 !important;
+}
+
+.sidebar input.exclude {
+    accent-color: #f27070 !important;
+}
+
+/* Sidebar item hover effects for always dark mode */
+.sidebar tr label:hover {
+    background-color: rgba(135, 206, 250, 0.15) !important;
+}
+
+/* Pastel error state styling for always dark mode */
+.error-state .chapter-status-icon,
+.error-state:hover .chapter-status-icon,
+.error-state:hover .menu-icon,
+.error-state .more-actions-menu .menu-item:hover svg {
+    fill: #f27070 !important;
+}
+
+.error-state .clickable-icon:hover,
+.error-state .more-actions-menu .menu-item:hover {
+    background-color: rgba(242, 112, 112, 0.15) !important;
+}
+
+.error-state .more-actions-menu .menu-item:hover span {
+    color: #f27070 !important;
+}

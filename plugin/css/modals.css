@@ -11,25 +11,25 @@
     z-index: 1000;
     justify-content: center;
     align-items: center;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .modal-container {
     position: relative;
-    background-color: white;
+    background-color: var(--modal-bg, white);
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
 }
 
 .modal-title-bar {
     position: relative;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    background-color: var(--modal-title-bg, #f8f9fa);
+    border-bottom: 1px solid var(--modal-border, #dee2e6);
     padding: 5px 10px;
-    border-radius: 8px 8px 0 0;
+    border-radius: 4px 4px 0 0;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -39,7 +39,7 @@
 .modal-title {
     margin: 0;
     font-size: 16px;
-    color: #333;
+    color: var(--modal-title-text, #333);
     flex-grow: 1;
     padding-right: 20px;
     word-wrap: break-word;
@@ -56,7 +56,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 4px;
-    color: #666;
+    color: var(--modal-close-color, #666);
     box-shadow: none;
 }
 
@@ -75,7 +75,7 @@
 /* Chapter Viewer specific sizing */
 #chapterViewer .modal-container {
     width: 90%;
-    max-width: 850px;
+    max-width: 810px;
     height: 90%;
 }
 
@@ -83,6 +83,7 @@
     padding: 20px 25px;
     overflow: auto;
     flex: 1;
+    font-size: 18px;
 }
 
 /* Cache Options specific sizing */
@@ -96,21 +97,31 @@
     overflow: auto;
 }
 
-#cacheOptionsTable {
-    width: 100%;
-    border-collapse: collapse;
+#cacheOptionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-#cacheOptionsTable td {
-    padding: 10px 5px;
-    vertical-align: middle;
-    line-height: 24px; /* Match toggle height for better alignment */
+.cache-option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-#cacheOptionsTable td:first-child {
-    width: 180px;
-    text-align: left;
+.cache-option-label {
+    flex: 0 0 50%;
+    text-align: right;
+    padding-right: 10px;
 }
+
+.cache-option-value {
+    flex: 0 0 50%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 
 /* Style the enable caching checkbox as a toggle switch */
 #enableChapterCachingCheckbox {
@@ -160,19 +171,25 @@
 }
 
 /* Other checkboxes keep normal styling */
-#cacheOptionsTable input[type="checkbox"]:not(#enableChapterCachingCheckbox) {
+#cacheOptionsContainer input[type="checkbox"]:not(#enableChapterCachingCheckbox) {
     margin-right: 8px;
 }
 
 #cacheRetentionDays {
     width: 80px;
+    height: 26px;
+    padding: 0 8px;
     vertical-align: middle;
+    -moz-appearance: textfield; /* Firefox */
 }
 
-#clearAllCacheButton {
-    margin-left: 10px;
-    vertical-align: middle;
+/* Hide spinner arrows in WebKit browsers */
+#cacheRetentionDays::-webkit-outer-spin-button,
+#cacheRetentionDays::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
+
 
 /* Cover Image Modal specific sizing */
 #coverImageModal .modal-container {
@@ -215,8 +232,8 @@
     object-fit: contain;
 }
 
-/* Ensure all spans in the cache table are properly aligned */
-#cacheOptionsTable span {
+/* Ensure all spans in the cache options are properly aligned */
+#cacheOptionsContainer span {
     vertical-align: middle;
     display: inline-block;
     line-height: 24px;

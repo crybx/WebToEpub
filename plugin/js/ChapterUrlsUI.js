@@ -79,7 +79,7 @@ class ChapterUrlsUI {
         
         // Set up delete cache handler
         let deleteButton = document.getElementById("deleteAllCachedChapters");
-        if (deleteButton.children.length == 0) {
+        if (deleteButton.children.length === 0) {
             deleteButton.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
         }
         let deleteWrapper = deleteButton.parentElement;
@@ -670,6 +670,8 @@ class ChapterUrlsUI {
         document.getElementById("chapterSelectControlsDiv").hidden = !toTable;
         ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = toTable);
         document.getElementById("editURLsHint").hidden = toTable;
+        document.querySelector(".progressSection").hidden = !toTable;
+        document.querySelector(".HiddenButtonSection").hidden = !toTable;
     }
 
     /** 

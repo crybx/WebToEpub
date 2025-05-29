@@ -540,13 +540,37 @@ const main = (function() {
         ChapterUrlsUI.Filters.Filter(); //Run reset filters to clear confusion.
     }
 
+    function sbFiltersToggle() {
+        let sidebar = document.getElementById("sbOptions");
+        if (sidebar.classList.contains("sidebarOpen")) {
+            sbHide();
+        } else {
+            sbFiltersShow();
+        }
+    }
+
+    function updateSidebarButtons() {
+        let sidebar = document.getElementById("sbOptions");
+        let openSidebarButton = document.getElementById("openSidebarButton");
+        
+        if (sidebar.classList.contains("sidebarOpen")) {
+            // Sidebar is open - hide the top-right open button (close button is in sidebar)
+            openSidebarButton.hidden = true;
+        } else {
+            // Sidebar is closed - show the top-right open button
+            openSidebarButton.hidden = false;
+        }
+    }
+
     function sbShow() {
         document.getElementById("sbOptions").classList.add("sidebarOpen");
+        updateSidebarButtons();
     }
 
     function sbHide() {
         document.getElementById("sbOptions").classList.remove("sidebarOpen");
         document.getElementById("sbFilters").hidden = true;
+        updateSidebarButtons();
     }
 
     function showReadingList() {
@@ -664,7 +688,8 @@ const main = (function() {
         document.getElementById("writeOptionsButton").onclick = () => userPreferences.writeToFile();
         document.getElementById("readOptionsInput").onchange = onReadOptionsFromFile;
         UserPreferences.getReadingListCheckbox().onclick = onReadingListCheckboxClicked;
-        document.getElementById("viewFiltersButton").onclick = () => sbFiltersShow();
+        document.getElementById("viewFiltersButton").onclick = () => sbFiltersToggle();
+        document.getElementById("openSidebarButton").onclick = () => sbFiltersShow();
         document.getElementById("sbClose").onclick = () => sbHide();
         document.getElementById("viewReadingListButton").onclick = () => showReadingList();
         
@@ -740,6 +765,26 @@ const main = (function() {
         }
     }
 
+    function initializeIcons() {
+        // Initialize the filter icon
+        let viewFiltersIcon = document.getElementById("viewFiltersIcon");
+        if (viewFiltersIcon) {
+            viewFiltersIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILTER));
+        }
+        
+        // Initialize the sidebar close icon
+        let sbCloseIcon = document.getElementById("sbCloseIcon");
+        if (sbCloseIcon) {
+            sbCloseIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.ARROW_BAR_RIGHT));
+        }
+        
+        // Initialize the sidebar open icon (flipped version)
+        let openSidebarIcon = document.getElementById("openSidebarIcon");
+        if (openSidebarIcon) {
+            openSidebarIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.ARROW_BAR_RIGHT));
+        }
+    }
+
     // actions to do when window opened
     window.onload = function() {
         userPreferences = UserPreferences.readFromLocalStorage();
@@ -749,7 +794,9 @@ const main = (function() {
             setupCustomTooltips();
             getAdvancedOptionsSection().hidden = !userPreferences.advancedOptionsVisibleByDefault.value;
             getAdditionalMetadataSection().hidden = !userPreferences.ShowMoreMetadataOptions.value;
+            initializeIcons();
             addEventHandlers();
+            updateSidebarButtons();
             ChapterCache.updateCacheButtonText();
             populateControls();
             if (util.isFirefox()) {
