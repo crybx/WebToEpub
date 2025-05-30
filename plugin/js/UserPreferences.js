@@ -278,12 +278,16 @@ class UserPreferences {
         let theme = document.querySelector("#themeColorTag").value;
         let autodark = document.querySelector("link#autoDark");
         let alwaysDark = document.querySelector("link#alwaysDark");
+        let cyberpunk = document.querySelector("link#cyberpunk");
         autodark.disabled = true;
         alwaysDark.disabled = true;
-        if (theme == "") {
+        cyberpunk.disabled = true;
+        if (theme === "") {
             autodark.disabled = false;
-        } else if (theme == "DarkMode") {
+        } else if (theme === "DarkMode") {
             alwaysDark.disabled = false;
+        } else if (theme === "CyberpunkMode") {
+            cyberpunk.disabled = false;
         }
     }
 

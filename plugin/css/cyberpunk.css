@@ -1,0 +1,245 @@
+/* Cyberpunk Theme for WebToEpub */
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a2a 100%);
+    background-attachment: fixed;
+    background-size: 100% 100vh;
+    min-height: 100vh;
+    color: #00ffff;
+    font-family: 'Courier New', monospace;
+}
+
+/* Input and form elements */
+input, select, progress, textarea {
+    background: #1a1a2e;
+    color: #00ffff;
+    border: 1px solid #8b00ff;
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(45deg, #16213e 0%, #1a1a2e 50%, #16213e 100%) !important;
+    color: #00ffff !important;
+    border: 1px solid #8b00ff !important;
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
+    text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+}
+
+button:hover {
+    background: linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%) !important;
+    color: #8b00ff !important;
+    border-color: #00ffff !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    text-shadow: 0 0 5px rgba(139, 0, 255, 0.8);
+}
+
+/* Container and borders */
+.container {
+    border-color: #8b00ff !important;
+    box-shadow: 0 0 20px rgba(139, 0, 255, 0.3);
+}
+
+/* Progress bars */
+progress {
+    background: #1a1a2e;
+    border: 1px solid #8b00ff;
+}
+
+progress::-webkit-progress-bar {
+    background: #1a1a2e;
+    border: 1px solid #8b00ff;
+}
+
+progress::-webkit-progress-value {
+    background: linear-gradient(90deg, #8b00ff 0%, #00ffff 100%);
+}
+
+progress::-moz-progress-bar {
+    background: linear-gradient(90deg, #8b00ff 0%, #00ffff 100%);
+}
+
+/* Cyberpunk CSS variables */
+:root {
+    --header-bg: #1a1a2e;
+    --row-hover-bg: rgba(139, 0, 255, 0.1);
+    --icon-color: #00ffff;
+    --icon-color-dark: #8b00ff;
+    --modal-bg: #16213e;
+    --modal-title-bg: #1a1a2e;
+    --modal-title-text: #00ffff;
+    --modal-border: #8b00ff;
+    --modal-close-color: #00ffff;
+    --border-color: #8b00ff;
+    --border-light: #6a00cc;
+    --input-border: #8b00ff;
+    --button-border: #8b00ff;
+    --sidebar-bg: rgba(26, 26, 46, 0.95);
+    --sidebar-text: #00ffff;
+}
+
+/* Chapter list styling */
+.chapter-list {
+    border-color: var(--border-color);
+    background: rgba(26, 26, 46, 0.8);
+}
+
+.chapter-list-header {
+    background: var(--header-bg);
+    border-color: var(--border-color);
+    color: #00ffff;
+    text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+}
+
+.chapter-row:hover {
+    background-color: var(--row-hover-bg);
+    box-shadow: 0 0 5px rgba(255, 0, 255, 0.2);
+}
+
+/* Default icon colors - dimmer blue that glows on hover */
+.bi-eye-fill,
+.bi-three-dots-vertical,
+.bi-download {
+    color: #33baff !important;
+}
+
+/* Cyberpunk glow effects for icons */
+.clickable-icon:hover {
+    background-color: rgba(139, 0, 255, 0.1) !important;
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.4);
+}
+
+.clickable-icon:hover > svg,
+.clickable-icon:hover > span > svg,
+.more-actions-menu .menu-item:hover svg {
+    fill: #00ffff !important;
+    filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.8));
+}
+
+.clickable-icon:active > svg,
+.clickable-icon:active > span > svg {
+    fill: #8b00ff !important;
+    filter: drop-shadow(0 0 3px rgba(139, 0, 255, 0.8));
+}
+
+/* Sidebar cyberpunk styling */
+.sidebar {
+    background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%) !important;
+    color: #00ffff !important;
+    border-left: 2px solid #8b00ff !important;
+    box-shadow: -8px 0 20px rgba(139, 0, 255, 0.4) !important;
+}
+
+.sidebar tr label:hover {
+    background: linear-gradient(90deg, rgba(139, 0, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%) !important;
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+/* Cyberpunk checkbox styling */
+input[type=checkbox] {
+    accent-color: rgba(182, 101, 255, 0.8) !important;
+    filter: drop-shadow(0 0 2px rgba(139, 0, 255, 0.5));
+}
+
+input[type=checkbox].greenBox {
+    accent-color: #61f161 !important;
+    filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.5));
+}
+
+.error-state input[type=checkbox] {
+    accent-color: #be1922 !important;
+    filter: drop-shadow(0 0 2px rgb(255, 245, 0));
+}
+
+/* More actions menu cyberpunk styling */
+.more-actions-menu {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border: 1px solid #8b00ff !important;
+    box-shadow: 0 8px 25px rgba(139, 0, 255, 0.4) !important;
+}
+
+.more-actions-menu .menu-item {
+    border-bottom: 1px solid var(--border-light) !important;
+    transition: all 0.2s ease;
+}
+
+.more-actions-menu .menu-item span {
+    color: #00ffff !important;
+    text-shadow: 0 0 2px rgba(0, 255, 255, 0.5);
+}
+
+.more-actions-menu .menu-item:hover {
+    background: linear-gradient(90deg, rgba(139, 0, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%) !important;
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.3);
+}
+
+.more-actions-menu .menu-item:hover span {
+    color: #8b00ff !important;
+    text-shadow: 0 0 3px rgba(139, 0, 255, 0.8);
+}
+
+/* Error state cyberpunk styling */
+.error-state .chapter-status-icon,
+.error-state:hover .chapter-status-icon,
+.error-state:hover .menu-icon,
+.error-state .more-actions-menu .menu-item:hover svg {
+    fill: #ff0040 !important;
+    filter: drop-shadow(0 0 3px rgba(255, 0, 64, 0.8));
+}
+
+.error-state .clickable-icon:hover,
+.error-state .more-actions-menu .menu-item:hover {
+    background: linear-gradient(90deg, rgba(255, 0, 64, 0.1) 0%, rgba(139, 0, 255, 0.1) 100%) !important;
+}
+
+.error-state .more-actions-menu .menu-item:hover span {
+    color: #ff0040 !important;
+    text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
+}
+
+/* Tooltip cyberpunk styling */
+.tooltip-wrapper .tooltipText {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #00ffff;
+    border: 1px solid #8b00ff;
+    box-shadow: 0 0 10px rgba(139, 0, 255, 0.4);
+    text-shadow: 0 0 2px rgba(0, 255, 255, 0.7);
+}
+
+/* Modal cyberpunk styling */
+.modal-backdrop {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-container {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #8b00ff;
+    box-shadow: 0 0 30px rgba(139, 0, 255, 0.5);
+}
+
+.modal-title-bar {
+    background: var(--modal-title-bg);
+    border-bottom: 1px solid #8b00ff;
+}
+
+.modal-title {
+    color: #00ffff;
+    text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+}
+
+.modal-close {
+    color: #00ffff;
+    border: 1px solid #8b00ff;
+    background: transparent;
+}
+
+.modal-close:hover {
+    color: #8b00ff !important;
+    background: rgba(139, 0, 255, 0.1) !important;
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.4);
+}
