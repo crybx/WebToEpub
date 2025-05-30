@@ -346,9 +346,12 @@ class LibraryBookData {
      */
     static switchToMainUI() {
         // Hide library section if visible
-        let libraryButton = document.getElementById("libButton");
-        if (libraryButton && document.getElementById("librarySection").style.display !== "none") {
-            libraryButton.click();
+        let librarySection = document.getElementById("hiddenBibSection");
+        if (librarySection && !librarySection.hidden) {
+            let libraryButton = document.getElementById("hiddenBibButton");
+            if (libraryButton) {
+                libraryButton.click();
+            }
         }
         
         // Ensure input section is visible
@@ -526,17 +529,37 @@ class LibraryBookData {
                 let row = Array.from(rows).find(r => r.rowIndex === index);
 
                 if (row && chapter.isInBook) {
-                    // Add eye icon for chapters that exist in book
+                    // Replace cache eye icon with library eye icon for chapters that exist in book
                     let statusColumn = row.querySelector(".chapter-status-column");
-                    if (statusColumn && !statusColumn.querySelector(".library-chapter-view-icon")) {
-                        let eyeIcon = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
-                        eyeIcon.classList.add("library-chapter-view-icon");
-                        eyeIcon.setAttribute("title", "View chapter from library book");
-                        eyeIcon.onclick = (e) => {
-                            e.stopPropagation();
-                            ChapterViewer.openLibraryChapter(bookId, chapter.libraryChapterIndex);
-                        };
-                        statusColumn.appendChild(eyeIcon);
+                    if (statusColumn) {
+                        // Remove existing cache icon and its tooltip wrapper if present
+                        let existingWrapper = statusColumn.querySelector(".tooltip-wrapper");
+                        if (existingWrapper) {
+                            existingWrapper.remove();
+                        }
+                        
+                        // Add library eye icon with tooltip wrapper (same structure as cache icon)
+                        if (!statusColumn.querySelector(".library-chapter-view-icon")) {
+                            let tooltipWrapper = document.createElement("div");
+                            tooltipWrapper.classList.add("tooltip-wrapper", "clickable-icon");
+                            
+                            let eyeIcon = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
+                            eyeIcon.classList.add("library-chapter-view-icon", "chapter-status-icon");
+                            eyeIcon.style.fill = "#28a745"; // Green color for library icon
+                            
+                            let tooltip = document.createElement("span");
+                            tooltip.classList.add("tooltipText");
+                            tooltip.textContent = "View chapter from library book";
+                            
+                            tooltipWrapper.onclick = (e) => {
+                                e.stopPropagation();
+                                ChapterViewer.openLibraryChapter(bookId, chapter.libraryChapterIndex);
+                            };
+                            
+                            tooltipWrapper.appendChild(eyeIcon);
+                            tooltipWrapper.appendChild(tooltip);
+                            statusColumn.insertBefore(tooltipWrapper, statusColumn.firstChild);
+                        }
                     }
                     
                     // Mark row as "in library" for CSS styling
