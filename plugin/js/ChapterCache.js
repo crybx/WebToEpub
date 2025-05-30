@@ -840,7 +840,9 @@ class ChapterCache {
             // Download the file
             let blob = new Blob([htmlContent], {type: "text/html"});
             let overwriteExisting = true; // Allow overwrite for individual downloads
-            let backgroundDownload = false; // Show download dialog for individual files
+            // Respect user's "Don't popup SaveAs dialog" preference
+            let userPreferences = UserPreferences.readFromLocalStorage();
+            let backgroundDownload = userPreferences.noDownloadPopup.value;
             
             // Use the Download utility from the main codebase
             if (typeof Download !== "undefined" && Download.save) {
@@ -879,7 +881,6 @@ class ChapterCache {
 </head>
 <body>
     <div class="chapter-content">
-        <h1>${ChapterCache.escapeHtml(title)}</h1>
         ${content}
     </div>
 </body>
