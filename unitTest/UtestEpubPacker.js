@@ -23,7 +23,7 @@ function makePacker() {
     return epubPacker;
 }
 
-function makeEpubItemSupplier(imageCollector) {
+async function makeEpubItemSupplier(imageCollector) {
     imageCollector = imageCollector || ImageCollector.StubCollector();
     let parser = new ArchiveOfOurOwnParser();
     parser.userPreferences = new UserPreferences();
@@ -41,7 +41,7 @@ function makeEpubItemSupplier(imageCollector) {
     }
     // monkey patch to avoid adding information page
     parser.getInformationEpubItemChildNodes = undefined;
-    let epubItems = parser.webPagesToEpubItems(webPages);
+    let epubItems = await parser.webPagesToEpubItems(webPages);
     return new EpubItemSupplier(parser, epubItems, imageCollector);
 }
 
@@ -52,12 +52,12 @@ function makeDummyUserPreferences(includeImageSourceUrl, useSvgForImages) {
     return preferences;
 }
 
-test("buildContentOpf", function (assert) {
+test("buildContentOpf", async function (assert) {
     let epubPacker = makePacker();
     epubPacker.metaInfo.seriesName = "BakaSeries";
     epubPacker.metaInfo.seriesIndex = "666";
     epubPacker.getDateForMetaData = function () { return "2015-10-17T21:04:54.061Z"; };
-    let contentOpf = epubPacker.buildContentOpf(makeEpubItemSupplier());
+    let contentOpf = epubPacker.buildContentOpf(await makeEpubItemSupplier());
 
     // firefox adds /r/n after some elements. Remove so string same for Chrome and Firefox.
     assert.equal(contentOpf.replace(/\r|\n/g, ""),
@@ -89,7 +89,7 @@ test("buildContentOpf", function (assert) {
     );
 });
 
-test("buildEpub3ContentOpf", function (assert) {
+test("buildEpub3ContentOpf", async function (assert) {
     let metaInfo = new EpubMetaInfo();
     metaInfo.uuid = "Dummy UUID";
     metaInfo.title = "Dummy <Title>";
@@ -99,7 +99,7 @@ test("buildEpub3ContentOpf", function (assert) {
     epubPacker.metaInfo.seriesName = "BakaSeries";
     epubPacker.metaInfo.seriesIndex = "666";
     epubPacker.getDateForMetaData = function () { return "2015-10-17T21:04:54.061Z"; };
-    let contentOpf = epubPacker.buildContentOpf(makeEpubItemSupplier());
+    let contentOpf = epubPacker.buildContentOpf(await makeEpubItemSupplier());
 
     // firefox adds /r/n after some elements. Remove so string same for Chrome and Firefox.
     assert.equal(contentOpf.replace(/\r|\n/g, ""),
@@ -140,7 +140,7 @@ test("buildEpub3ContentOpf", function (assert) {
     );
 });
 
-test("buildContentOpfWithCover", function (assert) {
+test("buildContentOpfWithCover", async function (assert) {
     let image = new ImageInfo("http://bp.org/thepic.jpeg", 0, "http://bp.org/thepic.jpeg");
     image.isCover = true;
     let imageCollector = {
@@ -151,7 +151,7 @@ test("buildContentOpfWithCover", function (assert) {
         coverImageInfo: image,
         imagesToPackInEpub: () => [ image ]
     };
-    let itemSupplier = makeEpubItemSupplier(imageCollector);
+    let itemSupplier = await makeEpubItemSupplier(imageCollector);
     let epubPacker = makePacker();
     epubPacker.getDateForMetaData = function () { return "2015-10-17T21:04:54.061Z"; };
     let contentOpf = epubPacker.buildContentOpf(itemSupplier);
@@ -192,14 +192,14 @@ test("buildContentOpfWithCover", function (assert) {
     );
 });
 
-test("buildContentOpfWithTranslatorAndAuthorFileAs", function (assert) {
+test("buildContentOpfWithTranslatorAndAuthorFileAs", async function (assert) {
     let epubPacker = makePacker();
     epubPacker.metaInfo.seriesName = "BakaSeries";
     epubPacker.metaInfo.seriesIndex = "666";
     epubPacker.metaInfo.fileAuthorAs = "Doe, John";
     epubPacker.metaInfo.translator = "Baka-Tsuki staff";
     epubPacker.getDateForMetaData = function () { return "2015-10-17T21:04:54.061Z"; };
-    let contentOpf = epubPacker.buildContentOpf(makeEpubItemSupplier());
+    let contentOpf = epubPacker.buildContentOpf(await makeEpubItemSupplier());
 
     // firefox adds /r/n after some elements. Remove so string same for Chrome and Firefox.
     assert.equal(contentOpf.replace(/\r|\n/g, ""),
@@ -232,8 +232,8 @@ test("buildContentOpfWithTranslatorAndAuthorFileAs", function (assert) {
     );
 });
 
-test("buildTableOfContents", function (assert) {
-    let buildTableOfContents = makePacker().buildTableOfContents(makeEpubItemSupplier());
+test("buildTableOfContents", async function (assert) {
+    let buildTableOfContents = makePacker().buildTableOfContents(await makeEpubItemSupplier());
     // firefox adds /r/n after some elements. Remove so string same for Chrome and Firefox.
     assert.equal(buildTableOfContents.replace(/\r|\n/g, ""),
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
@@ -265,8 +265,8 @@ test("buildTableOfContents", function (assert) {
     );
 });
 
-test("buildNestedTableOfContents", function (assert) {
-    let epubItemSupplier = makeEpubItemSupplier();
+test("buildNestedTableOfContents", async function (assert) {
+    let epubItemSupplier = await makeEpubItemSupplier();
     let doc = TestUtils.makeDomWithBody("<div></div><div></div>");
     let body = doc.body;
     let epubItems = [];
@@ -491,8 +491,8 @@ test("addExtensionIfMissing_Missing_Added", function (assert) {
     assert.equal(actual, "web.epub");
 });
 
-test("buildNavigationDocument", function (assert) {
-    let epubItemSupplier = makeEpubItemSupplier();
+test("buildNavigationDocument", async function (assert) {
+    let epubItemSupplier = await makeEpubItemSupplier();
     let doc = TestUtils.makeDomWithBody("<div></div><div></div>");
     let body = doc.body;
     let epubItems = [];

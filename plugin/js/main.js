@@ -163,8 +163,8 @@ const main = (function() {
         ErrorLog.clearHistory();
         setProcessingButtonsState(true);
         parser.onStartCollecting();
-        await parser.fetchContent().then(function() {
-            return packEpub(metaInfo);
+        await parser.fetchContent().then(async function() {
+            return await packEpub(metaInfo);
         }).then(function(content) {
             // Enable button here.  If user cancels save dialog
             // the promise never returns
@@ -221,10 +221,10 @@ const main = (function() {
             EpubPacker.EPUB_VERSION_3 : EpubPacker.EPUB_VERSION_2;
     }
 
-    function packEpub(metaInfo) {
+    async function packEpub(metaInfo) {
         let epubVersion = epubVersionFromPreferences();
         let epubPacker = new EpubPacker(metaInfo, epubVersion);
-        return epubPacker.assemble(parser.epubItemSupplier());
+        return epubPacker.assemble(await parser.epubItemSupplier());
     }
 
     function dumpErrorLogToFile() {

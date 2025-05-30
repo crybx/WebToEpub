@@ -238,8 +238,22 @@ class Parser {
     /**
     * default implementation turns each webPage into single epub item
     */
-    webPageToEpubItems(webPage, epubItemIndex) {
-        let content = this.convertRawDomToContent(webPage);
+    async webPageToEpubItems(webPage, epubItemIndex) {
+        // Check if we have cached, pre-processed content
+        let cachedContent = null;
+        try {
+            cachedContent = await ChapterCache.get(webPage.sourceUrl);
+        } catch (e) {
+            // Ignore cache read errors, fall back to normal processing
+        }
+        
+        let content;
+        if (cachedContent) {
+            content = cachedContent;
+        } else {
+            content = this.convertRawDomToContent(webPage);
+        }
+        
         let items = [];
         if (content != null) {
             items.push(new ChapterEpubItem(webPage, content, epubItemIndex));
@@ -395,13 +409,13 @@ class Parser {
         return fileName;
     }
 
-    epubItemSupplier() {
-        let epubItems = this.webPagesToEpubItems([...this.state.webPages.values()]);
+    async epubItemSupplier() {
+        let epubItems = await this.webPagesToEpubItems([...this.state.webPages.values()]);
         this.fixupHyperlinksInEpubItems(epubItems);
         return new EpubItemSupplier(this, epubItems, this.imageCollector);
     }
 
-    webPagesToEpubItems(webPages) {
+    async webPagesToEpubItems(webPages) {
         let epubItems = [];
         let index = 0;
 
@@ -413,7 +427,7 @@ class Parser {
 
         for (let webPage of webPages.filter(c => this.isWebPagePackable(c))) {
             let newItems = (webPage.error == null)
-                ? webPage.parser.webPageToEpubItems(webPage, index)
+                ? await webPage.parser.webPageToEpubItems(webPage, index)
                 : this.makePlaceholderEpubItem(webPage, index);
             epubItems = epubItems.concat(newItems);
             index += newItems.length;
