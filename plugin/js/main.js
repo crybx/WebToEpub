@@ -677,6 +677,9 @@ const main = (function() {
         document.getElementById("LibShowAdvancedOptionsCheckbox").addEventListener("change", function() {
             LibraryUI.LibRenderSavedEpubs();
         });
+        document.getElementById("LibShowCompactViewCheckbox").addEventListener("change", function() {
+            LibraryUI.LibRenderSavedEpubs();
+        });
         document.getElementById("LibAddToLibrary").addEventListener("click", fetchContentAndPackEpub);
         document.getElementById("LibPauseToLibrary").addEventListener("click", pauseToLibarary);
         document.getElementById("stylesheetToDefaultButton").onclick = onStylesheetToDefaultClick;

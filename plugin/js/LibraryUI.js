@@ -57,7 +57,7 @@ class LibraryUI {
         LibRenderString += "<div class='center-flex'>";
         LibRenderString += "<button id='libupdateall'>"+document.getElementById("LibTemplateUpdateAll").innerHTML+"</button>";
         LibRenderString += "</div>";
-        if ( ShowCompactView && !ShowAdvancedOptions) {
+        if (ShowCompactView) {
             LibRenderString += "<table>";
             LibRenderString += "<tbody>";
             let column = 5;
@@ -85,7 +85,7 @@ class LibraryUI {
             LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWraper");
             document.getElementById("libupdateall").addEventListener("click", function() {LibraryUI.Libupdateall();});
             for (let i = 0; i < CurrentLibKeys.length; i++) {
-                document.getElementById("LibCover"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibDownload(this);});
+                document.getElementById("LibCover"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibLoadBook(this);});
             }
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 document.getElementById("LibCover"+CurrentLibKeys[i]).src = await LibraryStorage.LibGetFromStorage("LibCover" + CurrentLibKeys[i]);
