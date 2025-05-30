@@ -232,6 +232,9 @@ class LibraryUI {
      * Delete all library items
      */
     static Libdeleteall() {
+        if (!confirm(chrome.i18n.getMessage("__MSG_confirm_Clear_Library__"))) {
+            return;
+        }
         LibraryUI.LibShowLoadingText();
         chrome.storage.local.get(null, async function(items) {
             let CurrentLibKeys = await LibraryStorage.LibGetAllLibStorageKeys("LibEpub", Object.keys(items));

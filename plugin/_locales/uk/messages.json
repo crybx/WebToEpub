@@ -484,6 +484,10 @@
 		"message": "Очистити бібліотеку",
 		"description": "Label on button to clear Local Storage"
 	},
+	"__MSG_confirm_Clear_Library__": {
+		"message": "Ви впевнені, що хочете очистити всю бібліотеку? Це видалить всі збережені книги і не може бути скасовано.",
+		"description": "Confirmation dialog when clearing the entire library"
+	},
 	"__MSG_button_Lib_Template_Export_Library__": {
 		"message": "Експорт бібліотеки",
 		"description": "Label on button to export Library in json format"

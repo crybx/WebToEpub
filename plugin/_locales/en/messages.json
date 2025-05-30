@@ -27,6 +27,10 @@
 		"message": "Clear Library",
 		"description": "Label on button to clear Local Storage"
 	},
+	"__MSG_confirm_Clear_Library__": {
+		"message": "Are you sure you want to clear the entire library? This will delete all saved books and cannot be undone.",
+		"description": "Confirmation dialog when clearing the entire library"
+	},
 	"__MSG_button_Lib_Template_Export_Library__": {
 		"message": "Export Library",
 		"description": "Label on button to export Library in json format"

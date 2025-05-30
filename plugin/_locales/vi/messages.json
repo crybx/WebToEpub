@@ -420,6 +420,10 @@
         "message": "Xóa thư viện",
         "description": "Label on button to clear Local Storage"
     },
+    "__MSG_confirm_Clear_Library__": {
+        "message": "Bạn có chắc chắn muốn xóa toàn bộ thư viện? Điều này sẽ xóa tất cả các sách đã lưu và không thể hoàn tác.",
+        "description": "Confirmation dialog when clearing the entire library"
+    },
     "__MSG_button_Lib_Template_Export_Library__": {
         "message": "Xuất thư viện",
         "description": "Label on button to export Library in json format"
