@@ -833,8 +833,9 @@ class ChapterCache {
             // Create HTML file with proper structure
             let htmlContent = ChapterCache.createChapterHtml(title, content);
             
-            // Generate safe filename
-            let fileName = ChapterCache.sanitizeFilename(title || "Chapter") + ".html";
+            // Generate safe filename with book title and chapter title
+            let bookTitle = ChapterCache.getBookTitle();
+            let fileName = ChapterCache.createHtmlFilename(bookTitle, title);
             
             // Download the file
             let blob = new Blob([htmlContent], {type: "text/html"});
@@ -886,11 +887,72 @@ class ChapterCache {
     }
 
     /**
+    * Get the book title from the UI
+    */
+    static getBookTitle() {
+        try {
+            let titleElement = document.getElementById("titleInput");
+            if (titleElement && titleElement.value && titleElement.value.trim()) {
+                return titleElement.value.trim();
+            }
+        } catch (error) {
+            // Fallback if DOM access fails
+        }
+        return "Book";
+    }
+
+    /**
+    * Create HTML filename with format "BookTitle_ChapterTitle.html"
+    */
+    static createHtmlFilename(bookTitle, chapterTitle) {
+        let sanitizedBookTitle = ChapterCache.sanitizeFilename(bookTitle || "Book");
+        let sanitizedChapterTitle = ChapterCache.sanitizeFilename(chapterTitle || "Chapter");
+        
+        return `${sanitizedBookTitle}_${sanitizedChapterTitle}.html`;
+    }
+
+    /**
     * Sanitize filename for safe file system usage
     */
     static sanitizeFilename(filename) {
-        // Remove or replace characters that are invalid in filenames
-        return filename.replace(/[<>:"/\\|?*]/g, "_").trim();
+        if (!filename || filename.trim() === "") {
+            return "Chapter";
+        }
+        
+        let sanitized = filename.trim();
+        
+        // First, normalize whitespace - replace any whitespace sequences with single space
+        sanitized = sanitized.replace(/\s+/g, " ");
+        
+        // Use a more conservative approach instead of util.safeForFileName to avoid ellipsis issues
+        // Replace problematic characters with underscores, then normalize underscores
+        sanitized = sanitized
+            .replace(/[<>:"/\\|?*]/g, "_")  // Replace illegal filename chars
+            .replace(/[ ]/g, "_")           // Replace spaces with underscores
+            .replace(/[^\w\-_.]/g, "_")     // Replace any other non-alphanumeric chars (except dash, underscore, dot)
+            .replace(/_+/g, "_")            // Collapse multiple underscores to single
+            .replace(/^_+|_+$/g, "");       // Remove leading/trailing underscores
+        
+        // Limit length to reasonable size (keeping some room for book title + chapter title + extension)
+        const maxLength = 80;
+        if (sanitized.length > maxLength) {
+            sanitized = sanitized.substring(0, maxLength).replace(/_+$/, "");
+        }
+        
+        // If we ended up with empty string, use fallback
+        if (!sanitized) {
+            sanitized = "Chapter";
+        }
+        
+        // Additional check for Windows reserved names and illegal characters
+        if (typeof Download !== "undefined" && Download.isFileNameIllegalOnWindows) {
+            if (Download.isFileNameIllegalOnWindows(sanitized)) {
+                // If still illegal, create a safe fallback
+                sanitized = "Chapter_" + Date.now();
+            }
+        }
+        
+        return sanitized;
     }
 
     /**
