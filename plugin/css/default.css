@@ -237,13 +237,13 @@ button:active {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
     width: 100%;
 }
 
 .progressButtonRow .expandedButton {
     flex: 1;
-    min-width: 150px;
+    min-width: 130px;
 }
 
 #coverUrlSection img {

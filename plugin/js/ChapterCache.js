@@ -736,6 +736,9 @@ class ChapterCache {
                 }));
                 index += group.length;
                 group = parser.groupPagesToFetch(webPages, index);
+                if (util.sleepController.signal.aborted) {
+                    break;
+                }
             }
         } catch (err) {
             ErrorLog.log(err);

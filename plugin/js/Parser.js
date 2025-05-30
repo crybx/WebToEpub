@@ -580,7 +580,7 @@ class Parser {
                 await Promise.all(group.map(async (webPage) => this.fetchWebPageContent(webPage)));
                 index += group.length;
                 group = this.groupPagesToFetch(pagesToFetch, index);
-                if (util.sleepControler.signal.aborted) {
+                if (util.sleepController.signal.aborted) {
                     break;
                 }
             }
