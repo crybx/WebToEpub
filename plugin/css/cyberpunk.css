@@ -272,6 +272,39 @@ input[type=checkbox].greenBox {
     text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
 }
 
+/* Library Chapter Status Indicators - Cyberpunk Theme */
+.chapter-in-library {
+    background-color: rgba(0, 255, 255, 0.1) !important;
+    border-left: 3px solid #00ffff !important;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
+}
+
+.chapter-in-library .chapter-title {
+    color: #00ffff !important;
+    text-shadow: 0 0 2px rgba(0, 255, 255, 0.5);
+}
+
+.chapter-new-on-website {
+    background-color: rgba(139, 0, 255, 0.1) !important;
+    border-left: 3px solid #8b00ff !important;
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.2);
+}
+
+.chapter-new-on-website .chapter-title {
+    color: #8b00ff !important;
+    text-shadow: 0 0 2px rgba(139, 0, 255, 0.5);
+}
+
+.library-chapter-view-icon {
+    color: #00ffff !important;
+    filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.7));
+}
+
+.library-chapter-view-icon:hover {
+    color: #8b00ff !important;
+    filter: drop-shadow(0 0 3px rgba(139, 0, 255, 0.8));
+}
+
 .file-upload-label:hover,
 .lib-clickable-label:hover {
     background: rgba(139, 0, 255, 0.1);

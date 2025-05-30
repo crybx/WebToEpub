@@ -358,4 +358,213 @@ class LibraryBookData {
             inputSection.classList.add("visible");
         }
     }
+
+    /**
+     * Get chapter URLs that exist in a library book (RELIABLE - uses actual EPUB content)
+     * @param {string} bookId - The Library book ID
+     * @returns {Array<string>} Array of chapter URLs found in the book
+     */
+    static async getChapterUrlsInBook(bookId) {
+        try {
+            let bookData = await LibraryBookData.extractBookData(bookId);
+            // Return only real URLs (not library:// URLs) that exist in the book
+            return bookData.chapters
+                .map(ch => ch.sourceUrl)
+                .filter(url => url && !url.startsWith('library://'));
+        } catch (error) {
+            console.error("Error extracting chapter URLs from book:", error);
+            return [];
+        }
+    }
+
+    /**
+     * Compare website chapters against actual book content to detect new chapters
+     * REPLACES BRITTLE READING LIST DEPENDENCY
+     * @param {string} bookId - The Library book ID
+     * @param {Array} websiteChapters - Chapters found on the website
+     * @returns {Array} Chapters with isInBook and isIncludeable flags set
+     */
+    static async detectNewChapters(bookId, websiteChapters) {
+        try {
+            // Get full book data to map URLs to library chapter indices
+            let bookData = await LibraryBookData.extractBookData(bookId);
+            let bookChapterMap = new Map();
+            
+            bookData.chapters.forEach((bookChapter, index) => {
+                if (bookChapter.sourceUrl && !bookChapter.sourceUrl.startsWith('library://')) {
+                    bookChapterMap.set(bookChapter.sourceUrl, {
+                        libraryChapterIndex: index,
+                        title: bookChapter.title
+                    });
+                }
+            });
+            
+            return websiteChapters.map(chapter => {
+                let libraryInfo = bookChapterMap.get(chapter.sourceUrl);
+                let isInBook = libraryInfo !== undefined;
+                
+                return {
+                    ...chapter,
+                    isInBook: isInBook,
+                    isIncludeable: !isInBook, // Only new chapters selectable
+                    previousDownload: isInBook, // For compatibility with existing UI
+                    libraryChapterIndex: libraryInfo?.libraryChapterIndex,
+                    libraryBookId: bookId
+                };
+            });
+        } catch (error) {
+            console.error("Error detecting new chapters:", error);
+            // Fallback: mark all chapters as new if detection fails
+            return websiteChapters.map(chapter => ({
+                ...chapter,
+                isInBook: false,
+                isIncludeable: true,
+                previousDownload: false
+            }));
+        }
+    }
+
+    /**
+     * UNIFIED LIBRARY BOOK LOADING - Replaces separate "Search new Chapters" and "Select" actions
+     * @param {string} bookId - The Library book ID
+     */
+    static async loadLibraryBookInMainUI(bookId) {
+        try {
+            // Show loading indicator
+            LibraryUI.LibShowLoadingText();
+
+            // 1. Get book metadata and stored URL
+            let storyUrl = await LibraryStorage.LibGetFromStorage("LibStoryURL" + bookId);
+            if (!storyUrl) {
+                throw new Error("No story URL found for this book");
+            }
+
+            // 2. Clear main UI and load the original website
+            main.resetUI();
+            main.setUiFieldToValue("startingUrlInput", storyUrl);
+            
+            let useRealParser = true;
+            let websiteChapters = [];
+            
+            try {
+                // 3. Try to use real parser for current website
+                await main.onLoadAndAnalyseButtonClick();
+                
+                // 4. Get chapters from website using real parser
+                if (window.parser && window.parser.state && window.parser.state.webPages) {
+                    websiteChapters = [...window.parser.state.webPages.values()];
+                    console.log(`Real parser loaded ${websiteChapters.length} chapters from website`);
+                } else {
+                    throw new Error("Real parser did not populate chapters");
+                }
+                
+            } catch (parserError) {
+                console.log("Real parser failed, falling back to mock parser:", parserError);
+                useRealParser = false;
+                
+                // 5. Fallback: Use mock parser with library content only
+                await LibraryBookData.loadBookWithMockParser(bookId);
+                // Clear loading indicator since fallback completed
+                LibraryUI.LibRenderSavedEpubs();
+                return; // Mock parser handles its own UI, so exit here
+            }
+            
+            if (useRealParser && websiteChapters.length > 0) {
+                // 6. Compare website chapters against book content (RELIABLE METHOD)
+                let updatedChapters = await LibraryBookData.detectNewChapters(bookId, websiteChapters);
+                
+                // 7. Update parser state with enhanced chapter data
+                window.parser.state.webPages.clear();
+                updatedChapters.forEach((chapter, index) => {
+                    window.parser.state.webPages.set(index, chapter);
+                });
+                
+                // 8. Re-populate chapter table with enhanced data
+                let chapterUrlsUI = new ChapterUrlsUI(window.parser);
+                chapterUrlsUI.populateChapterUrlsTable(updatedChapters);
+                
+                // 9. Add library-specific visual indicators
+                await LibraryBookData.addLibraryChapterIndicators(bookId, updatedChapters);
+                
+                console.log(`Enhanced ${updatedChapters.length} chapters with library status`);
+            }
+            
+            // 10. Ensure reading list checkbox is checked for compatibility
+            if (!document.getElementById("includeInReadingListCheckbox")?.checked) {
+                document.getElementById("includeInReadingListCheckbox")?.click();
+            }
+            
+            // 11. Clear loading indicator since operation completed successfully
+            // We need to refresh the library UI to clear the loading indicator
+            // even though we're switching to main UI
+            LibraryUI.LibRenderSavedEpubs();
+            
+            // 12. Switch to main UI
+            LibraryBookData.switchToMainUI();
+            
+            console.log(`Library book ${bookId} loaded successfully in main UI`);
+            
+        } catch (error) {
+            console.error("Error loading library book in main UI:", error);
+            // Clear loading indicator on error as well
+            LibraryUI.LibRenderSavedEpubs();
+            alert("Failed to load library book: " + error.message);
+        }
+    }
+
+    /**
+     * Add visual indicators for chapters that exist in the library book
+     * @param {string} bookId - The Library book ID  
+     * @param {Array} chapters - Enhanced chapters array
+     */
+    static async addLibraryChapterIndicators(bookId, chapters) {
+        try {
+            // Wait a moment for the chapter table to be fully rendered
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            chapters.forEach((chapter, index) => {
+                let row = document.querySelector(`tr[data-chapter-index="${index}"]`);
+                if (row && chapter.isInBook) {
+                    // Add eye icon for chapters that exist in book
+                    let statusColumn = row.querySelector(".chapter-status-column");
+                    if (statusColumn && !statusColumn.querySelector(".library-chapter-view-icon")) {
+                        let eyeIcon = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
+                        eyeIcon.className = "library-chapter-view-icon";
+                        eyeIcon.title = "View chapter from library book";
+                        eyeIcon.onclick = (e) => {
+                            e.stopPropagation();
+                            ChapterViewer.openLibraryChapter(bookId, chapter.libraryChapterIndex);
+                        };
+                        statusColumn.appendChild(eyeIcon);
+                    }
+                    
+                    // Mark row as "in library" for CSS styling
+                    row.classList.add("chapter-in-library");
+                } else if (row && !chapter.isInBook) {
+                    // Mark new chapters for visual distinction
+                    row.classList.add("chapter-new-on-website");
+                }
+            });
+            
+        } catch (error) {
+            console.error("Error adding library chapter indicators:", error);
+        }
+    }
+
+    /**
+     * Fallback method when real parser fails - uses mock parser with library content
+     * @param {string} bookId - The Library book ID
+     */
+    static async loadBookWithMockParser(bookId) {
+        try {
+            console.log("Loading library book with mock parser as fallback");
+            
+            // Use existing LibSelectBook logic as fallback
+            await LibraryBookData.LibSelectBook({dataset: {libepubid: bookId}});
+            
+        } catch (error) {
+            console.error("Error loading book with mock parser:", error);
+            throw error;
+        }
+    }
 }

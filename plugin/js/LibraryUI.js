@@ -108,7 +108,7 @@ class LibraryUI {
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDeleteEpub"+CurrentLibKeys[i]+"'>"+LibTemplateDeleteEpub+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDownload"+CurrentLibKeys[i]+"'>"+LibTemplateDownload+"</button>";
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibSelectBook"+CurrentLibKeys[i]+"'>"+LibTemplateSelectBook+"</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>Load Book</button>";
                 LibRenderString += "<span class='new-chapter-badge new-chapter-normal' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "</td>";
@@ -118,7 +118,6 @@ class LibraryUI {
                     LibRenderString += "<label id='LibMergeUploadLabel"+CurrentLibKeys[i]+"' data-libbuttonid='LibMergeUploadButton' data-libepubid="+CurrentLibKeys[i]+" for='LibMergeUpload"+CurrentLibKeys[i]+"' class='file-upload-label'>";
                     LibRenderString += "<button id='LibMergeUploadButton"+CurrentLibKeys[i]+"' class='disabled-button'>"+LibTemplateMergeUploadButton+"</button></label>";
                     LibRenderString += "<input type='file' data-libepubid="+CurrentLibKeys[i]+" id='LibMergeUpload"+CurrentLibKeys[i]+"' hidden>";
-                    LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibSearchNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateSearchNewChapter+"</button>";
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibEditMetadata"+CurrentLibKeys[i]+"'>"+LibTemplateEditMetadataButton+"</button>";
                 }
                 LibRenderString += "</td>";
@@ -166,7 +165,7 @@ class LibraryUI {
                 document.getElementById("LibDeleteEpub"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibDeleteEpub(this);});
                 document.getElementById("LibUpdateNewChapter"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibUpdateNewChapter(this);});
                 document.getElementById("LibDownload"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibDownload(this);});
-                document.getElementById("LibSelectBook"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryBookData.LibSelectBook(this);});
+                document.getElementById("LibLoadBook"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibLoadBook(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("change", function() {LibraryUI.LibSaveTextURLChange(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusin", function() {LibraryUI.LibShowTextURLWarning(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusout", function() {LibraryUI.LibHideTextURLWarning(this);});
@@ -177,7 +176,6 @@ class LibraryUI {
                     document.getElementById("LibMergeUpload"+CurrentLibKeys[i]).addEventListener("change", function() {LibraryUI.LibMergeUpload(this);});
                     document.getElementById("LibMergeUploadLabel"+CurrentLibKeys[i]).addEventListener("mouseover", function() {LibraryUI.LibMouseoverButtonUpload(this);});
                     document.getElementById("LibMergeUploadLabel"+CurrentLibKeys[i]).addEventListener("mouseout", function() {LibraryUI.LibMouseoutButtonUpload(this);});
-                    document.getElementById("LibSearchNewChapter"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibSearchNewChapter(this);});
                     document.getElementById("LibEditMetadata"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibEditMetadata(this);});
                 }
             }
@@ -439,6 +437,22 @@ class LibraryUI {
     }
 
     /**
+     * UNIFIED LOAD BOOK ACTION - Replaces separate "Search new Chapters" and "Select" 
+     * Uses reliable EPUB-based chapter detection instead of brittle Reading List
+     */
+    static async LibLoadBook(objbtn) {
+        let bookId = objbtn.dataset.libepubid;
+        try {
+            await LibraryBookData.loadLibraryBookInMainUI(bookId);
+        } catch (error) {
+            console.error("Error in LibLoadBook:", error);
+            // Fallback to old behavior if new method fails
+            LibraryUI.LibSearchNewChapter(objbtn);
+        }
+    }
+
+    /**
+     * Legacy method - kept for compatibility and fallback
      * Search for new chapters for a book
      */
     static LibSearchNewChapter(objbtn) {
