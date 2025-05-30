@@ -149,3 +149,13 @@ input[type=checkbox].greenBox {
 .warning-text {
     color: #ffff99 !important; /* Light yellow for better dark mode contrast */
 }
+
+/* Library Banner Dark Mode */
+:root {
+    --library-banner-bg: #2d4a32;
+    --library-banner-border: #66bb6a;
+    --library-banner-text: #a5d6a7;
+    --library-banner-button-bg: #66bb6a;
+    --library-banner-button-text: #1b1b1b;
+    --library-banner-button-hover: #81c784;
+}

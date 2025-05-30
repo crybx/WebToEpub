@@ -100,7 +100,7 @@
 /* Library Chapter Status Indicators */
 .chapter-in-library {
     background-color: rgba(76, 175, 80, 0.1);
-    border-left: 3px solid #4CAF50;
+    border-left: 1px solid #4CAF50;
 }
 
 .chapter-in-library .chapter-title {
@@ -109,7 +109,7 @@
 
 .chapter-new-on-website {
     background-color: rgba(255, 152, 0, 0.1);
-    border-left: 3px solid #ff9800;
+    border-left: 1px solid #ff9800;
 }
 
 .library-chapter-view-icon {
@@ -126,4 +126,75 @@
 .lib-compact-table {
     /* Same as .no-border-spacing */
     border-spacing: 0;
+}
+
+/* Library Book Indicator Banner */
+.library-book-banner {
+    background-color: var(--library-banner-bg, #e8f5e8);
+    border: 1px solid var(--library-banner-border, #4caf50);
+    border-radius: 4px 4px 0 0;
+    margin: 0;
+    padding: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Library banner spans full width of container */
+.container .library-book-banner {
+    align-self: stretch;
+}
+
+.library-banner-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.library-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.library-banner-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.library-banner-text {
+    color: var(--library-banner-text, #2e7d32);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.library-book-title {
+    flex-grow: 1;
+    color: var(--library-banner-text, #2e7d32);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.library-banner-button {
+    background-color: var(--library-banner-button-bg, #4caf50);
+    color: var(--library-banner-button-text, white) !important;
+    border: 1px solid var(--library-banner-button-border, #4caf50);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+    /* Ensure good contrast in all themes */
+    background: var(--library-banner-button-bg, #4caf50) !important;
+    text-shadow: none;
+    /* Override default button styles for better readability */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.library-banner-button:hover {
+    background-color: var(--library-banner-button-hover, #45a049) !important;
+    background: var(--library-banner-button-hover, #45a049) !important;
+    border-color: var(--library-banner-button-hover, #45a049);
 }

@@ -626,4 +626,89 @@ class LibraryUI {
     static LibHideTextURLWarning(obj) {
         document.getElementById("LibURLWarning"+obj.dataset.libepubid).innerHTML = "<tr><td></td></tr>";
     }
+
+    /**
+     * Show library book indicator banner when a library book is automatically detected
+     * Note: This should be called AFTER the library book data has been loaded into the UI
+     */
+    static async LibShowBookIndicator(bookId) {
+        try {
+            // First try to get the actual book title from the EPUB metadata
+            let bookTitle = null;
+            try {
+                let metadata = await LibraryStorage.LibGetMetadata(bookId);
+                if (metadata && metadata[0]) {
+                    bookTitle = metadata[0]; // metadata[0] is the title
+                }
+            } catch (error) {
+                console.warn("Could not get metadata for book", bookId, error);
+            }
+            
+            // Fallback to titleInput field if metadata fetch failed
+            if (!bookTitle) {
+                bookTitle = main.getValueFromUiField("titleInput");
+            }
+            
+            // Final fallback to filename if both above methods failed
+            if (!bookTitle) {
+                bookTitle = await LibraryStorage.LibGetFromStorage("LibFilename" + bookId);
+                // Clean up the title by removing .epub extension if present
+                if (bookTitle && bookTitle.endsWith(".epub")) {
+                    bookTitle = bookTitle.replace(/\.epub$/, "");
+                }
+            }
+            
+            // Show the banner
+            let indicator = document.getElementById("libraryBookIndicator");
+            let titleElement = document.getElementById("libraryBookTitle");
+            
+            // Always update the title text (for when switching between books)
+            titleElement.textContent = bookTitle || `Book ${bookId}`;
+            indicator.hidden = false;
+            
+            // Store current library book for reference
+            window.currentLibraryBook = { id: bookId, title: bookTitle };
+            
+        } catch (error) {
+            console.error("Error showing library book indicator:", error);
+        }
+    }
+
+    /**
+     * Hide library book indicator and exit library mode
+     * Loads the current URL as a website instead of library book
+     */
+    static LibExitLibraryMode() {
+        let indicator = document.getElementById("libraryBookIndicator");
+        indicator.hidden = true;
+        window.currentLibraryBook = null;
+        window.isLoadingLibraryBook = false;
+        
+        // Set a flag to bypass library detection on next load
+        window.bypassLibraryDetection = true;
+        
+        // Get current URL and reload as website
+        let currentUrl = main.getValueFromUiField("startingUrlInput");
+        if (currentUrl) {
+            // Clear UI and load as normal website
+            main.resetUI();
+            main.setUiFieldToValue("startingUrlInput", currentUrl);
+            main.onLoadAndAnalyseButtonClick();
+        } else {
+            // Fallback: just reload the page
+            location.reload();
+        }
+    }
+
+    /**
+     * Setup event handlers for library book indicator
+     */
+    static LibSetupBookIndicatorHandlers() {
+        let exitButton = document.getElementById("exitLibraryModeButton");
+        if (exitButton) {
+            exitButton.addEventListener("click", () => {
+                LibraryUI.LibExitLibraryMode();
+            });
+        }
+    }
 }

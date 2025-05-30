@@ -315,9 +315,62 @@ const main = (function() {
         return !util.isNullOrEmpty(search);
     }
 
+    // Detect if URL matches any library book
+    async function detectLibraryBook(url) {
+        try {
+            // Get all book IDs efficiently
+            let bookIds = await LibraryStorage.LibGetStorageIDs();
+            if (!bookIds || bookIds.length === 0) {
+                return null;
+            }
+
+            // Build array of URL keys
+            let urlKeys = bookIds.map(id => `LibStoryURL${id}`);
+
+            // Get all URLs in one storage call
+            let urlData = await LibraryStorage.LibGetFromStorageArray(urlKeys);
+
+            // Check for matches
+            for (let key of urlKeys) {
+                if (urlData[key] === url) {
+                    let bookId = key.replace("LibStoryURL", "");
+                    return bookId;
+                }
+            }
+            return null;
+        } catch (error) {
+            console.error("Error detecting library book:", error);
+            return null;
+        }
+    }
+
+
     async function populateControlsWithDom(url, dom) {
         initalWebPage = dom;
         setUiFieldToValue("startingUrlInput", url);
+
+        // Check for matching library book first (but not if we're already loading/in library mode or bypassing)
+        if (!window.currentLibraryBook && !window.isLoadingLibraryBook && !window.bypassLibraryDetection) {
+            let libraryBookId = await detectLibraryBook(url);
+            if (libraryBookId) {
+                // Set flag to prevent re-entry during loading
+                window.isLoadingLibraryBook = true;
+                try {
+                    // Load library book first, then show indicator with correct title
+                    await LibraryBookData.loadLibraryBookInMainUI(libraryBookId);
+                    await LibraryUI.LibShowBookIndicator(libraryBookId);
+                } finally {
+                    // Clear loading flag
+                    window.isLoadingLibraryBook = false;
+                }
+                return;
+            }
+        }
+        
+        // Clear bypass flag after processing (one-time use)
+        if (window.bypassLibraryDetection) {
+            window.bypassLibraryDetection = false;
+        }
 
         // set the base tag, in case server did not supply it
         util.setBaseTag(url, initalWebPage);
@@ -713,6 +766,9 @@ const main = (function() {
             LibraryUI.LibRenderSavedEpubs();
         });
         document.getElementById("LibAddToLibrary").addEventListener("click", fetchContentAndPackEpub);
+        
+        // Setup library book indicator event handlers
+        LibraryUI.LibSetupBookIndicatorHandlers();
         if (document.getElementById("stopDownloadButton")) {
             document.getElementById("stopDownloadButton").addEventListener("click", stopDownload);
         }

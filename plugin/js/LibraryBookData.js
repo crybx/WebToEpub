@@ -498,7 +498,6 @@ class LibraryBookData {
             
         } catch (error) {
             console.error("Error loading library book in main UI:", error);
-            // Clear loading indicator on error as well
             LibraryUI.LibRenderSavedEpubs();
             alert("Failed to load library book: " + error.message);
         }

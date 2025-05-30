@@ -891,5 +891,13 @@
 			    "content": "$1"
 			}
 		}
+	},
+	"__MSG_label_library_mode__": {
+		"message": "You are viewing a book from your Library:",
+		"description": "Label indicating the user is viewing a library book"
+	},
+	"__MSG_button_exit_library_mode__": {
+		"message": "Exit Library View",
+		"description": "Button to exit library view and load chapters from the website"
 	}
 }

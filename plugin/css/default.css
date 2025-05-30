@@ -351,3 +351,4 @@ button:active {
 #sbFilters input[type=text], #sbFilters input[type=url], #sbFilters textarea, #sbFilters select {
     width: calc(100% - 15px);
 }
+

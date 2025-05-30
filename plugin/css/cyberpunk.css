@@ -215,7 +215,7 @@ input[type=checkbox].greenBox {
 .chapter-in-library {
     background: linear-gradient(90deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 255, 127, 0.05) 100%) !important;
     box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.2);
-    border-left: 3px solid #00ff7f;
+    border-left: 1px solid #00ff7f;
 }
 
 .chapter-in-library:hover {
@@ -226,7 +226,7 @@ input[type=checkbox].greenBox {
 .chapter-new-on-website {
     background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%) !important;
     box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.2);
-    border-left: 3px solid #ffd700;
+    border-left: 1px solid #ffd700;
 }
 
 .chapter-new-on-website:hover {
@@ -298,7 +298,7 @@ input[type=checkbox].greenBox {
 /* Library Chapter Status Indicators - Cyberpunk Theme */
 .chapter-in-library {
     background-color: rgba(0, 255, 255, 0.1) !important;
-    border-left: 3px solid #00ffff !important;
+    border-left: 1px solid #00ffff !important;
     box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
 }
 
@@ -309,7 +309,7 @@ input[type=checkbox].greenBox {
 
 .chapter-new-on-website {
     background-color: rgba(139, 0, 255, 0.1) !important;
-    border-left: 3px solid #8b00ff !important;
+    border-left: 1px solid #8b00ff !important;
     box-shadow: 0 0 8px rgba(139, 0, 255, 0.2);
 }
 
@@ -342,4 +342,28 @@ input[type=checkbox].greenBox {
 .lib-book-cover-cell {
     border: 1px solid #6a00cc;
     background: rgba(26, 26, 46, 0.3);
+}
+
+/* Library Banner Cyberpunk Mode */
+:root {
+    --library-banner-bg: linear-gradient(135deg, rgba(139, 0, 255, 0.2), rgba(0, 255, 255, 0.1));
+    --library-banner-border: #8b00ff;
+    --library-banner-text: #00ffff;
+    --library-banner-button-bg: linear-gradient(45deg, #8b00ff, #00ffff);
+    --library-banner-button-text: #000000;
+    --library-banner-button-hover: linear-gradient(45deg, #a000ff, #20ffff);
+}
+
+.library-book-banner {
+    box-shadow: 0 0 10px rgba(139, 0, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+    border-image: linear-gradient(45deg, #8b00ff, #00ffff) 1;
+}
+
+.library-banner-button {
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.6);
+}
+
+.library-banner-button:hover {
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.8), 0 0 15px rgba(0, 255, 255, 0.4);
 }
