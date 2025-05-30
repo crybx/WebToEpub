@@ -6,6 +6,7 @@
     <link href="css/default.css" rel="stylesheet" type="text/css" />
     <link href="css/chapterUrlsUI.css" rel="stylesheet" type="text/css" />
     <link href="css/modals.css" rel="stylesheet" type="text/css" />
+    <link href="css/libraryUI.css" rel="stylesheet" type="text/css" />
     <link href="css/autoDark.css" rel="stylesheet" type="text/css"  id="autoDark" />
     <link href="css/alwaysDark.css" rel="stylesheet" type="text/css" id="alwaysDark" disabled="true"/>
     <link href="css/cyberpunk.css" rel="stylesheet" type="text/css" id="cyberpunk" disabled="true"/>
@@ -217,7 +218,7 @@
                             <input type="file" data-libepubid="LibEpubNew" id="LibEpubNewUpload">
                         </tr>
                         <tr>
-                            <td style="height: 115.5px; width: 106.5px;" rowspan="4">
+                            <td class="lib-book-cover-cell" rowspan="4">
                                 <img src="">
                             </td>
                             <td colspan="2">
@@ -226,17 +227,17 @@
                                 <button id="LibTemplateUpdateNewChapter">__MSG_button_Lib_Template_Update_new_Chapters__</button>
                                 <button id="LibTemplateDownload">__MSG_button_Lib_Template_Download_EPUB__</button>
                                 <button id="LibTemplateSelectBook">__MSG_button_Lib_Template_Select_Book__</button>
-                                <label style="cursor: pointer;">
-                                    <button id="LibTemplateMergeUploadButton" style="pointer-events: none;">__MSG_button_Lib_Template_Add_Chapter_from_different_EPUB__</button>
+                                <label class="lib-clickable-label">
+                                    <button id="LibTemplateMergeUploadButton" class="lib-upload-button-overlay">__MSG_button_Lib_Template_Add_Chapter_from_different_EPUB__</button>
                                     <button id="LibTemplateEditMetadataButton">__MSG_button_Lib_Template_Edit_Metadata__</button>
                                 </label>
                                 <input type="file">
                             </td>
                         </tr>
                         <tr>
-                            <td id="LibTemplateNewChapter">__MSG_label_Lib_Template_New_Chapter__</td><td style="padding:0;">
-                            <td id="LibTemplateURL">__MSG_label_Lib_Template_Story_URL__</td><td style="padding:0;">
-                                <table style="border-spacing:0;">
+                            <td id="LibTemplateNewChapter">__MSG_label_Lib_Template_New_Chapter__</td><td class="lib-no-padding-cell">
+                            <td id="LibTemplateURL">__MSG_label_Lib_Template_Story_URL__</td><td class="lib-no-padding-cell">
+                                <table class="lib-compact-table">
                                     <tbody id="LibTemplateURLWarning">
                                         <tr>
                                             <td id="LibTemplateWarningURLChange">__MSG_label_Lib_Template_Warning_URL_Change__</td>
@@ -244,7 +245,7 @@
                                     </tbody>
                                     <tbody>
                                         <tr>
-                                            <td style="padding:0;">
+                                            <td class="lib-no-padding-cell">
                                                 <input type="url" value="Library template">
                                             </td>
                                         </tr>

@@ -194,9 +194,13 @@ var packNonManifestExtensionFiles = function(zip, packedFileName) {
         }).then(function () {
             return addCssFileToZip(zip, "modals.css");
         }).then(function () {
+            return addCssFileToZip(zip, "libraryUI.css");
+        }).then(function () {
             return addCssFileToZip(zip, "alwaysDark.css");
         }).then(function () {
             return addCssFileToZip(zip, "autoDark.css");
+        }).then(function () {
+            return addCssFileToZip(zip, "cyberpunk.css");
         }).then(function () {
             return getFileList("../plugin/popup.html");
         }).then(function(fileList) {

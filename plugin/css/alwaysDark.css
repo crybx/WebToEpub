@@ -140,3 +140,12 @@ input[type=checkbox].greenBox {
 .error-state .header-more-actions-menu .menu-item:hover span {
     color: #f27070 !important;
 }
+
+/* Library UI for always dark mode styling */
+.new-chapter-badge {
+    color: #90ee90 !important; /* Light green for good contrast on dark backgrounds */
+}
+
+.warning-text {
+    color: #ffff99 !important; /* Light yellow for better dark mode contrast */
+}

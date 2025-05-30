@@ -811,8 +811,6 @@ const main = (function() {
         fetchContentAndPackEpub: fetchContentAndPackEpub,
         downloadChapters: downloadChapters,
         resetUI: resetUI,
-        setProcessingButtonsState: setProcessingButtonsState,
-        setMetadataButtonsState: setMetadataButtonsState,
         setUiFieldToValue: setUiFieldToValue,
         getValueFromUiField: getValueFromUiField,
         getUserPreferences: () => userPreferences,

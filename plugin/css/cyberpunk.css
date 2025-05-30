@@ -260,3 +260,30 @@ input[type=checkbox].greenBox {
     background: rgba(139, 0, 255, 0.1) !important;
     box-shadow: 0 0 8px rgba(139, 0, 255, 0.4);
 }
+
+/* Library UI cyberpunk styling */
+.new-chapter-badge {
+    color: #00ff41 !important; /* Cyberpunk green instead of chartreuse */
+    text-shadow: 0 0 3px rgba(0, 255, 65, 0.8);
+}
+
+.warning-text {
+    color: #ff0040 !important; /* Cyberpunk red-pink instead of yellow */
+    text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
+}
+
+.file-upload-label:hover,
+.lib-clickable-label:hover {
+    background: rgba(139, 0, 255, 0.1);
+    box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
+}
+
+/* Library template styling */
+.lib-compact-table {
+    border-color: #8b00ff;
+}
+
+.lib-book-cover-cell {
+    border: 1px solid #6a00cc;
+    background: rgba(26, 26, 46, 0.3);
+}

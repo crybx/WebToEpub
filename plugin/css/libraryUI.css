@@ -1,0 +1,103 @@
+/* Library UI Styles */
+
+/* File Upload Components */
+.file-upload-label {
+    cursor: pointer;
+}
+
+.disabled-button {
+    pointer-events: none;
+}
+
+/* Layout Utilities */
+.center-flex {
+    display: flex;
+    justify-content: center;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.no-border-spacing {
+    border-spacing: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+/* Library Table Layout */
+.chapter-indicator-cell {
+    height: 1.2em;
+}
+
+.cover-image-cell {
+    height: 115.5px;
+    width: 106.5px;
+}
+
+/* New Chapter Badges */
+.new-chapter-badge {
+    font-size: 1.2em;
+    color: #228B22; /* Forest green - darker green for light backgrounds */
+}
+
+.new-chapter-compact {
+    padding: 0;
+}
+
+.new-chapter-normal {
+    padding: 1em;
+}
+
+/* Library Cover Images */
+.cover-compact-clickable {
+    cursor: pointer;
+    /* Dynamic max-height and max-width will be set via JavaScript */
+}
+
+/* Warning Messages */
+.warning-text {
+    color: #B8860B; /* Dark goldenrod - much better contrast on light backgrounds */
+}
+
+/* Library Specific Layouts */
+.library-url-table {
+    padding: 0;
+}
+
+.library-url-input-cell {
+    padding: 0;
+}
+
+/* Library HTML Template Styles */
+.lib-book-cover-cell {
+    /* Same as .cover-image-cell but separate for semantic clarity in HTML templates */
+    height: 115.5px;
+    width: 106.5px;
+}
+
+.lib-clickable-label {
+    /* Same as .file-upload-label but separate for semantic clarity */
+    cursor: pointer;
+}
+
+.lib-upload-button-overlay {
+    /* Same as .disabled-button */
+    pointer-events: none;
+}
+
+.lib-no-padding-cell {
+    /* Same as .no-padding but specific to library table cells */
+    padding: 0;
+}
+
+.lib-compact-table {
+    /* Same as .no-border-spacing */
+    border-spacing: 0;
+}

@@ -354,7 +354,8 @@ class LibraryBookData {
         // Ensure input section is visible
         let inputSection = document.getElementById("inputSection");
         if (inputSection) {
-            inputSection.style.display = "block";
+            inputSection.classList.remove("hidden");
+            inputSection.classList.add("visible");
         }
     }
 }

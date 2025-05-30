@@ -40,13 +40,13 @@ class LibraryUI {
             LibTemplateEditMetadataButton = document.getElementById("LibTemplateEditMetadataButton").innerHTML;
             LibRenderString += "<button id='libdeleteall'>"+document.getElementById("LibTemplateClearLibrary").innerHTML+"</button>";
             LibRenderString += "<button id='libexportall'>"+document.getElementById("LibTemplateExportLibrary").innerHTML+"</button>";
-            LibRenderString += "<label data-libbuttonid='LibImportLibraryButton' data-libepubid='' id='LibImportLibraryLabel' for='LibImportLibraryFile' style='cursor: pointer;'>";
-            LibRenderString += "<button id='LibImportLibraryButton' style='pointer-events: none;'>"+document.getElementById("LibTemplateImportEpubButton").innerHTML+"</button></label>";
+            LibRenderString += "<label data-libbuttonid='LibImportLibraryButton' data-libepubid='' id='LibImportLibraryLabel' for='LibImportLibraryFile' class='file-upload-label'>";
+            LibRenderString += "<button id='LibImportLibraryButton' class='disabled-button'>"+document.getElementById("LibTemplateImportEpubButton").innerHTML+"</button></label>";
             LibRenderString += "<input type='file' data-libepubid='LibImportLibrary' id='LibImportLibraryFile' hidden>";
             LibRenderString += "<br>";
             LibRenderString += "<p>"+document.getElementById("LibTemplateUploadEpubFileLabel").innerHTML+"</p>";
-            LibRenderString += "<label data-libbuttonid='LibUploadEpubButton' data-libepubid='' id='LibUploadEpubLabel' for='LibEpubNewUploadFile' style='cursor: pointer;'>";
-            LibRenderString += "<button id='LibUploadEpubButton' style='pointer-events: none;'>"+document.getElementById("LibTemplateUploadEpubButton").innerHTML+"</button></label>";
+            LibRenderString += "<label data-libbuttonid='LibUploadEpubButton' data-libepubid='' id='LibUploadEpubLabel' for='LibEpubNewUploadFile' class='file-upload-label'>";
+            LibRenderString += "<button id='LibUploadEpubButton' class='disabled-button'>"+document.getElementById("LibTemplateUploadEpubButton").innerHTML+"</button></label>";
             LibRenderString += "<input type='file' data-libepubid='LibEpubNew' id='LibEpubNewUploadFile' hidden>";
             LibRenderString += "<br>";
             LibRenderString += "<textarea id='LibAddListToLibraryInput' type='text'>Add one novel per line</textarea>";
@@ -54,7 +54,7 @@ class LibraryUI {
             LibRenderString += "<button id='LibAddListToLibraryButton'>"+document.getElementById("LibTemplateAddListToLibrary").innerHTML+"</button>";
             
         }
-        LibRenderString += "<div style='display:flex; justify-content: center;'>";
+        LibRenderString += "<div class='center-flex'>";
         LibRenderString += "<button id='libupdateall'>"+document.getElementById("LibTemplateUpdateAll").innerHTML+"</button>";
         LibRenderString += "</div>";
         if ( ShowCompactView && !ShowAdvancedOptions) {
@@ -64,9 +64,9 @@ class LibraryUI {
             for (let i = 0; i < CurrentLibKeys.length; i = i + column) {
                 LibRenderString += "<tr>";
                 for (let j = i; j < CurrentLibKeys.length && j < column + i; j++) {
-                    LibRenderString += "<td style='height: 1.2em;'>";
-                    LibRenderString += "<div style='display:flex; justify-content: center;'>";
-                    LibRenderString += "<span style='padding: 0; font-size: 1.2em; color: Chartreuse;' id='LibNewChapterCount"+CurrentLibKeys[j]+"'></span>";
+                    LibRenderString += "<td class='chapter-indicator-cell'>";
+                    LibRenderString += "<div class='center-flex'>";
+                    LibRenderString += "<span class='new-chapter-badge new-chapter-compact' id='LibNewChapterCount"+CurrentLibKeys[j]+"'></span>";
                     LibRenderString += "</div>";
                     LibRenderString += "</td>";
                 }
@@ -74,7 +74,7 @@ class LibraryUI {
                 LibRenderString += "<tr>";
                 for (let j = i; j < CurrentLibKeys.length && j < column + i; j++) {
                     LibRenderString += "<td>";
-                    LibRenderString += "<img data-libepubid="+CurrentLibKeys[j]+" style='cursor: pointer; max-height: "+(772/column)+"px; max-width: "+(603/column)+"px;' class='LibCoverCompact' id='LibCover"+CurrentLibKeys[j]+"'>";
+                    LibRenderString += "<img data-libepubid="+CurrentLibKeys[j]+" style='max-height: "+(772/column)+"px; max-width: "+(603/column)+"px;' class='LibCoverCompact cover-compact-clickable' id='LibCover"+CurrentLibKeys[j]+"'>";
                     LibRenderString += "</td>";
                 }
                 LibRenderString += "</tr>";
@@ -99,7 +99,7 @@ class LibraryUI {
                 LibRenderString += "<table>";
                 LibRenderString += "<tbody>";
                 LibRenderString += "<tr>";
-                LibRenderString += "<td style='height: 115.5px; width: 106.5px;' rowspan='4'>   <img class='LibCover' id='LibCover"+CurrentLibKeys[i]+"'></td>";
+                LibRenderString += "<td class='cover-image-cell' rowspan='4'>   <img class='LibCover' id='LibCover"+CurrentLibKeys[i]+"'></td>";
                 LibRenderString += "<td colspan='2'>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderUp"+CurrentLibKeys[i]+"'>↑</button>";
@@ -109,14 +109,14 @@ class LibraryUI {
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDownload"+CurrentLibKeys[i]+"'>"+LibTemplateDownload+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibSelectBook"+CurrentLibKeys[i]+"'>"+LibTemplateSelectBook+"</button>";
-                LibRenderString += "<span style='padding: 1em; font-size: 1.2em; color: Chartreuse;' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
+                LibRenderString += "<span class='new-chapter-badge new-chapter-normal' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "</td>";
                     LibRenderString += "</tr>";
                     LibRenderString += "<tr>";
                     LibRenderString += "<td colspan='2'>";
-                    LibRenderString += "<label id='LibMergeUploadLabel"+CurrentLibKeys[i]+"' data-libbuttonid='LibMergeUploadButton' data-libepubid="+CurrentLibKeys[i]+" for='LibMergeUpload"+CurrentLibKeys[i]+"' style='cursor: pointer;'>";
-                    LibRenderString += "<button id='LibMergeUploadButton"+CurrentLibKeys[i]+"' style='pointer-events: none;'>"+LibTemplateMergeUploadButton+"</button></label>";
+                    LibRenderString += "<label id='LibMergeUploadLabel"+CurrentLibKeys[i]+"' data-libbuttonid='LibMergeUploadButton' data-libepubid="+CurrentLibKeys[i]+" for='LibMergeUpload"+CurrentLibKeys[i]+"' class='file-upload-label'>";
+                    LibRenderString += "<button id='LibMergeUploadButton"+CurrentLibKeys[i]+"' class='disabled-button'>"+LibTemplateMergeUploadButton+"</button></label>";
                     LibRenderString += "<input type='file' data-libepubid="+CurrentLibKeys[i]+" id='LibMergeUpload"+CurrentLibKeys[i]+"' hidden>";
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibSearchNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateSearchNewChapter+"</button>";
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibEditMetadata"+CurrentLibKeys[i]+"'>"+LibTemplateEditMetadataButton+"</button>";
@@ -125,13 +125,13 @@ class LibraryUI {
                 LibRenderString += "</tr>";
                 LibRenderString += "<tr>";
                 LibRenderString += "<td>"+LibTemplateURL+"</td>";
-                LibRenderString += "<td style='padding:0;'>";
-                LibRenderString += "<table style='border-spacing:0;'>";
+                LibRenderString += "<td class='library-url-table'>";
+                LibRenderString += "<table class='no-border-spacing'>";
                 LibRenderString += "<tbody id='LibURLWarning"+CurrentLibKeys[i]+"'>";
                 LibRenderString += "<tr><td></td></tr>";
                 LibRenderString += "</tbody>";
                 LibRenderString += "<tbody>";
-                LibRenderString += "<tr><td style='padding:0;'>";
+                LibRenderString += "<tr><td class='library-url-input-cell'>";
                 LibRenderString += "<input data-libepubid="+CurrentLibKeys[i]+" id='LibStoryURL"+CurrentLibKeys[i]+"' type='url' value=''>";
                 LibRenderString += "</td></tr>";
                 LibRenderString += "</tbody>";
@@ -422,7 +422,7 @@ class LibraryUI {
         let obj = {};
         obj.dataset = {};
         obj.dataset.libclick = "yes";
-        document.getElementById("startingUrlInput").value = await LibraryStorage.LibGetFromStorage(LibGetURL);
+        main.setUiFieldToValue("startingUrlInput", await LibraryStorage.LibGetFromStorage(LibGetURL));
         await main.onLoadAndAnalyseButtonClick.call(obj);
         if (document.getElementById("includeInReadingListCheckbox").checked != true) {
             document.getElementById("includeInReadingListCheckbox").click();
@@ -461,7 +461,7 @@ class LibraryUI {
     static LibDownload(objbtn) {
         let LibGetFileAndName = ["LibEpub" + objbtn.dataset.libepubid, "LibFilename" + objbtn.dataset.libepubid];
         chrome.storage.local.get(LibGetFileAndName, async function(items) {
-            let userPreferences = UserPreferences.readFromLocalStorage();
+            let userPreferences = main.getUserPreferences();
             let overwriteExisting = userPreferences.overwriteExistingEpub.value;
             let backgroundDownload = userPreferences.noDownloadPopup.value;
             let LibRemove = ["LibNewChapterCount" + objbtn.dataset.libepubid];
@@ -599,7 +599,7 @@ class LibraryUI {
     static LibShowTextURLWarning(obj) {
         let LibTemplateWarningURLChange = document.getElementById("LibTemplateWarningURLChange").innerHTML;
         let LibWarningElement = document.getElementById("LibURLWarning"+obj.dataset.libepubid);
-        LibWarningElement.innerHTML = "<tr><td style='color:yellow;'></td></tr>";
+        LibWarningElement.innerHTML = "<tr><td class='warning-text'></td></tr>";
         LibWarningElement.firstChild.firstChild.textContent = LibTemplateWarningURLChange;
     }
 
