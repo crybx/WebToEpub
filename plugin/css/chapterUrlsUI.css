@@ -71,6 +71,14 @@
     align-items: center;
 }
 
+.chapter-list-header .chapter-status-column {
+    flex: 0 0 52px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 0 4px 0 0;
+}
+
 .chapter-row {
     display: flex;
     border-bottom: 1px solid var(--border-light, #eee);
@@ -190,10 +198,6 @@ svg {
     color: var(--icon-color, #808080);
 }
 
-#deleteAllCachedChapters svg {
-    color: var(--icon-color-dark, #555555);
-}
-
 /* Clickable Icons */
 .clickable-icon {
     cursor: pointer;
@@ -283,17 +287,6 @@ svg {
     left: auto;
 }
 
-/* Tooltip positioning for delete button - opens above  */
-.chapter-status-column .delete-all-tooltip .tooltipText {
-    bottom: 100%;
-    left: 50%;
-    right: auto;
-    top: auto;
-    transform: translateX(-50%);
-    margin-bottom: 5px;
-    min-width: 180px;
-    white-space: normal;
-}
 
 /* Tooltip positioning for filter button */
 #viewFiltersButton .tooltipText {
@@ -327,10 +320,6 @@ svg {
     height: 16px;
 }
 
-#deleteAllCachedChapters {
-    display: none;
-    transition: filter 0.2s ease;
-}
 
 /* More actions dropdown menu */
 .more-actions-wrapper {
@@ -361,7 +350,7 @@ svg {
 .more-actions-menu .menu-item,
 .header-more-actions-menu .menu-item {
     display: flex;
-    align-items: center;
+    text-align: left;
     padding: 8px 12px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
@@ -408,7 +397,7 @@ svg {
 .header-more-actions-menu {
     visibility: hidden;
     position: absolute;
-    min-width: 200px;
+    min-width: 270px;
     z-index: 1000;
     top: 100%;
     right: 0;

@@ -77,14 +77,6 @@ class ChapterUrlsUI {
             chapterSelectInfo.appendChild(SvgIcons.createSvgElement(SvgIcons.INFO_FILL));
         }
         
-        // Set up delete cache handler
-        let deleteButton = document.getElementById("deleteAllCachedChapters");
-        if (deleteButton.children.length === 0) {
-            deleteButton.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
-        }
-        let deleteWrapper = deleteButton.parentElement;
-        deleteWrapper.onclick = () => ChapterCache.deleteAllCachedChapters(chapters);
-        
         // Set up header more actions menu
         ChapterUrlsUI.setupHeaderMoreActions(chapters);
         this.showHideChapterUrlsColumn();
@@ -451,12 +443,7 @@ class ChapterUrlsUI {
     static async updateDeleteCacheButtonVisibility() {
         // Check if there are actually cached chapters for the current page's URLs
         let hasCache = await ChapterCache.hasAnyCachedChaptersOnPage();
-        let deleteButton = document.getElementById("deleteAllCachedChapters");
         let headerMoreActions = document.getElementById("headerMoreActionsWrapper");
-        
-        if (deleteButton) {
-            deleteButton.style.display = hasCache ? "block" : "none";
-        }
         
         if (headerMoreActions) {
             headerMoreActions.style.display = hasCache ? "block" : "none";
@@ -1034,6 +1021,8 @@ class ChapterUrlsUI {
         let headerMoreActionsIcon = document.getElementById("headerMoreActionsIcon");
         let headerMoreActionsMenu = document.getElementById("headerMoreActionsMenu");
         let downloadSelectedIcon = document.getElementById("downloadSelectedIcon");
+        let deleteSelectedCachedIcon = document.getElementById("deleteSelectedCachedIcon");
+        let deleteAllCachedIcon = document.getElementById("deleteAllCachedIcon");
         
         // Set up icons if not already done
         if (headerMoreActionsIcon && headerMoreActionsIcon.children.length === 0) {
@@ -1042,6 +1031,14 @@ class ChapterUrlsUI {
         
         if (downloadSelectedIcon && downloadSelectedIcon.children.length === 0) {
             downloadSelectedIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
+        }
+        
+        if (deleteSelectedCachedIcon && deleteSelectedCachedIcon.children.length === 0) {
+            deleteSelectedCachedIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
+        }
+        
+        if (deleteAllCachedIcon && deleteAllCachedIcon.children.length === 0) {
+            deleteAllCachedIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
         }
         
         // Set up click handler for the three dots icon
@@ -1059,6 +1056,26 @@ class ChapterUrlsUI {
             downloadSelectedItem.onclick = async (e) => {
                 e.stopPropagation();
                 await ChapterUrlsUI.downloadSelectedChaptersAsHtml(chapters);
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+        
+        // Set up delete selected cached chapters handler
+        let deleteSelectedCachedItem = document.getElementById("deleteSelectedCachedChaptersMenuItem");
+        if (deleteSelectedCachedItem) {
+            deleteSelectedCachedItem.onclick = async (e) => {
+                e.stopPropagation();
+                await ChapterUrlsUI.deleteSelectedCachedChapters(chapters);
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+        
+        // Set up delete all cached chapters handler
+        let deleteAllCachedItem = document.getElementById("deleteAllCachedChaptersMenuItem");
+        if (deleteAllCachedItem) {
+            deleteAllCachedItem.onclick = async (e) => {
+                e.stopPropagation();
+                await ChapterCache.deleteAllCachedChapters(chapters);
                 ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
             };
         }
@@ -1111,12 +1128,11 @@ class ChapterUrlsUI {
                 }
             }
             
-            // Show result message
-            let message = `Downloaded ${count} of ${selectedChapters.length} chapters as HTML files.`;
+            // Show errors if any occurred
             if (errors.length > 0) {
-                message += `\n\nErrors:\n${errors.join('\n')}`;
+                let message = `Errors occurred while downloading chapters:\n${errors.join('\n')}`;
+                alert(message);
             }
-            alert(message);
             
         } catch (error) {
             console.error("Error downloading selected chapters:", error);
@@ -1139,6 +1155,72 @@ class ChapterUrlsUI {
         });
         
         return selected;
+    }
+
+    /**
+     * Delete selected cached chapters
+     */
+    static async deleteSelectedCachedChapters(chapters) {
+        try {
+            let selectedChapters = ChapterUrlsUI.getSelectedChapters(chapters);
+            
+            if (selectedChapters.length === 0) {
+                alert("No chapters selected for deletion.");
+                return;
+            }
+            
+            // Filter to only cached chapters
+            let cachedChapters = [];
+            for (let chapter of selectedChapters) {
+                let cachedContent = await ChapterCache.get(chapter.sourceUrl);
+                if (cachedContent) {
+                    cachedChapters.push(chapter);
+                }
+            }
+            
+            if (cachedChapters.length === 0) {
+                alert("No cached chapters found among selected chapters.");
+                return;
+            }
+            
+            // Confirm deletion
+            let confirmMessage = `Delete ${cachedChapters.length} cached chapter${cachedChapters.length > 1 ? 's' : ''}?`;
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            let deletedCount = 0;
+            let errors = [];
+            
+            for (let chapter of cachedChapters) {
+                try {
+                    await ChapterCache.deleteChapter(chapter.sourceUrl);
+                    deletedCount++;
+                    
+                    // Update the visual status of the chapter row
+                    let row = ChapterUrlsUI.findRowBySourceUrl(chapter.sourceUrl);
+                    if (row) {
+                        await ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
+                    }
+                } catch (error) {
+                    console.error(`Failed to delete cached chapter "${chapter.title}":`, error);
+                    errors.push(`${chapter.title}: ${error.message}`);
+                }
+            }
+            
+            // Update delete button visibility
+            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            
+            // Show errors if any occurred
+            if (errors.length > 0) {
+                let message = `Errors occurred while deleting cached chapters:\n${errors.join('\n')}`;
+                alert(message);
+            }
+            
+        } catch (error) {
+            console.error("Error deleting selected cached chapters:", error);
+            alert("Failed to delete selected cached chapters: " + error.message);
+        }
     }
 }
 ChapterUrlsUI.RangeCalculator = class {
