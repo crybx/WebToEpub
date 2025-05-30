@@ -116,7 +116,8 @@ progress::-moz-progress-bar {
 
 .clickable-icon:hover > svg,
 .clickable-icon:hover > span > svg,
-.more-actions-menu .menu-item:hover svg {
+.more-actions-menu .menu-item:hover svg,
+.header-more-actions-menu .menu-item:hover svg {
     fill: #00ffff !important;
     filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.8));
 }
@@ -157,28 +158,33 @@ input[type=checkbox].greenBox {
 }
 
 /* More actions menu cyberpunk styling */
-.more-actions-menu {
+.more-actions-menu,
+.header-more-actions-menu {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
     border: 1px solid #8b00ff !important;
     box-shadow: 0 8px 25px rgba(139, 0, 255, 0.4) !important;
 }
 
-.more-actions-menu .menu-item {
+.more-actions-menu .menu-item,
+.header-more-actions-menu .menu-item {
     border-bottom: 1px solid var(--border-light) !important;
     transition: all 0.2s ease;
 }
 
-.more-actions-menu .menu-item span {
+.more-actions-menu .menu-item span,
+.header-more-actions-menu .menu-item span {
     color: #00ffff !important;
     text-shadow: 0 0 2px rgba(0, 255, 255, 0.5);
 }
 
-.more-actions-menu .menu-item:hover {
+.more-actions-menu .menu-item:hover,
+.header-more-actions-menu .menu-item:hover {
     background: linear-gradient(90deg, rgba(139, 0, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%) !important;
     box-shadow: 0 0 8px rgba(139, 0, 255, 0.3);
 }
 
-.more-actions-menu .menu-item:hover span {
+.more-actions-menu .menu-item:hover span,
+.header-more-actions-menu .menu-item:hover span {
     color: #8b00ff !important;
     text-shadow: 0 0 3px rgba(139, 0, 255, 0.8);
 }
@@ -187,17 +193,20 @@ input[type=checkbox].greenBox {
 .error-state .chapter-status-icon,
 .error-state:hover .chapter-status-icon,
 .error-state:hover .menu-icon,
-.error-state .more-actions-menu .menu-item:hover svg {
+.error-state .more-actions-menu .menu-item:hover svg,
+.error-state .header-more-actions-menu .menu-item:hover svg {
     fill: #ff0040 !important;
     filter: drop-shadow(0 0 3px rgba(255, 0, 64, 0.8));
 }
 
 .error-state .clickable-icon:hover,
-.error-state .more-actions-menu .menu-item:hover {
+.error-state .more-actions-menu .menu-item:hover,
+.error-state .header-more-actions-menu .menu-item:hover {
     background: linear-gradient(90deg, rgba(255, 0, 64, 0.1) 0%, rgba(139, 0, 255, 0.1) 100%) !important;
 }
 
-.error-state .more-actions-menu .menu-item:hover span {
+.error-state .more-actions-menu .menu-item:hover span,
+.error-state .header-more-actions-menu .menu-item:hover span {
     color: #ff0040 !important;
     text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
 }

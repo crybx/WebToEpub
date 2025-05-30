@@ -84,6 +84,9 @@ class ChapterUrlsUI {
         }
         let deleteWrapper = deleteButton.parentElement;
         deleteWrapper.onclick = () => ChapterCache.deleteAllCachedChapters(chapters);
+        
+        // Set up header more actions menu
+        ChapterUrlsUI.setupHeaderMoreActions(chapters);
         this.showHideChapterUrlsColumn();
         
         // Update select all checkbox state after populating table
@@ -443,14 +446,20 @@ class ChapterUrlsUI {
     }
 
     /**
-    * Update visibility of delete cache button based on whether any chapters are cached
+    * Update visibility of delete cache button and header more actions based on whether any chapters are cached
     */
     static async updateDeleteCacheButtonVisibility() {
         // Check if there are actually cached chapters for the current page's URLs
         let hasCache = await ChapterCache.hasAnyCachedChaptersOnPage();
         let deleteButton = document.getElementById("deleteAllCachedChapters");
+        let headerMoreActions = document.getElementById("headerMoreActionsWrapper");
+        
         if (deleteButton) {
             deleteButton.style.display = hasCache ? "block" : "none";
+        }
+        
+        if (headerMoreActions) {
+            headerMoreActions.style.display = hasCache ? "block" : "none";
         }
     }
 
@@ -1017,6 +1026,120 @@ class ChapterUrlsUI {
             return retVal;
         }
     };
+
+    /**
+     * Set up the header more actions menu
+     */
+    static setupHeaderMoreActions(chapters) {
+        let headerMoreActionsIcon = document.getElementById("headerMoreActionsIcon");
+        let headerMoreActionsMenu = document.getElementById("headerMoreActionsMenu");
+        let downloadSelectedIcon = document.getElementById("downloadSelectedIcon");
+        
+        // Set up icons if not already done
+        if (headerMoreActionsIcon && headerMoreActionsIcon.children.length === 0) {
+            headerMoreActionsIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.THREE_DOTS_VERTICAL));
+        }
+        
+        if (downloadSelectedIcon && downloadSelectedIcon.children.length === 0) {
+            downloadSelectedIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
+        }
+        
+        // Set up click handler for the three dots icon
+        let headerMoreActionsWrapper = document.getElementById("headerMoreActionsWrapper");
+        if (headerMoreActionsWrapper) {
+            headerMoreActionsWrapper.onclick = (e) => {
+                e.stopPropagation();
+                ChapterUrlsUI.toggleHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+        
+        // Set up download selected chapters handler
+        let downloadSelectedItem = document.getElementById("downloadSelectedChaptersHtml");
+        if (downloadSelectedItem) {
+            downloadSelectedItem.onclick = async (e) => {
+                e.stopPropagation();
+                await ChapterUrlsUI.downloadSelectedChaptersAsHtml(chapters);
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+        
+        // Close menu when clicking outside
+        document.addEventListener("click", () => ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu));
+    }
+
+    /**
+     * Toggle header more actions menu visibility
+     */
+    static toggleHeaderMoreActionsMenu(menu) {
+        // Hide all other open menus first
+        document.querySelectorAll(".more-actions-menu.show, .header-more-actions-menu.show").forEach(m => {
+            if (m !== menu) m.classList.remove("show");
+        });
+        
+        menu.classList.toggle("show");
+    }
+
+    /**
+     * Hide header more actions menu
+     */
+    static hideHeaderMoreActionsMenu(menu) {
+        menu.classList.remove("show");
+    }
+
+    /**
+     * Download selected chapters as HTML files
+     */
+    static async downloadSelectedChaptersAsHtml(chapters) {
+        try {
+            let selectedChapters = ChapterUrlsUI.getSelectedChapters(chapters);
+            
+            if (selectedChapters.length === 0) {
+                alert("No chapters selected for download.");
+                return;
+            }
+            
+            let count = 0;
+            let errors = [];
+            
+            for (let chapter of selectedChapters) {
+                try {
+                    await ChapterCache.downloadSingleChapterAsFile(chapter.sourceUrl, chapter.title);
+                    count++;
+                } catch (error) {
+                    console.error(`Failed to download chapter "${chapter.title}":`, error);
+                    errors.push(`${chapter.title}: ${error.message}`);
+                }
+            }
+            
+            // Show result message
+            let message = `Downloaded ${count} of ${selectedChapters.length} chapters as HTML files.`;
+            if (errors.length > 0) {
+                message += `\n\nErrors:\n${errors.join('\n')}`;
+            }
+            alert(message);
+            
+        } catch (error) {
+            console.error("Error downloading selected chapters:", error);
+            alert("Failed to download selected chapters: " + error.message);
+        }
+    }
+
+    /**
+     * Get selected chapters from the chapter list
+     */
+    static getSelectedChapters(chapters) {
+        let selected = [];
+        let rows = document.querySelectorAll('.chapter-row');
+        
+        rows.forEach((row, index) => {
+            let checkbox = row.querySelector('input[type="checkbox"]');
+            if (checkbox && checkbox.checked && chapters[index]) {
+                selected.push(chapters[index]);
+            }
+        });
+        
+        return selected;
+    }
 }
 ChapterUrlsUI.RangeCalculator = class {
     constructor()

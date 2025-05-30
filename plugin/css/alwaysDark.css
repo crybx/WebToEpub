@@ -51,12 +51,14 @@ button:hover {
 .clickable-icon:hover > svg,
 .clickable-icon:hover > span > svg,
 .more-actions-menu .menu-item:hover svg,
+.header-more-actions-menu .menu-item:hover svg,
 .clickable-icon:active > svg,
 .clickable-icon:active > span > svg {
     fill: #87ceeb !important;
 }
 
 .more-actions-menu .menu-item:hover span,
+.header-more-actions-menu .menu-item:hover span,
 .modal-close:hover,
 .modal-close:active {
     color: #87ceeb !important;
@@ -79,16 +81,19 @@ button:hover {
 }
 
 /* More actions menu always dark mode */
-.more-actions-menu {
+.more-actions-menu,
+.header-more-actions-menu {
     background-color: var(--modal-bg, white) !important;
     border: 1px solid var(--border-color, #ccc) !important;
 }
 
-.more-actions-menu .menu-item {
+.more-actions-menu .menu-item,
+.header-more-actions-menu .menu-item {
     border-bottom: 1px solid var(--border-light, #eee) !important;
 }
 
-.more-actions-menu .menu-item span {
+.more-actions-menu .menu-item span,
+.header-more-actions-menu .menu-item span {
     color: var(--modal-title-text, #333) !important;
 }
 
@@ -120,15 +125,18 @@ input[type=checkbox].greenBox {
 .error-state .chapter-status-icon,
 .error-state:hover .chapter-status-icon,
 .error-state:hover .menu-icon,
-.error-state .more-actions-menu .menu-item:hover svg {
+.error-state .more-actions-menu .menu-item:hover svg,
+.error-state .header-more-actions-menu .menu-item:hover svg {
     fill: #f27070 !important;
 }
 
 .error-state .clickable-icon:hover,
-.error-state .more-actions-menu .menu-item:hover {
+.error-state .more-actions-menu .menu-item:hover,
+.error-state .header-more-actions-menu .menu-item:hover {
     background-color: rgba(242, 112, 112, 0.15) !important;
 }
 
-.error-state .more-actions-menu .menu-item:hover span {
+.error-state .more-actions-menu .menu-item:hover span,
+.error-state .header-more-actions-menu .menu-item:hover span {
     color: #f27070 !important;
 }

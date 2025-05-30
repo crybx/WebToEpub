@@ -212,7 +212,8 @@ svg {
 /* Only highlight SVG when directly hovering the clickable icon itself, not child elements */
 .clickable-icon:hover > svg,
 .clickable-icon:hover > span > svg,
-.more-actions-menu .menu-item:hover svg {
+.more-actions-menu .menu-item:hover svg,
+.header-more-actions-menu .menu-item:hover svg {
     fill: dodgerblue;
     filter: brightness(1.2);
 }
@@ -227,20 +228,24 @@ svg {
 .error-state .chapter-status-icon,
 .error-state:hover .chapter-status-icon,
 .error-state:hover .menu-icon,
-.error-state .more-actions-menu .menu-item:hover svg {
+.error-state .more-actions-menu .menu-item:hover svg,
+.error-state .header-more-actions-menu .menu-item:hover svg {
     fill: #dc3545;
 }
 
 .error-state .clickable-icon:hover,
-.error-state .more-actions-menu .menu-item:hover {
+.error-state .more-actions-menu .menu-item:hover,
+.error-state .header-more-actions-menu .menu-item:hover {
     background-color: rgba(220, 53, 69, 0.1);
 }
 
-.error-state .more-actions-menu .menu-item:hover span {
+.error-state .more-actions-menu .menu-item:hover span,
+.error-state .header-more-actions-menu .menu-item:hover span {
     color: #dc3545;
 }
 
-.more-actions-menu .menu-item:hover span {
+.more-actions-menu .menu-item:hover span,
+.header-more-actions-menu .menu-item:hover span {
     color: dodgerblue;
 }
 
@@ -336,11 +341,7 @@ svg {
 .more-actions-menu {
     visibility: hidden;
     position: absolute;
-    background-color: white;
     min-width: 180px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    border: 1px solid #ccc;
-    border-radius: 4px;
     z-index: 1000;
     top: 100%;
     right: 0;
@@ -349,7 +350,16 @@ svg {
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
 }
 
-.more-actions-menu .menu-item {
+.more-actions-menu,
+.header-more-actions-menu {
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.more-actions-menu .menu-item,
+.header-more-actions-menu .menu-item {
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -358,30 +368,55 @@ svg {
     transition: background-color 0.2s ease;
 }
 
-.more-actions-menu .menu-item svg {
+.more-actions-menu .menu-item svg,
+.header-more-actions-menu .menu-item svg {
     width: 14px;
     height: 14px;
     margin-right: 8px;
 }
 
-.more-actions-menu .menu-item span {
+.more-actions-menu .menu-item span,
+.header-more-actions-menu .menu-item span {
     font-size: 14px;
+    font-weight: normal;
     color: #333;
 }
 
-.more-actions-menu .menu-item:hover {
+.more-actions-menu .menu-item:hover,
+.header-more-actions-menu .menu-item:hover {
     background-color: rgba(0, 123, 255, 0.1);
 }
 
-.more-actions-menu .menu-item:last-child {
+.more-actions-menu .menu-item:last-child,
+.header-more-actions-menu .menu-item:last-child {
     border-bottom: none;
 }
 
-.more-actions-menu.show {
+.more-actions-menu.show,
+.header-more-actions-menu.show {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
 }
+
+/* Header more actions menu specific styling */
+.header-more-actions-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.header-more-actions-menu {
+    visibility: hidden;
+    position: absolute;
+    min-width: 200px;
+    z-index: 1000;
+    top: 100%;
+    right: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -395,123 +430,5 @@ svg {
     
     .chapter-status-column {
         flex: 0 0 60px;
-    }
-}
-
-/* Dark mode CSS variables */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --header-bg: #3a3a3a;
-        --row-hover-bg: #3a3a3a;
-        --icon-color: #b0b0b0;
-        --icon-color-dark: #999999;
-        --modal-bg: #2f2f2f;
-        --modal-title-bg: #3a3a3a;
-        --modal-title-text: #eee;
-        --modal-border: #555;
-        --modal-close-color: #b0b0b0;
-        --border-color: #555;
-        --border-light: #444;
-        --input-border: #555;
-        --button-border: #555;
-        --sidebar-bg: rgb(40, 40, 40);
-        --sidebar-text: #eee;
-    }
-
-    /* Lighter icon effects for dark mode */
-    .clickable-icon:hover {
-        background-color: rgba(135, 206, 250, 0.15) !important;
-    }
-
-    .clickable-icon:hover > svg,
-    .clickable-icon:hover > span > svg,
-    .more-actions-menu .menu-item:hover svg {
-        fill: #87ceeb !important;
-    }
-
-    .clickable-icon:active > svg,
-    .clickable-icon:active > span > svg {
-        fill: #87ceeb !important;
-    }
-
-    .more-actions-menu .menu-item:hover span {
-        color: #87ceeb;
-    }
-
-    /* Override modal close button colors */
-    .modal-close:hover {
-        color: #87ceeb !important;
-        background: rgba(135, 206, 250, 0.15) !important;
-    }
-
-    .modal-close:active {
-        color: #87ceeb !important;
-        background: rgba(135, 206, 250, 0.2) !important;
-    }
-
-    /* Override default icon colors in dark mode */
-    .bi-eye-fill,
-    .downloading-icon {
-        color: #87ceeb;
-    }
-
-    .sleeping-icon {
-        color: #d4a574;
-    }
-
-    /* More actions menu dark mode */
-    .more-actions-menu {
-        background-color: var(--modal-bg, white);
-        border: 1px solid var(--border-color, #ccc);
-    }
-
-    .more-actions-menu .menu-item {
-        border-bottom: 1px solid var(--border-light, #eee);
-    }
-
-    .more-actions-menu .menu-item span {
-        color: var(--modal-title-text, #333);
-    }
-
-    /* Checkbox accent colors for dark mode */
-    /* Default blue for standard checkboxes */
-    input[type=checkbox] {
-        accent-color: #87ceeb;
-    }
-
-    /* More specific overrides */
-    .error-state input[type=checkbox] {
-        accent-color: #f27070 !important;
-    }
-
-    input[type=checkbox].greenBox {
-        accent-color: #90ee90 !important;
-    }
-
-    .sidebar input.exclude {
-        accent-color: #f27070 !important;
-    }
-
-    /* Sidebar item hover effects for dark mode */
-    .sidebar tr label:hover {
-        background-color: rgba(135, 206, 250, 0.15) !important;
-    }
-
-
-    /* Pastel error state styling for dark mode */
-    .error-state .chapter-status-icon,
-    .error-state:hover .chapter-status-icon,
-    .error-state:hover .menu-icon,
-    .error-state .more-actions-menu .menu-item:hover svg {
-        fill: #f27070;
-    }
-
-    .error-state .clickable-icon:hover,
-    .error-state .more-actions-menu .menu-item:hover {
-        background-color: rgba(242, 112, 112, 0.15);
-    }
-
-    .error-state .more-actions-menu .menu-item:hover span {
-        color: #f27070;
     }
 }
