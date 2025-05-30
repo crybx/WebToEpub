@@ -151,6 +151,7 @@ const main = (function() {
         window.workInProgress = true;
         main.getPackEpubButton().disabled = true;
         replaceLibAddToLibrary();
+        document.getElementById("downloadChaptersButton").disabled = true;
         parser.onStartCollecting();
         await parser.fetchContent().then(function() {
             return packEpub(metaInfo);
@@ -160,6 +161,7 @@ const main = (function() {
             window.workInProgress = false;
             main.getPackEpubButton().disabled = false;
             replaceLibAddToLibrary();
+            document.getElementById("downloadChaptersButton").disabled = false;
             let overwriteExisting = userPreferences.overwriteExistingEpub.value;
             let backgroundDownload = userPreferences.noDownloadPopup.value;
             let fileName = Download.CustomFilename();
@@ -186,6 +188,7 @@ const main = (function() {
                 util.sleepControler = new AbortController;
             }
             replaceLibAddToLibrary();
+            document.getElementById("downloadChaptersButton").disabled = false;
             ErrorLog.showErrorMessage(err);
         });
     }
