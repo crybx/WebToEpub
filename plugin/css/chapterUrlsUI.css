@@ -248,6 +248,23 @@ svg {
     color: #dc3545;
 }
 
+/* Library Chapter Highlighting */
+.chapter-in-library {
+    background-color: rgba(40, 167, 69, 0.15);
+}
+
+.chapter-in-library:hover {
+    background-color: rgba(40, 167, 69, 0.25);
+}
+
+.chapter-new-on-website {
+    background-color: rgba(255, 193, 7, 0.15);
+}
+
+.chapter-new-on-website:hover {
+    background-color: rgba(255, 193, 7, 0.25);
+}
+
 .more-actions-menu .menu-item:hover span,
 .header-more-actions-menu .menu-item:hover span {
     color: dodgerblue;

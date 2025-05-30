@@ -211,6 +211,29 @@ input[type=checkbox].greenBox {
     text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
 }
 
+/* Library Chapter Highlighting - Cyberpunk */
+.chapter-in-library {
+    background: linear-gradient(90deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 255, 127, 0.05) 100%) !important;
+    box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.2);
+    border-left: 3px solid #00ff7f;
+}
+
+.chapter-in-library:hover {
+    background: linear-gradient(90deg, rgba(0, 255, 0, 0.2) 0%, rgba(0, 255, 127, 0.1) 100%) !important;
+    box-shadow: inset 0 0 12px rgba(0, 255, 0, 0.3), 0 0 8px rgba(0, 255, 0, 0.2);
+}
+
+.chapter-new-on-website {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%) !important;
+    box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.2);
+    border-left: 3px solid #ffd700;
+}
+
+.chapter-new-on-website:hover {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%) !important;
+    box-shadow: inset 0 0 12px rgba(255, 215, 0, 0.3), 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
 /* Tooltip cyberpunk styling */
 .tooltip-wrapper .tooltipText {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);

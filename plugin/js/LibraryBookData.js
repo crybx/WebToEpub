@@ -481,18 +481,16 @@ class LibraryBookData {
                 
                 // 8. Re-populate chapter table with enhanced data
                 let chapterUrlsUI = new ChapterUrlsUI(window.parser);
-                chapterUrlsUI.populateChapterUrlsTable(updatedChapters);
+                await chapterUrlsUI.populateChapterUrlsTable(updatedChapters);
                 
                 // 9. Add library-specific visual indicators
+                console.log("Adding library chapter indicators for", updatedChapters.length, "chapters");
                 await LibraryBookData.addLibraryChapterIndicators(bookId, updatedChapters);
                 
                 console.log(`Enhanced ${updatedChapters.length} chapters with library status`);
             }
             
-            // 10. Ensure reading list checkbox is checked for compatibility
-            if (!document.getElementById("includeInReadingListCheckbox")?.checked) {
-                document.getElementById("includeInReadingListCheckbox")?.click();
-            }
+            // 10. Library books manage their own chapter selection - no Reading List dependency needed
             
             // 11. Clear loading indicator since operation completed successfully
             // We need to refresh the library UI to clear the loading indicator
@@ -520,17 +518,20 @@ class LibraryBookData {
     static async addLibraryChapterIndicators(bookId, chapters) {
         try {
             // Wait a moment for the chapter table to be fully rendered
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             chapters.forEach((chapter, index) => {
-                let row = document.querySelector(`tr[data-chapter-index="${index}"]`);
+                // Find row by rowIndex property
+                let rows = document.querySelectorAll('.chapter-row');
+                let row = Array.from(rows).find(r => r.rowIndex === index);
+
                 if (row && chapter.isInBook) {
                     // Add eye icon for chapters that exist in book
                     let statusColumn = row.querySelector(".chapter-status-column");
                     if (statusColumn && !statusColumn.querySelector(".library-chapter-view-icon")) {
                         let eyeIcon = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
-                        eyeIcon.className = "library-chapter-view-icon";
-                        eyeIcon.title = "View chapter from library book";
+                        eyeIcon.classList.add("library-chapter-view-icon");
+                        eyeIcon.setAttribute("title", "View chapter from library book");
                         eyeIcon.onclick = (e) => {
                             e.stopPropagation();
                             ChapterViewer.openLibraryChapter(bookId, chapter.libraryChapterIndex);
