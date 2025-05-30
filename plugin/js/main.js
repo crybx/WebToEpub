@@ -809,7 +809,14 @@ const main = (function() {
         getPackEpubButton: getPackEpubButton,
         onLoadAndAnalyseButtonClick: onLoadAndAnalyseButtonClick,
         fetchContentAndPackEpub: fetchContentAndPackEpub,
-        resetUI: resetUI
+        downloadChapters: downloadChapters,
+        resetUI: resetUI,
+        setProcessingButtonsState: setProcessingButtonsState,
+        setMetadataButtonsState: setMetadataButtonsState,
+        setUiFieldToValue: setUiFieldToValue,
+        getValueFromUiField: getValueFromUiField,
+        getUserPreferences: () => userPreferences,
+        metaInfoFromControls: metaInfoFromControls
     };
 })();
 

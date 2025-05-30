@@ -1020,7 +1020,8 @@ class ChapterUrlsUI {
     static setupHeaderMoreActions(chapters) {
         let headerMoreActionsIcon = document.getElementById("headerMoreActionsIcon");
         let headerMoreActionsMenu = document.getElementById("headerMoreActionsMenu");
-        let downloadSelectedIcon = document.getElementById("downloadSelectedIcon");
+        let downloadSelectedCacheIcon = document.getElementById("downloadSelectedCacheIcon");
+        let downloadSelectedHtmlIcon = document.getElementById("downloadSelectedHtmlIcon");
         let deleteSelectedCachedIcon = document.getElementById("deleteSelectedCachedIcon");
         let deleteAllCachedIcon = document.getElementById("deleteAllCachedIcon");
         
@@ -1029,8 +1030,8 @@ class ChapterUrlsUI {
             headerMoreActionsIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.THREE_DOTS_VERTICAL));
         }
         
-        if (downloadSelectedIcon && downloadSelectedIcon.children.length === 0) {
-            downloadSelectedIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
+        if (downloadSelectedCacheIcon && downloadSelectedCacheIcon.children.length === 0) {
+            downloadSelectedCacheIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
         }
         
         if (deleteSelectedCachedIcon && deleteSelectedCachedIcon.children.length === 0) {
@@ -1039,6 +1040,10 @@ class ChapterUrlsUI {
         
         if (deleteAllCachedIcon && deleteAllCachedIcon.children.length === 0) {
             deleteAllCachedIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
+        }
+
+        if (downloadSelectedHtmlIcon && downloadSelectedHtmlIcon.children.length === 0) {
+            downloadSelectedHtmlIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
         }
         
         // Set up click handler for the three dots icon
@@ -1050,10 +1055,20 @@ class ChapterUrlsUI {
             };
         }
         
-        // Set up download selected chapters handler
-        let downloadSelectedItem = document.getElementById("downloadSelectedChaptersHtml");
-        if (downloadSelectedItem) {
-            downloadSelectedItem.onclick = async (e) => {
+        // Set up download selected chapters to cache handler
+        let downloadSelectedCacheItem = document.getElementById("downloadSelectedChaptersCache");
+        if (downloadSelectedCacheItem) {
+            downloadSelectedCacheItem.onclick = async (e) => {
+                e.stopPropagation();
+                await ChapterUrlsUI.downloadSelectedChaptersToCache(chapters);
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+        
+        // Set up download selected chapters as HTML handler
+        let downloadSelectedHtmlItem = document.getElementById("downloadSelectedChaptersHtml");
+        if (downloadSelectedHtmlItem) {
+            downloadSelectedHtmlItem.onclick = async (e) => {
                 e.stopPropagation();
                 await ChapterUrlsUI.downloadSelectedChaptersAsHtml(chapters);
                 ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
@@ -1155,6 +1170,53 @@ class ChapterUrlsUI {
         });
         
         return selected;
+    }
+
+    /**
+     * Download selected chapters to cache
+     */
+    static async downloadSelectedChaptersToCache(chapters) {
+        try {
+            let selectedChapters = ChapterUrlsUI.getSelectedChapters(chapters);
+            
+            if (selectedChapters.length === 0) {
+                alert("No chapters selected for download.");
+                return;
+            }
+            
+            // Get the parser from main.js global scope
+            if (typeof parser === "undefined") {
+                throw new Error("Parser not available");
+            }
+            
+            // Temporarily store the original webPages
+            let originalWebPages = new Map(parser.state.webPages);
+            
+            try {
+                // Set parser state to only include selected chapters
+                parser.state.webPages.clear();
+                selectedChapters.forEach((chapter, index) => {
+                    // Find the original chapter in the webPages map
+                    for (let [key, originalChapter] of originalWebPages) {
+                        if (originalChapter.sourceUrl === chapter.sourceUrl) {
+                            parser.state.webPages.set(key, originalChapter);
+                            break;
+                        }
+                    }
+                });
+                
+                // Call main.js downloadChapters function which handles proper button state management
+                await main.downloadChapters();
+                
+            } finally {
+                // Always restore the original webPages state
+                parser.state.webPages = originalWebPages;
+            }
+            
+        } catch (error) {
+            console.error("Error downloading selected chapters to cache:", error);
+            alert("Failed to download selected chapters: " + error.message);
+        }
     }
 
     /**

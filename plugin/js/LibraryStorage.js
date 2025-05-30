@@ -24,7 +24,7 @@ class LibraryStorage {
             }
         }
         if (LibidURL == -1) {
-            LibraryStorage.LibHandelUpdate(-1, AddEpub, document.getElementById("startingUrlInput").value, fileName.replace(".epub", ""), LibidURL);
+            LibraryStorage.LibHandelUpdate(-1, AddEpub, main.getValueFromUiField("startingUrlInput"), fileName.replace(".epub", ""), LibidURL);
             if (document.getElementById("LibDownloadEpubAfterUpdateCheckbox").checked) {
                 return Download.save(AddEpub, fileName, overwriteExisting, backgroundDownload);
             } else {

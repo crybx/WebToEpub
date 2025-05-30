@@ -186,8 +186,10 @@ class LibraryUI {
                 let newChapterHTML = (((await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0) == 0)? "" : await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) + LibTemplateNewChapter);
                 newChapterHTML = "<span class=\"newChapterWraper\">"+newChapterHTML+"</span>";
                 LibraryUI.AppendHtmlInDiv(newChapterHTML, document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]), "newChapterWraper");
-                document.getElementById("LibStoryURL"+CurrentLibKeys[i]).value = await LibraryStorage.LibGetFromStorage("LibStoryURL"+CurrentLibKeys[i]);
-                document.getElementById("LibFilename"+CurrentLibKeys[i]).value = await LibraryStorage.LibGetFromStorage("LibFilename"+CurrentLibKeys[i]);
+                let storyUrl = await LibraryStorage.LibGetFromStorage("LibStoryURL"+CurrentLibKeys[i]);
+                let filename = await LibraryStorage.LibGetFromStorage("LibFilename"+CurrentLibKeys[i]);
+                if (storyUrl) document.getElementById("LibStoryURL"+CurrentLibKeys[i]).value = storyUrl;
+                if (filename) document.getElementById("LibFilename"+CurrentLibKeys[i]).value = filename;
             }
             if (ShowAdvancedOptions) {
                 if (!util.isFirefox()) {
@@ -529,7 +531,7 @@ class LibraryUI {
             obj.dataset = {};
             obj.dataset.libclick = "yes";
             obj.dataset.libsuppressErrorLog = true;
-            document.getElementById("startingUrlInput").value = links[i];
+            main.setUiFieldToValue("startingUrlInput", links[i]);
             await main.onLoadAndAnalyseButtonClick.call(obj);
             if (document.getElementById("includeInReadingListCheckbox").checked != true) {
                 document.getElementById("includeInReadingListCheckbox").click();

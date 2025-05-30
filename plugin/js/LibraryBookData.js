@@ -275,15 +275,15 @@ class LibraryBookData {
      * @param {Object} bookData - Extracted book data with metadata and chapters
      */
     static populateMainUIWithBookData(bookData) {
-        // Populate metadata fields
+        // Populate metadata fields using main.js API
         if (bookData.metadata.sourceUrl) {
-            document.getElementById("startingUrlInput").value = bookData.metadata.sourceUrl;
+            main.setUiFieldToValue("startingUrlInput", bookData.metadata.sourceUrl);
         }
         if (bookData.metadata.title) {
-            document.getElementById("titleInput").value = bookData.metadata.title;
+            main.setUiFieldToValue("titleInput", bookData.metadata.title);
         }
         if (bookData.metadata.author) {
-            document.getElementById("authorInput").value = bookData.metadata.author;
+            main.setUiFieldToValue("authorInput", bookData.metadata.author);
         }
         
         // Create a mock parser to work with existing UI

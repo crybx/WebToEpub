@@ -732,7 +732,6 @@ class ChapterCache {
                     if (webPage.rawDom && !webPage.error) {
                         // convertRawDomToContent handles both processing and caching automatically
                         parser.convertRawDomToContent(webPage);
-                        console.log(`Downloaded and cached chapter: ${webPage.title}`);
                     }
                 }));
                 index += group.length;
@@ -858,8 +857,6 @@ class ChapterCache {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             }
-            
-            console.log(`Downloaded chapter as file: ${fileName}`);
         } catch (error) {
             console.error("Failed to download chapter as file:", error);
             alert("Failed to download chapter as file: " + error.message);
