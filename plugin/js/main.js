@@ -130,6 +130,19 @@ const main = (function() {
         }
     }
 
+    function setProcessingButtonsState(disabled) {
+        window.workInProgress = disabled;
+        main.getPackEpubButton().disabled = disabled;
+        document.getElementById("LibAddToLibrary").disabled = disabled;
+        document.getElementById("downloadChaptersButton").disabled = disabled;
+        window.workInProgress = disabled;
+    }
+
+    function setMetadataButtonsState(disabled) {
+        main.getPackEpubButton().disabled = disabled;
+        document.getElementById("LibAddToLibrary").disabled = disabled;
+    }
+
     async function fetchContentAndPackEpub() {
         let libclick = this;
         if (document.getElementById("noAdditionalMetadataCheckbox")?.checked) {
@@ -148,20 +161,14 @@ const main = (function() {
         ChapterUrlsUI.limitNumOfChapterS(userPreferences.maxChaptersPerEpub.value);
         await ChapterUrlsUI.resetChapterStatusIcons();
         ErrorLog.clearHistory();
-        window.workInProgress = true;
-        main.getPackEpubButton().disabled = true;
-        replaceLibAddToLibrary();
-        document.getElementById("downloadChaptersButton").disabled = true;
+        setProcessingButtonsState(true);
         parser.onStartCollecting();
         await parser.fetchContent().then(function() {
             return packEpub(metaInfo);
         }).then(function(content) {
             // Enable button here.  If user cancels save dialog
             // the promise never returns
-            window.workInProgress = false;
-            main.getPackEpubButton().disabled = false;
-            replaceLibAddToLibrary();
-            document.getElementById("downloadChaptersButton").disabled = false;
+            setProcessingButtonsState(false);
             let overwriteExisting = userPreferences.overwriteExistingEpub.value;
             let backgroundDownload = userPreferences.noDownloadPopup.value;
             let fileName = Download.CustomFilename();
@@ -182,13 +189,10 @@ const main = (function() {
                 dumpErrorLogToFile();
             }
         }).catch(function(err) {
-            window.workInProgress = false;
-            main.getPackEpubButton().disabled = false;
+            setProcessingButtonsState(false);
             if (util.sleepControler.signal.aborted) {
                 util.sleepControler = new AbortController;
             }
-            replaceLibAddToLibrary();
-            document.getElementById("downloadChaptersButton").disabled = false;
             ErrorLog.showErrorMessage(err);
         });
     }
@@ -197,25 +201,16 @@ const main = (function() {
         ChapterUrlsUI.limitNumOfChapterS(userPreferences.maxChaptersPerEpub.value);
         await ChapterUrlsUI.resetChapterStatusIcons();
         ErrorLog.clearHistory();
-        window.workInProgress = true;
-        main.getPackEpubButton().disabled = true;
-        document.getElementById("LibAddToLibrary").disabled = true;
-        document.getElementById("downloadChaptersButton").disabled = true;
+        setProcessingButtonsState(true);
         parser.onStartCollecting();
         
         await ChapterCache.downloadChaptersToCache().then(function() {
-            window.workInProgress = false;
-            main.getPackEpubButton().disabled = false;
-            document.getElementById("LibAddToLibrary").disabled = false;
-            document.getElementById("downloadChaptersButton").disabled = false;
+            setProcessingButtonsState(false);
             parser.updateReadingList();
             ErrorLog.showLogToUser();
             dumpErrorLogToFile();
         }).catch(function(err) {
-            window.workInProgress = false;
-            main.getPackEpubButton().disabled = false;
-            document.getElementById("LibAddToLibrary").disabled = false;
-            document.getElementById("downloadChaptersButton").disabled = false;
+            setProcessingButtonsState(false);
             ErrorLog.showErrorMessage(err);
         });
     }
@@ -451,10 +446,7 @@ const main = (function() {
         metaInfo.uuid = "";
         populateMetaInfo(metaInfo);
         getLoadAndAnalyseButton().hidden = false;
-        main.getPackEpubButton().disabled = false;
-        document.getElementById("LibAddToLibrary").disabled = false;
-        document.getElementById("LibAddToLibrary").hidden = false;
-        document.getElementById("LibPauseToLibrary").hidden = true;
+        setProcessingButtonsState(false);
         ChapterUrlsUI.clearChapterUrlsTable();
         CoverImageUI.clearUI();
         ProgressBar.setValue(0);
@@ -707,15 +699,13 @@ const main = (function() {
 
     // Additional metadata
     function autosearchadditionalmetadata() {
-        getPackEpubButton().disabled = true;
-        document.getElementById("LibAddToLibrary").disabled = true;
+        setMetadataButtonsState(true);
         let titelname = getValueFromUiField("titleInput");
         let url = "https://www.novelupdates.com/series-finder/?sf=1&sh=" + titelname;
         if (getValueFromUiField("subjectInput") == null) {
             autosearchnovelupdates(url, titelname);
         }
-        getPackEpubButton().disabled = false;
-        document.getElementById("LibAddToLibrary").disabled = false;
+        setMetadataButtonsState(false);
     }
 
     function autosearchnovelupdates(url, titelname) {
@@ -741,8 +731,7 @@ const main = (function() {
     }
 
     function onLoadMetadataButtonClick() {
-        getPackEpubButton().disabled = true;
-        document.getElementById("LibAddToLibrary").disabled = true;
+        setMetadataButtonsState(true);
         let url = getValueFromUiField("metadataUrlInput");
         return HttpClient.wrapFetch(url).then(function(xhr) {
             populateMetadataAddWithDom(url, xhr.responseXML);
@@ -761,12 +750,10 @@ const main = (function() {
             if (getValueFromUiField("authorInput") == "<unknown>") {
                 setUiFieldToValue("authorInput", metaAddInfo.author);
             }
-            getPackEpubButton().disabled = false;
-            document.getElementById("LibAddToLibrary").disabled = false;
+            setMetadataButtonsState(false);
         } catch (error) {
             ErrorLog.showErrorMessage(error);
-            getPackEpubButton().disabled = false;
-            document.getElementById("LibAddToLibrary").disabled = false;
+            setMetadataButtonsState(false);
         }
     }
 
