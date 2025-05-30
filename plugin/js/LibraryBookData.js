@@ -231,7 +231,7 @@ class LibraryBookData {
             let chapterContent = await chapterFile.getData(new zip.TextWriter());
             await epubZip.close();
 
-            // Parse the HTML content and extract the body
+            // Parse the HTML content and extract the body content (not the body tag itself)
             let parser = new DOMParser();
             let doc = parser.parseFromString(chapterContent, "application/xhtml+xml");
             let body = doc.querySelector("body");
@@ -240,7 +240,11 @@ class LibraryBookData {
                 throw new Error("No body content found in chapter");
             }
 
-            return body;
+            // Create a div containing only the body's inner content to match cached content structure
+            let contentDiv = document.createElement("div");
+            contentDiv.innerHTML = body.innerHTML;
+            
+            return contentDiv;
         } catch (error) {
             console.error("Error getting chapter content:", error);
             throw error;
