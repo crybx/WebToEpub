@@ -367,6 +367,7 @@ svg {
 .more-actions-menu .menu-item,
 .header-more-actions-menu .menu-item {
     display: flex;
+    align-items: center;
     text-align: left;
     padding: 8px 12px;
     cursor: pointer;

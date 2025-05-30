@@ -105,20 +105,39 @@ class LibraryUI {
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderUp"+CurrentLibKeys[i]+"'>↑</button>";
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderDown"+CurrentLibKeys[i]+"'>↓</button>";
                 }
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDeleteEpub"+CurrentLibKeys[i]+"'>"+LibTemplateDeleteEpub+"</button>";
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>Select Book</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDownload"+CurrentLibKeys[i]+"'>"+LibTemplateDownload+"</button>";
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>Load Book</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
+                
+                // Three dots menu
+                LibRenderString += "<div class='lib-more-actions-wrapper' id='LibMoreActionsWrapper"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "<button class='lib-more-actions-icon' id='LibMoreActionsIcon"+CurrentLibKeys[i]+"'></button>";
+                LibRenderString += "<div class='lib-more-actions-menu' id='LibMoreActionsMenu"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "<div class='menu-item' id='LibDeleteEpubMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "<span id='LibDeleteIcon"+CurrentLibKeys[i]+"'></span>";
+                LibRenderString += "<span>"+LibTemplateDeleteEpub+"</span>";
+                LibRenderString += "</div>";
+                if (ShowAdvancedOptions) {
+                    LibRenderString += "<div class='menu-item' id='LibMergeUploadMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
+                    LibRenderString += "<span id='LibMergeIcon"+CurrentLibKeys[i]+"'></span>";
+                    LibRenderString += "<span>"+LibTemplateMergeUploadButton+"</span>";
+                    LibRenderString += "</div>";
+                    LibRenderString += "<div class='menu-item' id='LibEditMetadataMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
+                    LibRenderString += "<span id='LibEditIcon"+CurrentLibKeys[i]+"'></span>";
+                    LibRenderString += "<span>"+LibTemplateEditMetadataButton+"</span>";
+                    LibRenderString += "</div>";
+                }
+                LibRenderString += "</div>";
+                LibRenderString += "</div>";
+                
                 LibRenderString += "<span class='new-chapter-badge new-chapter-normal' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "</td>";
                     LibRenderString += "</tr>";
                     LibRenderString += "<tr>";
                     LibRenderString += "<td colspan='2'>";
-                    LibRenderString += "<label id='LibMergeUploadLabel"+CurrentLibKeys[i]+"' data-libbuttonid='LibMergeUploadButton' data-libepubid="+CurrentLibKeys[i]+" for='LibMergeUpload"+CurrentLibKeys[i]+"' class='file-upload-label'>";
-                    LibRenderString += "<button id='LibMergeUploadButton"+CurrentLibKeys[i]+"' class='disabled-button'>"+LibTemplateMergeUploadButton+"</button></label>";
+                    // Keep the hidden file input for merge upload functionality
                     LibRenderString += "<input type='file' data-libepubid="+CurrentLibKeys[i]+" id='LibMergeUpload"+CurrentLibKeys[i]+"' hidden>";
-                    LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibEditMetadata"+CurrentLibKeys[i]+"'>"+LibTemplateEditMetadataButton+"</button>";
                 }
                 LibRenderString += "</td>";
                 LibRenderString += "</tr>";
@@ -162,7 +181,7 @@ class LibraryUI {
                 document.getElementById("LibAddListToLibraryButton").addEventListener("click", function() {LibraryUI.LibAddListToLibrary();});
             }
             for (let i = 0; i < CurrentLibKeys.length; i++) {
-                document.getElementById("LibDeleteEpub"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibDeleteEpub(this);});
+                // Standard event handlers
                 document.getElementById("LibUpdateNewChapter"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibUpdateNewChapter(this);});
                 document.getElementById("LibDownload"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibDownload(this);});
                 document.getElementById("LibLoadBook"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibLoadBook(this);});
@@ -170,17 +189,27 @@ class LibraryUI {
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusin", function() {LibraryUI.LibShowTextURLWarning(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusout", function() {LibraryUI.LibHideTextURLWarning(this);});
                 document.getElementById("LibFilename"+CurrentLibKeys[i]).addEventListener("change", function() {LibraryUI.LibSaveTextURLChange(this);});
+                
+                // Setup three dots menu
+                LibraryUI.setupLibraryMoreActionsMenu(CurrentLibKeys[i], ShowAdvancedOptions);
+                
                 if (ShowAdvancedOptions) {
                     document.getElementById("LibChangeOrderUp"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibChangeOrderUp(this);});
                     document.getElementById("LibChangeOrderDown"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibChangeOrderDown(this);});
                     document.getElementById("LibMergeUpload"+CurrentLibKeys[i]).addEventListener("change", function() {LibraryUI.LibMergeUpload(this);});
-                    document.getElementById("LibMergeUploadLabel"+CurrentLibKeys[i]).addEventListener("mouseover", function() {LibraryUI.LibMouseoverButtonUpload(this);});
-                    document.getElementById("LibMergeUploadLabel"+CurrentLibKeys[i]).addEventListener("mouseout", function() {LibraryUI.LibMouseoutButtonUpload(this);});
-                    document.getElementById("LibEditMetadata"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibEditMetadata(this);});
                 }
             }
             for (let i = 0; i < CurrentLibKeys.length; i++) {
-                document.getElementById("LibCover"+CurrentLibKeys[i]).src = await LibraryStorage.LibGetFromStorage("LibCover" + CurrentLibKeys[i]);                
+                let coverElement = document.getElementById("LibCover"+CurrentLibKeys[i]);
+                coverElement.src = await LibraryStorage.LibGetFromStorage("LibCover" + CurrentLibKeys[i]);
+                
+                // Add click handler to cover in non-compact view to trigger Select Book
+                coverElement.style.cursor = "pointer";
+                coverElement.dataset.libepubid = CurrentLibKeys[i];
+                coverElement.addEventListener("click", function() {
+                    LibraryUI.LibLoadBook(this);
+                });
+                
                 let newChapterHTML = (((await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0) == 0)? "" : await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) + LibTemplateNewChapter);
                 newChapterHTML = "<span class=\"newChapterWraper\">"+newChapterHTML+"</span>";
                 LibraryUI.AppendHtmlInDiv(newChapterHTML, document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]), "newChapterWraper");
@@ -709,6 +738,106 @@ class LibraryUI {
             exitButton.addEventListener("click", () => {
                 LibraryUI.LibExitLibraryMode();
             });
+        }
+    }
+
+    /**
+     * Setup three dots menu for library items
+     */
+    static setupLibraryMoreActionsMenu(bookId, showAdvancedOptions) {
+        // Add three dots icon
+        let moreActionsIcon = document.getElementById("LibMoreActionsIcon" + bookId);
+        if (moreActionsIcon && moreActionsIcon.children.length === 0) {
+            moreActionsIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.THREE_DOTS_VERTICAL));
+        }
+
+        // Add icons to menu items
+        let deleteIcon = document.getElementById("LibDeleteIcon" + bookId);
+        if (deleteIcon && deleteIcon.children.length === 0) {
+            deleteIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
+        }
+
+        if (showAdvancedOptions) {
+            let mergeIcon = document.getElementById("LibMergeIcon" + bookId);
+            if (mergeIcon && mergeIcon.children.length === 0) {
+                mergeIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILE_EARMARK_CHECK));
+            }
+
+            let editIcon = document.getElementById("LibEditIcon" + bookId);
+            if (editIcon && editIcon.children.length === 0) {
+                editIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILE_EARMARK_CHECK_FILL));
+            }
+        }
+
+        // Setup menu toggle handler
+        let moreActionsWrapper = document.getElementById("LibMoreActionsWrapper" + bookId);
+        let moreActionsMenu = document.getElementById("LibMoreActionsMenu" + bookId);
+        
+        if (moreActionsWrapper && moreActionsMenu) {
+            moreActionsWrapper.onclick = (e) => {
+                e.stopPropagation();
+                LibraryUI.toggleLibraryMoreActionsMenu(moreActionsMenu);
+            };
+        }
+
+        // Setup menu item handlers
+        let deleteMenuItem = document.getElementById("LibDeleteEpubMenuItem" + bookId);
+        if (deleteMenuItem) {
+            deleteMenuItem.onclick = (e) => {
+                e.stopPropagation();
+                LibraryUI.LibDeleteEpub(deleteMenuItem);
+                LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
+            };
+        }
+
+        if (showAdvancedOptions) {
+            let mergeMenuItem = document.getElementById("LibMergeUploadMenuItem" + bookId);
+            if (mergeMenuItem) {
+                mergeMenuItem.onclick = (e) => {
+                    e.stopPropagation();
+                    // Trigger the hidden file input
+                    document.getElementById("LibMergeUpload" + bookId).click();
+                    LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
+                };
+            }
+
+            let editMenuItem = document.getElementById("LibEditMetadataMenuItem" + bookId);
+            if (editMenuItem) {
+                editMenuItem.onclick = (e) => {
+                    e.stopPropagation();
+                    LibraryUI.LibEditMetadata(editMenuItem);
+                    LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
+                };
+            }
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener("click", () => LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu));
+    }
+
+    /**
+     * Toggle library more actions menu visibility
+     */
+    static toggleLibraryMoreActionsMenu(menu) {
+        if (menu.classList.contains("show")) {
+            LibraryUI.hideLibraryMoreActionsMenu(menu);
+        } else {
+            // Hide any other open menus first
+            document.querySelectorAll(".lib-more-actions-menu.show").forEach(m => {
+                if (m !== menu) {
+                    m.classList.remove("show");
+                }
+            });
+            menu.classList.add("show");
+        }
+    }
+
+    /**
+     * Hide library more actions menu
+     */
+    static hideLibraryMoreActionsMenu(menu) {
+        if (menu) {
+            menu.classList.remove("show");
         }
     }
 }

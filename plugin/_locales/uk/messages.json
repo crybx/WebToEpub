@@ -473,7 +473,7 @@
 		"description": "Label for checkbox to Show Advanced Library Options"
 	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
-		"message": "Завантажити EPUB після автоматичного додавання нового розділу.",
+		"message": "Автоматично завантажувати EPUB після додавання нових розділів",
 		"description": "Label for checkbox to Download Epubs after update"
 	},
 	"__MSG_label_Lib_Warning_In_Progress___": {

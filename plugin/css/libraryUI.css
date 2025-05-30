@@ -198,3 +198,99 @@
     background: var(--library-banner-button-hover, #45a049) !important;
     border-color: var(--library-banner-button-hover, #45a049);
 }
+
+/* Library Three Dots Menu */
+.lib-more-actions-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.lib-more-actions-menu {
+    visibility: hidden;
+    position: absolute;
+    min-width: 200px;
+    z-index: 1000;
+    top: 100%;
+    right: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.lib-more-actions-menu.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.lib-more-actions-menu .menu-item {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.lib-more-actions-menu .menu-item:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.lib-more-actions-menu .menu-item:hover svg {
+    fill: dodgerblue;
+    filter: brightness(1.2);
+}
+
+.lib-more-actions-menu .menu-item:hover span {
+    color: dodgerblue;
+}
+
+.lib-more-actions-menu .menu-item:last-child {
+    border-bottom: none;
+}
+
+.lib-more-actions-menu .menu-item svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    fill: #666;
+}
+
+.lib-more-actions-menu .menu-item span {
+    font-size: 14px;
+    font-weight: normal;
+    color: #333;
+}
+
+/* Library Three Dots Icon Button */
+.lib-more-actions-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 8px;
+    margin-right: 2px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    max-height: 30px;
+    vertical-align: middle;
+}
+
+.lib-more-actions-icon:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.lib-more-actions-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: #666;
+}
+

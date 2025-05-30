@@ -473,7 +473,7 @@
 		"description": "Label for checkbox to Show Advanced Library Options"
 	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
-		"message": "Скачать EPUB после автоматического добавления новой главы.",
+		"message": "Автоматически скачивать EPUB после добавления новых глав",
 		"description": "Label for checkbox to Download Epubs after update"
 	},
 	"__MSG_label_Lib_Warning_In_Progress___": {
