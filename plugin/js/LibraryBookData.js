@@ -432,7 +432,7 @@ class LibraryBookData {
     }
 
     /**
-     * UNIFIED LIBRARY BOOK LOADING - Replaces separate "Search new Chapters" and "Select" actions
+     * COMBINED LIBRARY BOOK LOADING - Replaces separate "Search new Chapters" and "Select" actions
      * @param {string} bookId - The Library book ID
      */
     static async loadLibraryBookInMainUI(bookId) {
@@ -446,66 +446,53 @@ class LibraryBookData {
                 throw new Error("No story URL found for this book");
             }
 
-            // 2. Clear main UI and load the original website
+            // 2. Immediately show library chapters with mock parser
+            console.log("Loading library chapters immediately...");
             main.resetUI();
             main.setUiFieldToValue("startingUrlInput", storyUrl);
+            await LibraryBookData.loadBookWithMockParser(bookId);
             
-            let useRealParser = true;
-            let websiteChapters = [];
+            // 3. Clear loading indicator and switch to main UI early
+            LibraryUI.LibRenderSavedEpubs();
+            LibraryBookData.switchToMainUI();
+            console.log("Library chapters displayed, now fetching website in background...");
             
+            // 4. Fetch website chapters in background and merge when ready
             try {
-                // 3. Try to use real parser for current website
+                // Try to load real parser for website
                 await main.onLoadAndAnalyseButtonClick();
                 
-                // 4. Get chapters from website using real parser
+                // Get chapters from website using real parser
                 if (window.parser && window.parser.state && window.parser.state.webPages) {
-                    websiteChapters = [...window.parser.state.webPages.values()];
-                    console.log(`Real parser loaded ${websiteChapters.length} chapters from website`);
+                    let websiteChapters = [...window.parser.state.webPages.values()];
+                    console.log(`Background fetch: loaded ${websiteChapters.length} chapters from website`);
+                    
+                    // Compare and merge with library chapters
+                    let updatedChapters = await LibraryBookData.detectNewChapters(bookId, websiteChapters);
+                    
+                    // Update parser state with enhanced chapter data
+                    window.parser.state.webPages.clear();
+                    updatedChapters.forEach((chapter, index) => {
+                        window.parser.state.webPages.set(index, chapter);
+                    });
+                    
+                    // Re-populate chapter table with merged data
+                    let chapterUrlsUI = new ChapterUrlsUI(window.parser);
+                    await chapterUrlsUI.populateChapterUrlsTable(updatedChapters);
+                    
+                    // Add library-specific visual indicators
+                    console.log("Background fetch complete: adding indicators for", updatedChapters.length, "chapters");
+                    await LibraryBookData.addLibraryChapterIndicators(bookId, updatedChapters);
+                    
+                    console.log(`Background fetch complete: merged ${updatedChapters.length} total chapters`);
                 } else {
-                    throw new Error("Real parser did not populate chapters");
+                    console.log("Background fetch: Real parser did not populate chapters, keeping library-only view");
                 }
                 
             } catch (parserError) {
-                console.log("Real parser failed, falling back to mock parser:", parserError);
-                useRealParser = false;
-                
-                // 5. Fallback: Use mock parser with library content only
-                await LibraryBookData.loadBookWithMockParser(bookId);
-                // Clear loading indicator since fallback completed
-                LibraryUI.LibRenderSavedEpubs();
-                return; // Mock parser handles its own UI, so exit here
+                console.log("Background fetch failed, keeping library-only view:", parserError);
+                // Library chapters are already displayed, so this is graceful degradation
             }
-            
-            if (useRealParser && websiteChapters.length > 0) {
-                // 6. Compare website chapters against book content (RELIABLE METHOD)
-                let updatedChapters = await LibraryBookData.detectNewChapters(bookId, websiteChapters);
-                
-                // 7. Update parser state with enhanced chapter data
-                window.parser.state.webPages.clear();
-                updatedChapters.forEach((chapter, index) => {
-                    window.parser.state.webPages.set(index, chapter);
-                });
-                
-                // 8. Re-populate chapter table with enhanced data
-                let chapterUrlsUI = new ChapterUrlsUI(window.parser);
-                await chapterUrlsUI.populateChapterUrlsTable(updatedChapters);
-                
-                // 9. Add library-specific visual indicators
-                console.log("Adding library chapter indicators for", updatedChapters.length, "chapters");
-                await LibraryBookData.addLibraryChapterIndicators(bookId, updatedChapters);
-                
-                console.log(`Enhanced ${updatedChapters.length} chapters with library status`);
-            }
-            
-            // 10. Library books manage their own chapter selection - no Reading List dependency needed
-            
-            // 11. Clear loading indicator since operation completed successfully
-            // We need to refresh the library UI to clear the loading indicator
-            // even though we're switching to main UI
-            LibraryUI.LibRenderSavedEpubs();
-            
-            // 12. Switch to main UI
-            LibraryBookData.switchToMainUI();
             
             console.log(`Library book ${bookId} loaded successfully in main UI`);
             
