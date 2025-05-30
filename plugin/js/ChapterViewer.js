@@ -258,7 +258,7 @@ class ChapterViewer {
             let chapterIndex = parseInt(urlParts[1]);
             
             // Get chapter content from Library
-            return await Library.getChapterContent(bookId, chapterIndex);
+            return await LibraryBookData.getChapterContent(bookId, chapterIndex);
         } catch (error) {
             console.error("Error getting library chapter content:", error);
             throw new Error("Failed to load library chapter: " + error.message);
@@ -282,7 +282,7 @@ class ChapterViewer {
             }
             
             // Get the content using the library chapter index
-            return await Library.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+            return await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
         } catch (error) {
             console.error("Error getting library chapter by original URL:", error);
             throw new Error("Failed to load library chapter: " + error.message);
