@@ -28,6 +28,10 @@ button:hover {
     --modal-bg: #2f2f2f;
     --modal-title-bg: #3a3a3a;
     --modal-title-text: #eee;
+    --scrollbar-track: rgba(58, 58, 58, 0.3);
+    --scrollbar-thumb: #666;
+    --scrollbar-thumb-hover: #777;
+    --scrollbar-border: rgba(85, 85, 85, 0.3);
     --modal-border: #555;
     --modal-close-color: #b0b0b0;
     --border-color: #555;

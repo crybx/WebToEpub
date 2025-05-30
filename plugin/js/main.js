@@ -348,12 +348,14 @@ const main = (function() {
         section.hidden = true;
         // Hide cache options modal if it's open
         document.getElementById("cacheOptionsModal").style.display = "none";
+        document.body.classList.remove("modal-open");
     }
 
     async function onCacheOptionsClick() {
         // Show the cache options modal
         let modal = document.getElementById("cacheOptionsModal");
         modal.style.display = "flex";
+        document.body.classList.add("modal-open");
         
         // Set up event handlers first
         ChapterCache.setupCacheEventHandlers();
@@ -365,12 +367,14 @@ const main = (function() {
         // Set up close button
         document.getElementById("closeCacheOptions").onclick = () => {
             modal.style.display = "none";
+            document.body.classList.remove("modal-open");
         };
 
         // Close on background click
         modal.onclick = (e) => {
             if (e.target === modal) {
                 modal.style.display = "none";
+                document.body.classList.remove("modal-open");
             }
         };
     }
@@ -607,6 +611,7 @@ const main = (function() {
             
             fullSizeImg.src = coverImg.src;
             modal.style.display = "flex";
+            document.body.classList.add("modal-open");
             
             // Update title with dimensions once image loads
             fullSizeImg.onload = function() {
@@ -654,6 +659,7 @@ const main = (function() {
     function closeCoverImageModal() {
         let modal = document.getElementById("coverImageModal");
         modal.style.display = "none";
+        document.body.classList.remove("modal-open");
     }
 
     function addEventHandlers() {

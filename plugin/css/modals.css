@@ -1,5 +1,10 @@
 /* Shared Modal Styles */
 
+/* Prevent body scrolling when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
 .modal-backdrop {
     display: none;
     position: fixed;
@@ -84,6 +89,43 @@
     overflow: auto;
     flex: 1;
     font-size: 18px;
+    scrollbar-width: thin; /* Firefox - thin scrollbar */
+    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, transparent); /* Firefox colors */
+}
+
+/* Webkit scrollbar styling (Chrome, Safari, Opera) */
+#chapterViewerContent::-webkit-scrollbar {
+    width: 8px; /* Narrow width to save space */
+}
+
+#chapterViewerContent::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, transparent);
+    border-radius: 4px;
+}
+
+#chapterViewerContent::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #c1c1c1);
+    border-radius: 4px;
+    border: 1px solid var(--scrollbar-border, transparent);
+}
+
+#chapterViewerContent::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #a8a8a8);
+}
+
+#scrollPercentage {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 1001;
 }
 
 /* Cache Options specific sizing */

@@ -211,6 +211,14 @@ input[type=checkbox].greenBox {
     text-shadow: 0 0 2px rgba(0, 255, 255, 0.7);
 }
 
+/* Chapter Viewer Scrollbar - Cyberpunk */
+#chapterViewer {
+    --scrollbar-track: rgba(26, 26, 46, 0.3);
+    --scrollbar-thumb: #6600cc;
+    --scrollbar-thumb-hover: #00ffff;
+    --scrollbar-border: rgba(102, 0, 204, 0.3);
+}
+
 /* Modal cyberpunk styling */
 .modal-backdrop {
     background: rgba(0, 0, 0, 0.8);

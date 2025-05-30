@@ -56,10 +56,15 @@ class ChapterViewer {
                 
                 // Show viewer
                 viewer.style.display = "flex";
+                document.body.classList.add("modal-open");
+                
+                // Set up scroll percentage tracking
+                ChapterViewer.setupScrollPercentage(contentDiv);
                 
                 // Set up close button
                 document.getElementById("closeChapterViewer").onclick = () => {
                     viewer.style.display = "none";
+                    document.body.classList.remove("modal-open");
                     // Remove custom stylesheet when closing viewer
                     let customStyle = document.getElementById("chapterViewerCustomStyle");
                     if (customStyle) {
@@ -71,6 +76,7 @@ class ChapterViewer {
                 viewer.onclick = (e) => {
                     if (e.target === viewer) {
                         viewer.style.display = "none";
+                        document.body.classList.remove("modal-open");
                         // Remove custom stylesheet when closing viewer
                         let customStyle = document.getElementById("chapterViewerCustomStyle");
                         if (customStyle) {
@@ -287,5 +293,34 @@ class ChapterViewer {
             console.error("Error getting library chapter by original URL:", error);
             throw new Error("Failed to load library chapter: " + error.message);
         }
+    }
+
+    /**
+     * Set up scroll percentage tracking for the chapter content
+     * @param {Element} contentDiv - The scrollable content container
+     */
+    static setupScrollPercentage(contentDiv) {
+        let scrollPercentageElement = document.getElementById("scrollPercentage");
+        
+        if (!scrollPercentageElement) {
+            return;
+        }
+
+        // Function to update scroll percentage
+        function updateScrollPercentage() {
+            let scrollTop = contentDiv.scrollTop;
+            let scrollHeight = contentDiv.scrollHeight - contentDiv.clientHeight;
+            
+            let percentage = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
+            percentage = Math.max(0, Math.min(100, percentage)); // Clamp between 0-100
+            
+            scrollPercentageElement.textContent = percentage + "%";
+        }
+
+        // Initial update
+        updateScrollPercentage();
+
+        // Add scroll event listener
+        contentDiv.addEventListener("scroll", updateScrollPercentage);
     }
 }
