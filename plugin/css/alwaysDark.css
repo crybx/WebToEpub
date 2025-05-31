@@ -38,6 +38,16 @@ button:hover {
     --border-light: #444;
     --input-border: #555;
     --button-border: #555;
+    --menu-bg: #2b2b2b;
+    --menu-border: #555;
+    --menu-item-border: #444;
+    --menu-item-text: #eee;
+    --menu-item-hover-bg: rgba(135, 206, 250, 0.15);
+    --menu-item-hover-text: #87ceeb;
+    --menu-item-hover-icon: #87ceeb;
+    --lib-card-bg: #3a3a3a;
+    --lib-card-border: #555;
+    --lib-card-title: #eee;
 }
 
 /* Sidebar dark mode styling */

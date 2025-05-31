@@ -78,6 +78,16 @@ progress::-moz-progress-bar {
     --border-color: #8b00ff;
     --border-light: #6a00cc;
     --input-border: #8b00ff;
+    --menu-bg: #1a1a2e;
+    --menu-border: #8b00ff;
+    --menu-item-border: #6a00cc;
+    --menu-item-text: #00ffff;
+    --menu-item-hover-bg: rgba(139, 0, 255, 0.2);
+    --menu-item-hover-text: #8b00ff;
+    --menu-item-hover-icon: #8b00ff;
+    --lib-card-bg: #1a1a2e;
+    --lib-card-border: #8b00ff;
+    --lib-card-title: #00ffff;
     --button-border: #8b00ff;
     --sidebar-bg: rgba(26, 26, 46, 0.95);
     --sidebar-text: #00ffff;

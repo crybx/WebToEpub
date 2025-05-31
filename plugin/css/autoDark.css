@@ -32,51 +32,22 @@
         background-color: rgba(135, 206, 250, 0.15) !important;
     }
 
-    /* More actions menu dark mode styling */
-    .more-actions-menu,
-    .header-more-actions-menu {
-        background-color: #2b2b2b !important;
-        border: 1px solid #555 !important;
-    }
-
-    .more-actions-menu .menu-item,
-    .header-more-actions-menu .menu-item {
-        border-bottom: 1px solid #444 !important;
-    }
-
-    .more-actions-menu .menu-item span,
-    .header-more-actions-menu .menu-item span {
-        color: #eee !important;
-    }
-
-    .more-actions-menu .menu-item:hover,
-    .header-more-actions-menu .menu-item:hover {
-        background-color: rgba(135, 206, 250, 0.15) !important;
-    }
-
-    .more-actions-menu .menu-item:hover svg,
-    .header-more-actions-menu .menu-item:hover svg {
-        fill: #87ceeb !important;
-    }
-
-    .more-actions-menu .menu-item:hover span,
-    .header-more-actions-menu .menu-item:hover span {
-        color: #87ceeb !important;
-    }
-
     /* Error state styling for dark mode */
     .error-state .more-actions-menu .menu-item:hover svg,
-    .error-state .header-more-actions-menu .menu-item:hover svg {
+    .error-state .header-more-actions-menu .menu-item:hover svg,
+    .error-state .lib-more-actions-menu .menu-item:hover svg {
         fill: #f27070 !important;
     }
 
     .error-state .more-actions-menu .menu-item:hover,
-    .error-state .header-more-actions-menu .menu-item:hover {
+    .error-state .header-more-actions-menu .menu-item:hover,
+    .error-state .lib-more-actions-menu .menu-item:hover {
         background-color: rgba(242, 112, 112, 0.15) !important;
     }
 
     .error-state .more-actions-menu .menu-item:hover span,
-    .error-state .header-more-actions-menu .menu-item:hover span {
+    .error-state .header-more-actions-menu .menu-item:hover span,
+    .error-state .lib-more-actions-menu .menu-item:hover span {
         color: #f27070 !important;
     }
 

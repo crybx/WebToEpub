@@ -501,3 +501,88 @@ button:active {
     }
 }
 
+/* CSS variables for more actions menu theming */
+:root {
+    --menu-bg: white;
+    --menu-border: #ccc;
+    --menu-item-border: #eee;
+    --menu-item-text: #333;
+    --menu-item-hover-bg: rgba(0, 123, 255, 0.1);
+    --menu-item-hover-text: dodgerblue;
+    --menu-item-hover-icon: dodgerblue;
+    --lib-card-bg: #f9f9f9;
+    --lib-card-border: #ddd;
+    --lib-card-title: #333;
+}
+
+/* Shared more actions dropdown menu styles */
+.more-actions-menu,
+.header-more-actions-menu,
+.lib-more-actions-menu {
+    background-color: var(--menu-bg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border: 1px solid var(--menu-border);
+    border-radius: 4px;
+}
+
+.more-actions-menu .menu-item,
+.header-more-actions-menu .menu-item,
+.lib-more-actions-menu .menu-item {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--menu-item-border);
+    transition: background-color 0.2s ease;
+}
+
+.more-actions-menu .menu-item svg,
+.header-more-actions-menu .menu-item svg,
+.lib-more-actions-menu .menu-item svg {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+}
+
+.more-actions-menu .menu-item span,
+.header-more-actions-menu .menu-item span,
+.lib-more-actions-menu .menu-item span {
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--menu-item-text);
+}
+
+.more-actions-menu .menu-item:hover,
+.header-more-actions-menu .menu-item:hover,
+.lib-more-actions-menu .menu-item:hover {
+    background-color: var(--menu-item-hover-bg);
+}
+
+.more-actions-menu .menu-item:hover span,
+.header-more-actions-menu .menu-item:hover span,
+.lib-more-actions-menu .menu-item:hover span {
+    color: var(--menu-item-hover-text);
+}
+
+.more-actions-menu .menu-item:hover svg,
+.header-more-actions-menu .menu-item:hover svg,
+.lib-more-actions-menu .menu-item:hover svg {
+    fill: var(--menu-item-hover-icon);
+    filter: brightness(1.2);
+}
+
+.more-actions-menu .menu-item:last-child,
+.header-more-actions-menu .menu-item:last-child,
+.lib-more-actions-menu .menu-item:last-child {
+    border-bottom: none;
+}
+
+.more-actions-menu.show,
+.header-more-actions-menu.show,
+.lib-more-actions-menu.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+

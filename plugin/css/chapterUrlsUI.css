@@ -259,9 +259,7 @@ svg {
 
 /* Only highlight SVG when directly hovering the clickable icon itself, not child elements */
 .clickable-icon:hover > svg,
-.clickable-icon:hover > span > svg,
-.more-actions-menu .menu-item:hover svg,
-.header-more-actions-menu .menu-item:hover svg {
+.clickable-icon:hover > span > svg {
     fill: dodgerblue;
     filter: brightness(1.2);
 }
@@ -277,18 +275,21 @@ svg {
 .error-state:hover .chapter-status-icon,
 .error-state:hover .menu-icon,
 .error-state .more-actions-menu .menu-item:hover svg,
-.error-state .header-more-actions-menu .menu-item:hover svg {
+.error-state .header-more-actions-menu .menu-item:hover svg,
+.error-state .lib-more-actions-menu .menu-item:hover svg {
     fill: #dc3545;
 }
 
 .error-state .clickable-icon:hover,
 .error-state .more-actions-menu .menu-item:hover,
-.error-state .header-more-actions-menu .menu-item:hover {
+.error-state .header-more-actions-menu .menu-item:hover,
+.error-state .lib-more-actions-menu .menu-item:hover {
     background-color: rgba(220, 53, 69, 0.1);
 }
 
 .error-state .more-actions-menu .menu-item:hover span,
-.error-state .header-more-actions-menu .menu-item:hover span {
+.error-state .header-more-actions-menu .menu-item:hover span,
+.error-state .lib-more-actions-menu .menu-item:hover span {
     color: #dc3545;
 }
 
@@ -309,10 +310,6 @@ svg {
     background-color: rgba(255, 193, 7, 0.25);
 }
 
-.more-actions-menu .menu-item:hover span,
-.header-more-actions-menu .menu-item:hover span {
-    color: dodgerblue;
-}
 
 /* Tooltip Styles */
 .tooltip-wrapper {
@@ -400,55 +397,6 @@ svg {
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
 }
 
-.more-actions-menu,
-.header-more-actions-menu {
-    background-color: white;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.more-actions-menu .menu-item,
-.header-more-actions-menu .menu-item {
-    display: flex;
-    align-items: center;
-    text-align: left;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s ease;
-}
-
-.more-actions-menu .menu-item svg,
-.header-more-actions-menu .menu-item svg {
-    width: 14px;
-    height: 14px;
-    margin-right: 8px;
-}
-
-.more-actions-menu .menu-item span,
-.header-more-actions-menu .menu-item span {
-    font-size: 14px;
-    font-weight: normal;
-    color: #333;
-}
-
-.more-actions-menu .menu-item:hover,
-.header-more-actions-menu .menu-item:hover {
-    background-color: rgba(0, 123, 255, 0.1);
-}
-
-.more-actions-menu .menu-item:last-child,
-.header-more-actions-menu .menu-item:last-child {
-    border-bottom: none;
-}
-
-.more-actions-menu.show,
-.header-more-actions-menu.show {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0);
-}
 
 /* Header more actions menu specific styling */
 .header-more-actions-wrapper {

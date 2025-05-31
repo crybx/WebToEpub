@@ -87,9 +87,9 @@ class LibraryUI {
             }
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 document.getElementById("LibCover"+CurrentLibKeys[i]).src = await LibraryStorage.LibGetFromStorage("LibCover" + CurrentLibKeys[i]);
-                let newChapterHTML = (((await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0) == 0)? "" : await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) + LibTemplateNewChapter);
-                newChapterHTML = "<span class=\"newChapterWraper\">"+newChapterHTML+"</span>";
-                LibraryUI.AppendHtmlInDiv(newChapterHTML, document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]), "newChapterWraper");
+                let newChapterCount = await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0;
+                let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + LibTemplateNewChapter;
+                document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]).textContent = newChapterText;
             }
             // Resize spacer to match the height of the absolutely positioned compact wrapper
             LibraryUI.resizeCompactSpacer();
@@ -107,16 +107,9 @@ class LibraryUI {
                 // Content section
                 LibRenderString += "<div class='lib-list-content'>";
                 
-                // Controls row
-                LibRenderString += "<div class='lib-list-controls'>";
-                if (ShowAdvancedOptions) {
-                    LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderUp"+CurrentLibKeys[i]+"'>↑</button>";
-                    LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderDown"+CurrentLibKeys[i]+"'>↓</button>";
-                }
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>Select Book</button>";
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
-                
-                // Three dots menu
+                // Title row with more actions menu
+                LibRenderString += "<div class='lib-title-row'>";
+                LibRenderString += "<div class='lib-title-display' id='LibTitleDisplay"+CurrentLibKeys[i]+"'></div>";
                 LibRenderString += "<div class='lib-more-actions-wrapper' id='LibMoreActionsWrapper"+CurrentLibKeys[i]+"'>";
                 LibRenderString += "<button class='lib-more-actions-icon' id='LibMoreActionsIcon"+CurrentLibKeys[i]+"'></button>";
                 LibRenderString += "<div class='lib-more-actions-menu' id='LibMoreActionsMenu"+CurrentLibKeys[i]+"'>";
@@ -132,6 +125,10 @@ class LibraryUI {
                 LibRenderString += "<span id='LibDownloadEpubIcon"+CurrentLibKeys[i]+"'></span>";
                 LibRenderString += "<span>"+LibTemplateDownload+"</span>";
                 LibRenderString += "</div>";
+                LibRenderString += "<div class='menu-item' id='LibClearNewChaptersMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"' style='display: none;'>";
+                LibRenderString += "<span id='LibClearNewChaptersIcon"+CurrentLibKeys[i]+"'></span>";
+                LibRenderString += "<span>Clear New Chapters Alert</span>";
+                LibRenderString += "</div>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "<div class='menu-item' id='LibMergeUploadMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                     LibRenderString += "<span id='LibMergeIcon"+CurrentLibKeys[i]+"'></span>";
@@ -144,6 +141,16 @@ class LibraryUI {
                 }
                 LibRenderString += "</div>";
                 LibRenderString += "</div>";
+                LibRenderString += "</div>";
+                
+                // Controls row
+                LibRenderString += "<div class='lib-list-controls'>";
+                if (ShowAdvancedOptions) {
+                    LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderUp"+CurrentLibKeys[i]+"'>↑</button>";
+                    LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderDown"+CurrentLibKeys[i]+"'>↓</button>";
+                }
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>Select Book</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
                 
                 LibRenderString += "<span class='new-chapter-badge new-chapter-normal' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
                 LibRenderString += "</div>";
@@ -153,11 +160,16 @@ class LibraryUI {
                     LibRenderString += "<input type='file' data-libepubid="+CurrentLibKeys[i]+" id='LibMergeUpload"+CurrentLibKeys[i]+"' hidden>";
                 }
                 
-                // URL section
+                // URL warning row (hidden by default)
+                LibRenderString += "<div class='lib-list-field' id='LibURLWarningField"+CurrentLibKeys[i]+"' style='display: none;'>";
+                LibRenderString += "<label class='lib-list-label'></label>";
+                LibRenderString += "<div class='lib-list-input-container'>";
+                LibRenderString += "<div class='lib-url-warning' id='LibURLWarning"+CurrentLibKeys[i]+"'></div>";
+                LibRenderString += "</div>";
+                LibRenderString += "</div>";
                 LibRenderString += "<div class='lib-list-field'>";
                 LibRenderString += "<label class='lib-list-label'>"+LibTemplateURL+"</label>";
                 LibRenderString += "<div class='lib-list-input-container'>";
-                LibRenderString += "<div class='lib-url-warning' id='LibURLWarning"+CurrentLibKeys[i]+"'></div>";
                 LibRenderString += "<input data-libepubid="+CurrentLibKeys[i]+" id='LibStoryURL"+CurrentLibKeys[i]+"' type='url' value=''>";
                 LibRenderString += "</div>";
                 LibRenderString += "</div>";
@@ -223,13 +235,30 @@ class LibraryUI {
                     LibraryUI.LibLoadBook(this);
                 });
                 
-                let newChapterHTML = (((await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0) == 0)? "" : await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) + LibTemplateNewChapter);
-                newChapterHTML = "<span class=\"newChapterWraper\">"+newChapterHTML+"</span>";
-                LibraryUI.AppendHtmlInDiv(newChapterHTML, document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]), "newChapterWraper");
+                let newChapterCount = await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0;
+                let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + LibTemplateNewChapter;
+                document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]).textContent = newChapterText;
+                
+                // Show/hide the clear new chapters menu item based on whether there are new chapters
+                let clearMenuItem = document.getElementById("LibClearNewChaptersMenuItem" + CurrentLibKeys[i]);
+                if (clearMenuItem) {
+                    clearMenuItem.style.display = (newChapterCount > 0) ? "flex" : "none";
+                }
+                
                 let storyUrl = await LibraryStorage.LibGetFromStorage("LibStoryURL"+CurrentLibKeys[i]);
                 let filename = await LibraryStorage.LibGetFromStorage("LibFilename"+CurrentLibKeys[i]);
                 if (storyUrl) document.getElementById("LibStoryURL"+CurrentLibKeys[i]).value = storyUrl;
                 if (filename) document.getElementById("LibFilename"+CurrentLibKeys[i]).value = filename;
+                
+                // Set the title display
+                try {
+                    let metadata = await LibraryStorage.LibGetMetadata(CurrentLibKeys[i]);
+                    let title = metadata && metadata[0] ? metadata[0] : (filename || "Untitled");
+                    document.getElementById("LibTitleDisplay"+CurrentLibKeys[i]).textContent = title;
+                } catch (error) {
+                    // Fallback to filename if metadata fetch fails
+                    document.getElementById("LibTitleDisplay"+CurrentLibKeys[i]).textContent = filename || "Untitled";
+                }
             }
             if (ShowAdvancedOptions) {
                 if (!util.isFirefox()) {
@@ -442,7 +471,7 @@ class LibraryUI {
         LibRenderString += "</div>";
         
         // Description field
-        LibRenderString += "<div class='lib-list-field'>";
+        LibRenderString += "<div class='lib-list-field lib-description-field'>";
         LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataDescription+"</label>";
         LibRenderString += "<div class='lib-list-input-container'>";
         LibRenderString += "<textarea rows='2' id='LibDescriptionInput"+objbtn.dataset.libepubid+"' name='descriptionInput'>"+LibMetadata[4]+"</textarea>";
@@ -558,6 +587,21 @@ class LibraryUI {
     }
 
     /**
+     * Clear new chapters alert for a library book
+     */
+    static LibClearNewChapters(objbtn) {
+        let LibRemove = ["LibNewChapterCount" + objbtn.dataset.libepubid];
+        chrome.storage.local.remove(LibRemove);
+        document.getElementById("LibNewChapterCount"+objbtn.dataset.libepubid).textContent = "";
+        
+        // Hide the clear new chapters menu item since there are no more new chapters
+        let clearMenuItem = document.getElementById("LibClearNewChaptersMenuItem" + objbtn.dataset.libepubid);
+        if (clearMenuItem) {
+            clearMenuItem.style.display = "none";
+        }
+    }
+
+    /**
      * Download an EPUB from library
      */
     static LibDownload(objbtn) {
@@ -568,7 +612,13 @@ class LibraryUI {
             let backgroundDownload = userPreferences.noDownloadPopup.value;
             let LibRemove = ["LibNewChapterCount" + objbtn.dataset.libepubid];
             chrome.storage.local.remove(LibRemove);
-            document.getElementById("LibNewChapterCount"+objbtn.dataset.libepubid).innerHTML = "";
+            document.getElementById("LibNewChapterCount"+objbtn.dataset.libepubid).textContent = "";
+            
+            // Hide the clear new chapters menu item since there are no more new chapters
+            let clearMenuItem = document.getElementById("LibClearNewChaptersMenuItem" + objbtn.dataset.libepubid);
+            if (clearMenuItem) {
+                clearMenuItem.style.display = "none";
+            }
             let blobdata = await LibraryStorage.LibConvertDataUrlToBlob(items["LibEpub" + objbtn.dataset.libepubid]);
             return Download.save(blobdata, items["LibFilename" + objbtn.dataset.libepubid] + ".epub", overwriteExisting, backgroundDownload);
         });
@@ -701,8 +751,13 @@ class LibraryUI {
     static LibShowTextURLWarning(obj) {
         let LibTemplateWarningURLChange = document.getElementById("LibTemplateWarningURLChange").innerHTML;
         let LibWarningElement = document.getElementById("LibURLWarning"+obj.dataset.libepubid);
+        let LibWarningField = document.getElementById("LibURLWarningField"+obj.dataset.libepubid);
+        
         LibWarningElement.textContent = LibTemplateWarningURLChange;
         LibWarningElement.classList.add("warning-text");
+        if (LibWarningField) {
+            LibWarningField.style.display = "flex";
+        }
     }
 
     /**
@@ -710,8 +765,13 @@ class LibraryUI {
      */
     static LibHideTextURLWarning(obj) {
         let LibWarningElement = document.getElementById("LibURLWarning"+obj.dataset.libepubid);
+        let LibWarningField = document.getElementById("LibURLWarningField"+obj.dataset.libepubid);
+        
         LibWarningElement.textContent = "";
         LibWarningElement.classList.remove("warning-text");
+        if (LibWarningField) {
+            LibWarningField.style.display = "none";
+        }
     }
 
     /**
@@ -825,6 +885,11 @@ class LibraryUI {
             downloadEpubIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
         }
 
+        let clearNewChaptersIcon = document.getElementById("LibClearNewChaptersIcon" + bookId);
+        if (clearNewChaptersIcon && clearNewChaptersIcon.children.length === 0) {
+            clearNewChaptersIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.X_CIRCLE));
+        }
+
         if (showAdvancedOptions) {
             let mergeIcon = document.getElementById("LibMergeIcon" + bookId);
             if (mergeIcon && mergeIcon.children.length === 0) {
@@ -872,6 +937,15 @@ class LibraryUI {
             downloadEpubMenuItem.onclick = (e) => {
                 e.stopPropagation();
                 LibraryUI.LibDownload(downloadEpubMenuItem);
+                LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
+            };
+        }
+
+        let clearNewChaptersMenuItem = document.getElementById("LibClearNewChaptersMenuItem" + bookId);
+        if (clearNewChaptersMenuItem) {
+            clearNewChaptersMenuItem.onclick = (e) => {
+                e.stopPropagation();
+                LibraryUI.LibClearNewChapters(clearNewChaptersMenuItem);
                 LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
             };
         }
