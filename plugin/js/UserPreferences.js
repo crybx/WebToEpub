@@ -279,15 +279,19 @@ class UserPreferences {
         let autodark = document.querySelector("link#autoDark");
         let alwaysDark = document.querySelector("link#alwaysDark");
         let cyberpunk = document.querySelector("link#cyberpunk");
+        let sunset = document.querySelector("link#sunset");
         autodark.disabled = true;
         alwaysDark.disabled = true;
         cyberpunk.disabled = true;
+        sunset.disabled = true;
         if (theme === "") {
             autodark.disabled = false;
         } else if (theme === "DarkMode") {
             alwaysDark.disabled = false;
         } else if (theme === "CyberpunkMode") {
             cyberpunk.disabled = false;
+        } else if (theme === "SunsetMode") {
+            sunset.disabled = false;
         }
     }
 

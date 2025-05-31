@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebToEpub</title>
+    <link href="css/themeBase.css" rel="stylesheet" type="text/css" />
     <link href="css/default.css" rel="stylesheet" type="text/css" />
     <link href="css/chapterUrlsUI.css" rel="stylesheet" type="text/css" />
     <link href="css/modals.css" rel="stylesheet" type="text/css" />
     <link href="css/libraryUI.css" rel="stylesheet" type="text/css" />
-    <link href="css/autoDark.css" rel="stylesheet" type="text/css"  id="autoDark" />
-    <link href="css/alwaysDark.css" rel="stylesheet" type="text/css" id="alwaysDark" disabled="true"/>
-    <link href="css/cyberpunk.css" rel="stylesheet" type="text/css" id="cyberpunk" disabled="true"/>
+    <link href="css/themeAutoDark.css" rel="stylesheet" type="text/css"  id="autoDark" />
+    <link href="css/themeAlwaysDark.css" rel="stylesheet" type="text/css" id="alwaysDark" disabled="true"/>
+    <link href="css/themeCyberpunk.css" rel="stylesheet" type="text/css" id="cyberpunk" disabled="true"/>
+    <link href="css/themeSunset.css" rel="stylesheet" type="text/css" id="sunset" disabled="true"/>
     <base />
 </head>
 <body>
@@ -22,7 +24,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div id="page-container">
         <section id="readingListSection" hidden="true">
             <button id="closeReadingList">__MSG_button_Close_ReadingList__</button>
             <table id="readingListTable">
@@ -358,8 +360,7 @@
                 </tr>
                 <tr>
                     <td>__MSG_label_Custom_Filename__</td>
-                    <td><input id="CustomFilenameInput" type="text" name="CustomFilenameInput"></td>
-                    <td><button id="CustomFilenameHelpButton">__MSG_button_Help__</button></td>
+                    <td><input id="CustomFilenameInput" type="text" name="CustomFilenameInput"> <button id="CustomFilenameHelpButton">__MSG_button_Help__</button></td>
                 </tr>
                 <tr id="translatorRow" hidden="true">
                     <td>__MSG_label_Translator__</td>
@@ -372,6 +373,7 @@
                             <option class="i18n" value="LightMode">__MSG_option_ID_Theme_Always_Light__</option>
                             <option class="i18n" value="DarkMode">__MSG_option_ID_Theme_Always_Dark__</option>
                             <option class="i18n" value="CyberpunkMode">Cyberpunk</option>
+                            <option class="i18n" value="SunsetMode">Sunset</option>
                             <option class="i18n" selected="true" value="">__MSG_option_ID_Theme_OS_Selection__</option>
                         </select>
                     </td>
@@ -481,8 +483,7 @@
                 </tr>
                 <tr id="autoParserSelectIncludesBTSeriesPageRow">
                     <td><input id="autoParserSelectIncludesBTSeriesPageCheckbox" type="checkbox" name="autoParserSelectIncludesBTSeriesPage" value="false"></td>
-                    <td>__MSG_label_Auto_Parser_Select_Includes_Baka_Tsuki_Series_Page_Parser__</td>
-                    <td><button id="seriesPageHelpButton">__MSG_button_Help__</button></td>
+                    <td>__MSG_label_Auto_Parser_Select_Includes_Baka_Tsuki_Series_Page_Parser__ <button id="seriesPageHelpButton">__MSG_button_Help__</button></td>
                 </tr>
                 <tr id="skipChaptersThatFailFetch">
                     <td><input id="skipChaptersThatFailFetchCheckbox" type="checkbox" name="skipChaptersThatFailFetchCheckbox" value="false"></td>
@@ -557,6 +558,7 @@
 
         <!-- Chapter Selection Options Section -->
         <section id="chapterSelectionOptionsSection">
+          <div id="findingChapterUrlsMessageRow" class="i18n warning">__MSG_Searching_For_URLs_Please_Wait__</div>
           <div id="chapterSelectControlsDiv">
             <table id="rangeSelectTable">
               <tr id="rangeStartChapterRow">
@@ -601,7 +603,6 @@
           <div>
             <button id="applyChangesButton" hidden="true">__MSG_button_Apply_Changes__</button>
             <p id="editURLsHint" class="i18n" hidden="true">__MSG_label_Edit_URLs_Hint__</p>
-            <div id="findingChapterUrlsMessageRow" class="i18n warning">__MSG_Searching_For_URLs_Please_Wait__</div>
           </div>
           <div>
             <div>

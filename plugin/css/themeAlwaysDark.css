@@ -1,0 +1,45 @@
+/* Always dark mode - overrides base colors only */
+:root {
+    /* WARNING: Keep these colors in sync with autoDark.css */
+    /* Both files must have identical values for consistent dark mode */
+    
+    /* Override base color palette for dark theme */
+    
+    /* Primary colors */
+    --color-primary: #66bb6a;
+    --color-primary-hover: #81c784;
+    --color-primary-light: #a5d6a7;
+    --color-primary-dark: #2e7d32;
+    
+    /* Secondary colors */
+    --color-secondary: #1e88e5;
+    --color-secondary-hover: #1565c0;
+    --color-secondary-light: #87ceeb;
+    
+    /* Neutral colors */
+    --color-neutral-50: #3a3a3a;
+    --color-neutral-100: #2b2b2b;
+    --color-neutral-200: #444;
+    --color-neutral-300: #555;
+    --color-neutral-400: #666;
+    --color-neutral-500: #777;
+    --color-neutral-600: #eee;
+    --color-neutral-700: #bbb;
+    --color-neutral-800: #eee;
+    --color-neutral-900: #fff;
+    
+    /* Surface colors */
+    --color-surface-primary: #2f2f2f;
+    --color-surface-secondary: #3a3a3a;
+    --color-surface-tertiary: #2d4a32;
+    
+    /* Status colors */
+    --color-success: #90ee90;
+    --color-success-light: #90ee90;
+    --color-warning: #ffff99;
+    --color-warning-light: #ffff99;
+    --color-error: #f27070;
+    --color-error-light: #f27070;
+    --color-info: #87ceeb;
+    --color-info-light: #d4a574;
+}

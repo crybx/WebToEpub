@@ -27,7 +27,7 @@
     -moz-appearance: none;
     width: 12px;
     height: 12px;
-    border: 1px solid #767676;
+    border: 1px solid var(--border-color);
     border-radius: 2.5px;
     background-color: white;
     position: relative;
@@ -36,7 +36,7 @@
 
 #selectAllUrlsCheckbox:indeterminate:focus,
 #selectAllUrlsCheckbox:indeterminate:hover {
-    border-color: #4f4f4f;
+    border-color: var(--border-color);
 }
 
 #chapterSelectionOptionsSection {
@@ -44,15 +44,12 @@
     flex-direction: column;
     align-content: center;
     justify-content: center;
-    gap: 4px;
     width: 100%;
 }
 
 #chapterSelectControlsDiv {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
+    display: block;
+    padding: 0 10px;
 }
 
 #chapterSelectControlButtons {
@@ -69,7 +66,6 @@
     min-width: 130px;
     height: auto !important;
     max-height: none !important;
-    min-height: 30px;
     white-space: normal;
     word-wrap: break-word;
     line-height: 1.2;
@@ -162,7 +158,7 @@
     padding: 0 0 0 8px;
     font-family: monospace;
     font-size: 12px;
-    color: #666;
+    color: var(--color-neutral-600);
     white-space: nowrap;
 }
 
@@ -193,7 +189,7 @@
 .chapter-list input[type=text]:focus,
 .chapter-list input[type=url]:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--color-secondary);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
@@ -204,7 +200,7 @@
 
 /* Red checkbox styling for error state rows */
 .error-state input[type=checkbox] {
-    accent-color: #dc3545;
+    accent-color: var(--color-error);
 }
 
 .greenBox {
@@ -230,7 +226,7 @@ svg {
 }
 
 .sleeping-icon {
-    color: #965607;
+    color: var(--color-warning);
 }
 
 .chapter-status-column svg {
@@ -277,7 +273,7 @@ svg {
 .error-state .more-actions-menu .menu-item:hover svg,
 .error-state .header-more-actions-menu .menu-item:hover svg,
 .error-state .lib-more-actions-menu .menu-item:hover svg {
-    fill: #dc3545;
+    fill: var(--color-error);
 }
 
 .error-state .clickable-icon:hover,
@@ -290,7 +286,7 @@ svg {
 .error-state .more-actions-menu .menu-item:hover span,
 .error-state .header-more-actions-menu .menu-item:hover span,
 .error-state .lib-more-actions-menu .menu-item:hover span {
-    color: #dc3545;
+    color: var(--color-error);
 }
 
 /* Library Chapter Highlighting */
@@ -321,7 +317,7 @@ svg {
 
 .tooltip-wrapper .tooltipText {
     visibility: hidden;
-    background-color: #555555;
+    background-color: var(--color-neutral-700);
     color: white;
     text-align: center;
     padding: 5px;
@@ -417,17 +413,4 @@ svg {
 }
 
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .chapter-url-column {
-        display: none;
-    }
-    
-    .chapter-checkbox-column {
-        flex: 0 0 30px;
-    }
-    
-    .chapter-status-column {
-        flex: 0 0 60px;
-    }
-}
+

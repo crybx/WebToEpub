@@ -205,7 +205,7 @@ body.modal-open {
     height: 24px;
     -webkit-appearance: none;
     appearance: none;
-    background-color: #ccc;
+    background-color: var(--color-neutral-400);
     border-radius: 12px;
     outline: none;
     cursor: pointer;
@@ -216,7 +216,7 @@ body.modal-open {
 }
 
 #enableChapterCachingCheckbox:checked {
-    background-color: #4CAF50;
+    background-color: var(--color-success);
 }
 
 #enableChapterCachingCheckbox::before {
@@ -238,7 +238,7 @@ body.modal-open {
 #toggleStateText {
     margin-left: 8px;
     font-size: 14px;
-    color: #666;
+    color: var(--color-neutral-600);
     font-weight: 500;
     vertical-align: middle;
     display: inline-block;
@@ -318,16 +318,16 @@ body.modal-open {
 .chapter-error {
     padding: 20px;
     text-align: center;
-    color: #dc3545;
-    border: 2px solid #dc3545;
+    color: var(--color-error);
+    border: 2px solid var(--color-error);
     border-radius: 8px;
-    background-color: #f8d7da;
+    background-color: var(--color-error-light);
     margin: 20px;
 }
 
 .chapter-error h3 {
     margin: 0 0 15px 0;
-    color: #dc3545;
+    color: var(--color-error);
 }
 
 .chapter-error p {
@@ -337,5 +337,5 @@ body.modal-open {
 .chapter-error .error-details {
     margin-top: 15px;
     font-size: 0.9em;
-    color: #721c24;
+    color: var(--color-error);
 }

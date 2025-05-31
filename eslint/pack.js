@@ -188,6 +188,8 @@ var packNonManifestExtensionFiles = function(zip, packedFileName) {
         }).then(function () {
             return addImageFileToZip(zip, "Trash3Fill.svg");
         }).then(function () {
+            return addCssFileToZip(zip, "themeBase.css");
+        }).then(function () {
             return addCssFileToZip(zip, "default.css");
         }).then(function () {
             return addCssFileToZip(zip, "chapterUrlsUI.css");
@@ -196,11 +198,13 @@ var packNonManifestExtensionFiles = function(zip, packedFileName) {
         }).then(function () {
             return addCssFileToZip(zip, "libraryUI.css");
         }).then(function () {
-            return addCssFileToZip(zip, "alwaysDark.css");
+            return addCssFileToZip(zip, "themeAlwaysDark.css");
         }).then(function () {
-            return addCssFileToZip(zip, "autoDark.css");
+            return addCssFileToZip(zip, "themeAutoDark.css");
         }).then(function () {
-            return addCssFileToZip(zip, "cyberpunk.css");
+            return addCssFileToZip(zip, "themeCyberpunk.css");
+        }).then(function () {
+            return addCssFileToZip(zip, "themeSunset.css");
         }).then(function () {
             return getFileList("../plugin/popup.html");
         }).then(function(fileList) {
