@@ -65,8 +65,7 @@
 #libraryExpandableSection {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
-    overflow-y: visible;
+    overflow: hidden;
     box-sizing: border-box;
     position: relative;
     z-index: 1;
@@ -97,13 +96,107 @@
     min-height: fit-content;
 }
 
-/* Library Table View Container */
-.lib-table-view-container {
+/* Library List View Container (flex-based) */
+.lib-list-view-container {
     width: 100%;
     max-width: 100%;
     overflow: visible;
     box-sizing: border-box;
     position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Individual library item in list view - two column layout */
+.lib-list-item {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: #f9f9f9;
+}
+
+/* Cover image section - left column */
+.lib-list-cover {
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.lib-list-cover .LibCover {
+    max-width: 106px;
+    max-height: 150px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+/* Content section containing controls and fields - right column */
+.lib-list-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Controls row (buttons and menu) */
+.lib-list-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.lib-list-controls button {
+    margin-right: 8px;
+    margin-bottom: 4px;
+}
+
+/* Field rows (URL and Filename) */
+.lib-list-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.lib-list-label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.lib-list-input-container {
+    position: relative;
+}
+
+.lib-list-input-container input,
+.lib-list-input-container textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+/* URL warning styling */
+.lib-url-warning {
+    font-size: 12px;
+    color: #B8860B;
+    margin-bottom: 4px;
+    min-height: 16px;
+}
+
+/* Metadata save button section */
+.lib-metadata-save {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+    padding-top: 8px;
+    border-top: 1px solid #ddd;
 }
 
 /* Compact Spacer - Maintains Height Space for Absolutely Positioned Library */

@@ -94,15 +94,21 @@ class LibraryUI {
             // Resize spacer to match the height of the absolutely positioned compact wrapper
             LibraryUI.resizeCompactSpacer();
         } else {
-            // Library Table View Container
-            LibRenderString += "<div class='lib-table-view-container'>";
+            // Library List View Container (flex-based)
+            LibRenderString += "<div class='lib-list-view-container'>";
             for (let i = 0; i < CurrentLibKeys.length; i++) {
-                LibRenderString += "<br>";
-                LibRenderString += "<table>";
-                LibRenderString += "<tbody>";
-                LibRenderString += "<tr>";
-                LibRenderString += "<td class='cover-image-cell' rowspan='4'>   <img class='LibCover' id='LibCover"+CurrentLibKeys[i]+"'></td>";
-                LibRenderString += "<td colspan='2'>";
+                LibRenderString += "<div class='lib-list-item'>";
+                
+                // Cover image section
+                LibRenderString += "<div class='lib-list-cover'>";
+                LibRenderString += "<img class='LibCover' id='LibCover"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "</div>";
+                
+                // Content section
+                LibRenderString += "<div class='lib-list-content'>";
+                
+                // Controls row
+                LibRenderString += "<div class='lib-list-controls'>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderUp"+CurrentLibKeys[i]+"'>↑</button>";
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderDown"+CurrentLibKeys[i]+"'>↓</button>";
@@ -140,40 +146,38 @@ class LibraryUI {
                 LibRenderString += "</div>";
                 
                 LibRenderString += "<span class='new-chapter-badge new-chapter-normal' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
+                LibRenderString += "</div>";
+                
+                // Hidden file input for merge upload functionality
                 if (ShowAdvancedOptions) {
-                    LibRenderString += "</td>";
-                    LibRenderString += "</tr>";
-                    LibRenderString += "<tr>";
-                    LibRenderString += "<td colspan='2'>";
-                    // Keep the hidden file input for merge upload functionality
                     LibRenderString += "<input type='file' data-libepubid="+CurrentLibKeys[i]+" id='LibMergeUpload"+CurrentLibKeys[i]+"' hidden>";
                 }
-                LibRenderString += "</td>";
-                LibRenderString += "</tr>";
-                LibRenderString += "<tr>";
-                LibRenderString += "<td>"+LibTemplateURL+"</td>";
-                LibRenderString += "<td class='library-url-table'>";
-                LibRenderString += "<table class='no-border-spacing'>";
-                LibRenderString += "<tbody id='LibURLWarning"+CurrentLibKeys[i]+"'>";
-                LibRenderString += "<tr><td></td></tr>";
-                LibRenderString += "</tbody>";
-                LibRenderString += "<tbody>";
-                LibRenderString += "<tr><td class='library-url-input-cell'>";
+                
+                // URL section
+                LibRenderString += "<div class='lib-list-field'>";
+                LibRenderString += "<label class='lib-list-label'>"+LibTemplateURL+"</label>";
+                LibRenderString += "<div class='lib-list-input-container'>";
+                LibRenderString += "<div class='lib-url-warning' id='LibURLWarning"+CurrentLibKeys[i]+"'></div>";
                 LibRenderString += "<input data-libepubid="+CurrentLibKeys[i]+" id='LibStoryURL"+CurrentLibKeys[i]+"' type='url' value=''>";
-                LibRenderString += "</td></tr>";
-                LibRenderString += "</tbody>";
-                LibRenderString += "</table>";
-                LibRenderString += "</td>";
-                LibRenderString += "</tr>";
-                LibRenderString += "<tr>";
-                LibRenderString += "<td>"+LibTemplateFilename+"</td>";
-                LibRenderString += "<td><input id='LibFilename"+CurrentLibKeys[i]+"' type='text' value=''></td>";
-                LibRenderString += "</tr>";
-                LibRenderString += "</tbody>";
-                LibRenderString += "</table>";
+                LibRenderString += "</div>";
+                LibRenderString += "</div>";
+                
+                // Filename section
+                LibRenderString += "<div class='lib-list-field'>";
+                LibRenderString += "<label class='lib-list-label'>"+LibTemplateFilename+"</label>";
+                LibRenderString += "<div class='lib-list-input-container'>";
+                LibRenderString += "<input id='LibFilename"+CurrentLibKeys[i]+"' type='text' value=''>";
+                LibRenderString += "</div>";
+                LibRenderString += "</div>";
+                
+                // Optional metadata section (moved inside content)
                 if (ShowAdvancedOptions) {
                     LibRenderString += "<div id='LibRenderMetadata"+CurrentLibKeys[i]+"'></div>";
                 }
+                
+                LibRenderString += "</div>";
+                
+                LibRenderString += "</div>";
             }
             LibRenderString += "</div>";
             // Clear existing content and add both controls and library sections
@@ -403,41 +407,55 @@ class LibraryUI {
         let LibRenderResult = document.getElementById("LibRenderMetadata" + objbtn.dataset.libepubid);
         let LibMetadata = await LibraryStorage.LibGetMetadata(objbtn.dataset.libepubid);
         let LibRenderString = "";
-        LibRenderString += "<div class='LibDivRenderWrapper'>";
-        LibRenderString += "<table>";
-        LibRenderString += "<tbody>";
-        LibRenderString += "<tr id='LibRenderMetadataSave"+objbtn.dataset.libepubid+"'>";
-        LibRenderString += "<td></td>";
-        LibRenderString += "<td></td>";
-        LibRenderString += "<td>";
+        LibRenderString += "<div class='lib-metadata-wrapper'>";
+        
+        // Save button section
+        LibRenderString += "<div class='lib-metadata-save'>";
         LibRenderString += "<button data-libepubid="+objbtn.dataset.libepubid+" id='LibMetadataSave"+objbtn.dataset.libepubid+"'>"+LibTemplateMetadataSave+"</button>";
-        LibRenderString += "</td>";
-        LibRenderString += "</tr>";
-        LibRenderString += "<tr id='LibRenderMetadataTitle"+objbtn.dataset.libepubid+"'>";
-        LibRenderString += "<td>"+LibTemplateMetadataTitle+"</td>";
-        LibRenderString += "<td colspan='2'><input id='LibTitleInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[0]+"'></input></td>";
-        LibRenderString += "</tr>";
-        LibRenderString += "</tr>";
-        LibRenderString += "<tr id='LibTemplateMetadataAuthor"+objbtn.dataset.libepubid+"'>";
-        LibRenderString += "<td>"+LibTemplateMetadataAuthor+"</td>";
-        LibRenderString += "<td colspan='2'><input id='LibAutorInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[1]+"'></input></td>";
-        LibRenderString += "</tr>";
-        LibRenderString += "<tr id='LibTemplateMetadataLanguage"+objbtn.dataset.libepubid+"'>";
-        LibRenderString += "<td>"+LibTemplateMetadataLanguage+"</td>";
-        LibRenderString += "<td colspan='2'><input id='LibLanguageInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[2]+"'></input></td>";
-        LibRenderString += "</tr>";
-        LibRenderString += "<tr id='LibRenderMetadataSubject"+objbtn.dataset.libepubid+"'>";
-        LibRenderString += "<td>"+LibTemplateMetadataSubject+"</td>";
-        LibRenderString += "<td colspan='2'><textarea rows='2' cols='60' id='LibSubjectInput"+objbtn.dataset.libepubid+"' type='text' name='subjectInput'>"+LibMetadata[3]+"</textarea></td>";
-        LibRenderString += "</tr>";
-        LibRenderString += "<tr id='LibRenderMetadataDescription" + objbtn.dataset.libepubid + "'>";
-        LibRenderString += "<td>"+LibTemplateMetadataDescription+"</td>";
-        LibRenderString += "<td colspan='2'><textarea  rows='2' cols='60' id='LibDescriptionInput"+objbtn.dataset.libepubid+"' type='text' name='descriptionInput'>"+LibMetadata[4]+"</textarea></td>";
-        LibRenderString += "</tr>";
-        LibRenderString += "</tbody>";
-        LibRenderString += "</table>";
         LibRenderString += "</div>";
-        LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWrapper");
+        
+        // Title field
+        LibRenderString += "<div class='lib-list-field'>";
+        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataTitle+"</label>";
+        LibRenderString += "<div class='lib-list-input-container'>";
+        LibRenderString += "<input id='LibTitleInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[0]+"'>";
+        LibRenderString += "</div>";
+        LibRenderString += "</div>";
+        
+        // Author field
+        LibRenderString += "<div class='lib-list-field'>";
+        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataAuthor+"</label>";
+        LibRenderString += "<div class='lib-list-input-container'>";
+        LibRenderString += "<input id='LibAutorInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[1]+"'>";
+        LibRenderString += "</div>";
+        LibRenderString += "</div>";
+        
+        // Language field
+        LibRenderString += "<div class='lib-list-field'>";
+        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataLanguage+"</label>";
+        LibRenderString += "<div class='lib-list-input-container'>";
+        LibRenderString += "<input id='LibLanguageInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[2]+"'>";
+        LibRenderString += "</div>";
+        LibRenderString += "</div>";
+        
+        // Subject field
+        LibRenderString += "<div class='lib-list-field'>";
+        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataSubject+"</label>";
+        LibRenderString += "<div class='lib-list-input-container'>";
+        LibRenderString += "<textarea rows='2' id='LibSubjectInput"+objbtn.dataset.libepubid+"' name='subjectInput'>"+LibMetadata[3]+"</textarea>";
+        LibRenderString += "</div>";
+        LibRenderString += "</div>";
+        
+        // Description field
+        LibRenderString += "<div class='lib-list-field'>";
+        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataDescription+"</label>";
+        LibRenderString += "<div class='lib-list-input-container'>";
+        LibRenderString += "<textarea rows='2' id='LibDescriptionInput"+objbtn.dataset.libepubid+"' name='descriptionInput'>"+LibMetadata[4]+"</textarea>";
+        LibRenderString += "</div>";
+        LibRenderString += "</div>";
+        
+        LibRenderString += "</div>";
+        LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "lib-metadata-wrapper");
         document.getElementById("LibMetadataSave"+objbtn.dataset.libepubid).addEventListener("click", function() {LibraryStorage.LibSaveMetadataChange(this);});
     }
 
@@ -671,15 +689,17 @@ class LibraryUI {
     static LibShowTextURLWarning(obj) {
         let LibTemplateWarningURLChange = document.getElementById("LibTemplateWarningURLChange").innerHTML;
         let LibWarningElement = document.getElementById("LibURLWarning"+obj.dataset.libepubid);
-        LibWarningElement.innerHTML = "<tr><td class='warning-text'></td></tr>";
-        LibWarningElement.firstChild.firstChild.textContent = LibTemplateWarningURLChange;
+        LibWarningElement.textContent = LibTemplateWarningURLChange;
+        LibWarningElement.classList.add("warning-text");
     }
 
     /**
      * Hide URL change warning
      */
     static LibHideTextURLWarning(obj) {
-        document.getElementById("LibURLWarning"+obj.dataset.libepubid).innerHTML = "<tr><td></td></tr>";
+        let LibWarningElement = document.getElementById("LibURLWarning"+obj.dataset.libepubid);
+        LibWarningElement.textContent = "";
+        LibWarningElement.classList.remove("warning-text");
     }
 
     /**
