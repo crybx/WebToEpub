@@ -447,7 +447,6 @@ class LibraryBookData {
             }
 
             // 2. Immediately show library chapters with mock parser
-            console.log("Loading library chapters immediately...");
             main.resetUI();
             main.setUiFieldToValue("startingUrlInput", storyUrl);
             await LibraryBookData.loadBookWithMockParser(bookId);
@@ -455,7 +454,6 @@ class LibraryBookData {
             // 3. Clear loading indicator and switch to main UI early
             LibraryUI.LibRenderSavedEpubs();
             LibraryBookData.switchToMainUI();
-            console.log("Library chapters displayed, now fetching website in background...");
             
             // 4. Fetch website chapters in background and merge when ready
             try {
@@ -465,7 +463,6 @@ class LibraryBookData {
                 // Get chapters from website using real parser
                 if (window.parser && window.parser.state && window.parser.state.webPages) {
                     let websiteChapters = [...window.parser.state.webPages.values()];
-                    console.log(`Background fetch: loaded ${websiteChapters.length} chapters from website`);
                     
                     // Compare and merge with library chapters
                     let updatedChapters = await LibraryBookData.detectNewChapters(bookId, websiteChapters);
@@ -481,20 +478,12 @@ class LibraryBookData {
                     await chapterUrlsUI.populateChapterUrlsTable(updatedChapters);
                     
                     // Add library-specific visual indicators
-                    console.log("Background fetch complete: adding indicators for", updatedChapters.length, "chapters");
                     await LibraryBookData.addLibraryChapterIndicators(bookId, updatedChapters);
-                    
-                    console.log(`Background fetch complete: merged ${updatedChapters.length} total chapters`);
-                } else {
-                    console.log("Background fetch: Real parser did not populate chapters, keeping library-only view");
                 }
                 
             } catch (parserError) {
-                console.log("Background fetch failed, keeping library-only view:", parserError);
                 // Library chapters are already displayed, so this is graceful degradation
             }
-            
-            console.log(`Library book ${bookId} loaded successfully in main UI`);
             
         } catch (error) {
             console.error("Error loading library book in main UI:", error);
@@ -571,8 +560,6 @@ class LibraryBookData {
      */
     static async loadBookWithMockParser(bookId) {
         try {
-            console.log("Loading library book with mock parser as fallback");
-            
             // Use existing LibSelectBook logic as fallback
             await LibraryBookData.LibSelectBook({dataset: {libepubid: bookId}});
             

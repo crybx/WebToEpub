@@ -342,7 +342,6 @@ class LibraryStorage {
         let LibLanguageInput = document.getElementById("LibLanguageInput"+obj.dataset.libepubid).value;
         let LibSubjectInput = document.getElementById("LibSubjectInput"+obj.dataset.libepubid).value;
         let LibDescriptionInput = document.getElementById("LibDescriptionInput"+obj.dataset.libepubid).value;
-        LibraryUI.LibShowLoadingText();
         let LibDateCreated = new EpubPacker().getDateForMetaData();
         try {
             let EpubReader = await new zip.Data64URIReader(await LibraryStorage.LibGetFromStorage("LibEpub"+obj.dataset.libepubid));
@@ -376,7 +375,21 @@ class LibraryStorage {
 
             EpubZipWrite.add(epubPaths.contentOpf, new zip.TextReader(opfFile));
             let content = await EpubZipWrite.close();
-            LibraryStorage.LibHandelUpdate(-1, content, await LibraryStorage.LibGetFromStorage("LibStoryURL"+obj.dataset.libepubid), await LibraryStorage.LibGetFromStorage("LibFilename"+obj.dataset.libepubid), obj.dataset.libepubid);
+            
+            // Save the updated EPUB directly without triggering full library re-render
+            let metadataFileReader = new FileReader();
+            metadataFileReader.readAsDataURL(content);
+            metadataFileReader.onload = function() {
+                chrome.storage.local.set({
+                    ["LibEpub" + obj.dataset.libepubid]: metadataFileReader.result
+                }, function() {
+                    // Just close the metadata editing interface for this book
+                    let metadataContainer = document.getElementById("LibRenderMetadata" + obj.dataset.libepubid);
+                    if (metadataContainer) {
+                        metadataContainer.innerHTML = "";
+                    }
+                });
+            };
         } catch {
             ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorEditMetadata"));
             return;
