@@ -576,6 +576,10 @@
 		"message": "Открыть ссылку на главу",
 		"description": "Menu option to open the chapter URL in a new tab"
 	},
+	"__MSG_menu_Open_Story_URL__": {
+		"message": "Открыть ссылку на историю",
+		"description": "Menu option to open the main story URL in a new tab"
+	},
 	"__MSG_menu_Download_Chapter__": {
 		"message": "Скачать HTML файл",
 		"description": "Menu option to download a single chapter as HTML file"

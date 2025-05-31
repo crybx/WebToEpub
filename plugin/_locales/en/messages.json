@@ -862,6 +862,10 @@
 		"message": "Open Chapter URL",
 		"description": "Menu option to open the chapter URL in a new tab"
 	},
+	"__MSG_menu_Open_Story_URL__": {
+		"message": "Open Story URL",
+		"description": "Menu option to open the main story URL in a new tab"
+	},
 	"__MSG_menu_Delete_Chapter__": {
 		"message": "Delete Chapter",
 		"description": "Menu option to delete a single cached chapter"

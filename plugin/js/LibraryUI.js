@@ -117,6 +117,10 @@ class LibraryUI {
                 LibRenderString += "<span id='LibDeleteIcon"+CurrentLibKeys[i]+"'></span>";
                 LibRenderString += "<span>"+LibTemplateDeleteEpub+"</span>";
                 LibRenderString += "</div>";
+                LibRenderString += "<div class='menu-item' id='LibOpenStoryUrlMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "<span id='LibOpenStoryUrlIcon"+CurrentLibKeys[i]+"'></span>";
+                LibRenderString += "<span>"+chrome.i18n.getMessage("__MSG_menu_Open_Story_URL__")+"</span>";
+                LibRenderString += "</div>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "<div class='menu-item' id='LibMergeUploadMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                     LibRenderString += "<span id='LibMergeIcon"+CurrentLibKeys[i]+"'></span>";
@@ -444,6 +448,23 @@ class LibraryUI {
     }
 
     /**
+     * Open the story URL for a library book in a new tab
+     */
+    static async LibOpenStoryUrl(bookId) {
+        try {
+            let storyUrl = await LibraryStorage.LibGetFromStorage("LibStoryURL" + bookId);
+            if (storyUrl && storyUrl.trim() !== "") {
+                window.open(storyUrl, "_blank");
+            } else {
+                alert("No story URL found for this book.");
+            }
+        } catch (error) {
+            console.error("Error opening story URL:", error);
+            alert("Failed to open story URL: " + error.message);
+        }
+    }
+
+    /**
      * Update an existing book with new chapters
      */
     static async LibUpdateNewChapter(objbtn) {
@@ -757,6 +778,11 @@ class LibraryUI {
             deleteIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
         }
 
+        let openStoryUrlIcon = document.getElementById("LibOpenStoryUrlIcon" + bookId);
+        if (openStoryUrlIcon && openStoryUrlIcon.children.length === 0) {
+            openStoryUrlIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT));
+        }
+
         if (showAdvancedOptions) {
             let mergeIcon = document.getElementById("LibMergeIcon" + bookId);
             if (mergeIcon && mergeIcon.children.length === 0) {
@@ -786,6 +812,15 @@ class LibraryUI {
             deleteMenuItem.onclick = (e) => {
                 e.stopPropagation();
                 LibraryUI.LibDeleteEpub(deleteMenuItem);
+                LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
+            };
+        }
+
+        let openStoryUrlMenuItem = document.getElementById("LibOpenStoryUrlMenuItem" + bookId);
+        if (openStoryUrlMenuItem) {
+            openStoryUrlMenuItem.onclick = (e) => {
+                e.stopPropagation();
+                LibraryUI.LibOpenStoryUrl(bookId);
                 LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
             };
         }
