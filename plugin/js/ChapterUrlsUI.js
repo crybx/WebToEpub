@@ -980,7 +980,7 @@ class ChapterUrlsUI {
             ChapterUrlsUI.Filters.filterTermsFrequency.forEach((value, id) => {
                 row = document.createElement("tr");
                 col = document.createElement("td");
-                col.setAttribute("width", "10px");
+                col.classList.add("filter-checkbox-col");
                 
                 checkboxId = "chkFilter" + id;
                 let el = document.createElement("input");
@@ -1003,13 +1003,13 @@ class ChapterUrlsUI {
                 el.innerText = value.key;
                 el.id = checkboxId + "Label";
                 el.setAttribute("for", checkboxId);
-                el.setAttribute("width", "100%");
+                el.classList.add("filter-label");
                 col.appendChild(el);
                 row.appendChild(col);
 
                 retVal.appendChild(row);
             });
-            retVal.setAttribute("width", "100%");
+            retVal.classList.add("filter-table");
             return retVal;
         }
     };

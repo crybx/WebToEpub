@@ -60,7 +60,8 @@ progress::-moz-progress-bar {
 }
 
 section.minWidth {
-    min-width: 600px;
+    min-width: 300px;
+    width: 100%;
 }
 
 .withBorder {
@@ -89,7 +90,10 @@ button:disabled {
     margin: auto;
     border-radius: 4px;
     position: relative;
-    width: fit-content;
+    width: 100%;
+    max-width: 100%;
+    min-width: 320px;
+    box-sizing: border-box;
 }
 
 .container section {
@@ -100,8 +104,9 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     padding: 4px;
     border: 1px var(--border-color, #CCC) solid;
     border-radius: 3px;
-    max-width: 400px;
-    min-width: 356px;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #advancedOptionsSection textarea, #advancedOptionsSection select, #manualDelayPerChapterTag {
@@ -117,6 +122,9 @@ textarea.allSpace {
 
 #inputSection {
     display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #inputSection .form-container {
@@ -124,6 +132,7 @@ textarea.allSpace {
     flex-direction: column;
     flex: 1;
     gap: 4px;
+    order: 1;
 }
 
 #inputSection .form-field {
@@ -141,6 +150,7 @@ textarea.allSpace {
     flex-shrink: 0;
     font-size: 12px;
     text-align: left;
+    min-width: 80px;
 }
 
 #inputSection .field-input {
@@ -172,6 +182,7 @@ textarea.allSpace {
     align-items: flex-start;
     gap: 4px;
     max-height: 170px;
+    order: 2;
 }
 
 #inputSection .cover-image-container button {
@@ -183,6 +194,9 @@ textarea.allSpace {
     max-height: 140px;
     min-width: 100px;
     cursor: pointer;
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
 }
 
 #inputSection .field-input input {
@@ -239,6 +253,7 @@ button:active {
     align-items: center;
     gap: 4px;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .progressButtonRow .expandedButton {
@@ -249,9 +264,7 @@ button:active {
 #coverUrlSection img {
     max-height: 142px;
     max-width: 106.5px;
-    position: absolute;
-    top: 14px;
-    right: 7%;
+    position: static;
 }
 
 .LibCover {
@@ -350,5 +363,141 @@ button:active {
 
 #sbFilters input[type=text], #sbFilters input[type=url], #sbFilters textarea, #sbFilters select {
     width: calc(100% - 15px);
+}
+
+/* Filter table responsive styles */
+.filter-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.filter-table td:first-child {
+    width: 20px;
+}
+
+.filter-table td:last-child {
+    width: calc(100% - 20px);
+}
+
+.filter-table td.filter-checkbox-col {
+    text-align: center;
+}
+
+.filter-table .filter-checkbox-col input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
+    margin: 0;
+}
+
+.filter-label {
+    width: 100%;
+    display: block;
+    word-wrap: break-word;
+}
+
+/* Responsive breakpoints */
+
+/* Mobile devices - up to 480px */
+@media (max-width: 480px) {
+    .container {
+        border: none;
+        border-radius: 0;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .container section {
+        padding: 8px;
+    }
+    
+    #inputSection {
+        flex-direction: column;
+    }
+    
+    #inputSection .cover-image-container {
+        order: 2;
+        max-height: 120px;
+        align-self: center;
+        margin-bottom: 10px;
+    }
+    
+    #inputSection .form-field {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    #inputSection .field-label {
+        width: 100%;
+        text-align: left;
+        font-weight: bold;
+    }
+    
+    #inputSection .field-input {
+        margin-right: 0;
+    }
+    
+    #inputSection .field-action {
+        margin-top: 4px;
+    }
+    
+    #inputSection .form-field.checkbox-field {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    #inputSection .field-checkbox {
+        width: auto;
+    }
+    
+    #inputSection .checkbox-label {
+        text-align: left;
+    }
+    
+    .progressButtonRow {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .progressButtonRow .expandedButton {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .HiddenButtonSection {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .HiddenButtonSection button {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* Tablets - 481px to 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+    .container {
+        max-width: 95%;
+        margin: 8px auto;
+    }
+    
+    #inputSection .field-label {
+        width: 100px;
+        min-width: 100px;
+    }
+}
+
+/* Desktop - 769px and up */
+@media (min-width: 769px) {
+    .container {
+        max-width: fit-content;
+        min-width: 600px;
+    }
+    
+    #inputSection .field-label {
+        width: 120px;
+    }
 }
 
