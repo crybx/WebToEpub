@@ -586,7 +586,7 @@ const main = (function() {
     }
 
     function getLibrarySection() {
-        return document.getElementById("hiddenBibSection");
+        return document.getElementById("libraryExpandableSection");
     }
 
     function onSeriesPageHelp() {

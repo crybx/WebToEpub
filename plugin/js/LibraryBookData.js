@@ -350,7 +350,7 @@ class LibraryBookData {
      */
     static switchToMainUI() {
         // Hide library section if visible
-        let librarySection = document.getElementById("hiddenBibSection");
+        let librarySection = document.getElementById("libraryExpandableSection");
         if (librarySection && !librarySection.hidden) {
             let libraryButton = document.getElementById("hiddenBibButton");
             if (libraryButton) {

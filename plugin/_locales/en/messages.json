@@ -12,8 +12,8 @@
 		"description": "Label for checkbox to Show Advanced Library Options"
 	},
 	"__MSG_label_Lib_Compact_View__": {
-		"message": "Show Library in Compact Layout",
-		"description": "Label for checkbox to Show Advanced Library Options"
+		"message": "Compact Library View",
+		"description": "Label for checkbox to enable compact library view"
 	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
 		"message": "Automatically Download Epubs After Adding New Chapters",

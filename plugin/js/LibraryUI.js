@@ -26,8 +26,9 @@ class LibraryUI {
         let LibTemplateMergeUploadButton = "";
         let LibTemplateEditMetadataButton = "";
 
-        LibRenderString += "<div class='LibDivRenderWraper'>";
-        document.getElementById("LibShowCompactViewRow").hidden = !ShowAdvancedOptions;
+        // Library Controls Container
+        LibRenderString += "<div class='lib-controls-container'>";
+        document.getElementById("LibShowCompactViewRow").hidden = false;
         document.getElementById("LibDownloadEpubAfterUpdateRow").hidden = !ShowAdvancedOptions;
         if (ShowAdvancedOptions) {
             if (!util.isFirefox()) {
@@ -57,32 +58,29 @@ class LibraryUI {
         LibRenderString += "<div class='center-flex'>";
         LibRenderString += "<button id='libupdateall'>"+document.getElementById("LibTemplateUpdateAll").innerHTML+"</button>";
         LibRenderString += "</div>";
+        LibRenderString += "</div>";
+        
         if (ShowCompactView) {
-            LibRenderString += "<table>";
-            LibRenderString += "<tbody>";
-            let column = 5;
-            for (let i = 0; i < CurrentLibKeys.length; i = i + column) {
-                LibRenderString += "<tr>";
-                for (let j = i; j < CurrentLibKeys.length && j < column + i; j++) {
-                    LibRenderString += "<td class='chapter-indicator-cell'>";
-                    LibRenderString += "<div class='center-flex'>";
-                    LibRenderString += "<span class='new-chapter-badge new-chapter-compact' id='LibNewChapterCount"+CurrentLibKeys[j]+"'></span>";
-                    LibRenderString += "</div>";
-                    LibRenderString += "</td>";
-                }
-                LibRenderString += "</tr>";
-                LibRenderString += "<tr>";
-                for (let j = i; j < CurrentLibKeys.length && j < column + i; j++) {
-                    LibRenderString += "<td>";
-                    LibRenderString += "<img data-libepubid="+CurrentLibKeys[j]+" style='max-height: "+(772/column)+"px; max-width: "+(603/column)+"px;' class='LibCoverCompact cover-compact-clickable' id='LibCover"+CurrentLibKeys[j]+"'>";
-                    LibRenderString += "</td>";
-                }
-                LibRenderString += "</tr>";
+            // Library Compact View Container
+            LibRenderString += "<div class='lib-compact-view-container'>";
+            LibRenderString += "<div class='lib-compact-spacer' id='lib-compact-spacer'></div>";
+            LibRenderString += "<div class='lib-compact-wrapper' id='lib-compact-wrapper'>";
+            LibRenderString += "<div class='lib-compact-grid'>";
+            for (let i = 0; i < CurrentLibKeys.length; i++) {
+                LibRenderString += "<div class='lib-compact-item' data-libepubid='"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "<div class='lib-compact-badge-container'>";
+                LibRenderString += "<span class='new-chapter-badge new-chapter-compact' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
+                LibRenderString += "</div>";
+                LibRenderString += "<div class='lib-compact-cover-container'>";
+                LibRenderString += "<img data-libepubid="+CurrentLibKeys[i]+" class='LibCoverCompact cover-compact-clickable' id='LibCover"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "</div>";
+                LibRenderString += "</div>";
             }
-            LibRenderString += "</tbody>";
-            LibRenderString += "</table>";
             LibRenderString += "</div>";
-            LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWraper");
+            LibRenderString += "</div>";
+            LibRenderString += "</div>";
+            // Clear existing content and add both controls and library sections
+            LibRenderResult.innerHTML = LibRenderString;
             document.getElementById("libupdateall").addEventListener("click", function() {LibraryUI.Libupdateall();});
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 document.getElementById("LibCover"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibLoadBook(this);});
@@ -93,7 +91,11 @@ class LibraryUI {
                 newChapterHTML = "<span class=\"newChapterWraper\">"+newChapterHTML+"</span>";
                 LibraryUI.AppendHtmlInDiv(newChapterHTML, document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]), "newChapterWraper");
             }
+            // Resize spacer to match the height of the absolutely positioned compact wrapper
+            LibraryUI.resizeCompactSpacer();
         } else {
+            // Library Table View Container
+            LibRenderString += "<div class='lib-table-view-container'>";
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 LibRenderString += "<br>";
                 LibRenderString += "<table>";
@@ -106,7 +108,6 @@ class LibraryUI {
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderDown"+CurrentLibKeys[i]+"'>↓</button>";
                 }
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>Select Book</button>";
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibDownload"+CurrentLibKeys[i]+"'>"+LibTemplateDownload+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
                 
                 // Three dots menu
@@ -120,6 +121,10 @@ class LibraryUI {
                 LibRenderString += "<div class='menu-item' id='LibOpenStoryUrlMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                 LibRenderString += "<span id='LibOpenStoryUrlIcon"+CurrentLibKeys[i]+"'></span>";
                 LibRenderString += "<span>"+chrome.i18n.getMessage("__MSG_menu_Open_Story_URL__")+"</span>";
+                LibRenderString += "</div>";
+                LibRenderString += "<div class='menu-item' id='LibDownloadEpubMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
+                LibRenderString += "<span id='LibDownloadEpubIcon"+CurrentLibKeys[i]+"'></span>";
+                LibRenderString += "<span>"+LibTemplateDownload+"</span>";
                 LibRenderString += "</div>";
                 if (ShowAdvancedOptions) {
                     LibRenderString += "<div class='menu-item' id='LibMergeUploadMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
@@ -171,7 +176,8 @@ class LibraryUI {
                 }
             }
             LibRenderString += "</div>";
-            LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWraper");
+            // Clear existing content and add both controls and library sections
+            LibRenderResult.innerHTML = LibRenderString;
             document.getElementById("libupdateall").addEventListener("click", function() {LibraryUI.Libupdateall();});
             if (ShowAdvancedOptions) {
                 document.getElementById("libdeleteall").addEventListener("click", function() {LibraryUI.Libdeleteall();});
@@ -187,7 +193,6 @@ class LibraryUI {
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 // Standard event handlers
                 document.getElementById("LibUpdateNewChapter"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibUpdateNewChapter(this);});
-                document.getElementById("LibDownload"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibDownload(this);});
                 document.getElementById("LibLoadBook"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibLoadBook(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("change", function() {LibraryUI.LibSaveTextURLChange(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusin", function() {LibraryUI.LibShowTextURLWarning(this);});
@@ -238,12 +243,12 @@ class LibraryUI {
     static LibShowLoadingText() {
         let LibRenderResult = document.getElementById("LibRenderResult");
         let LibRenderString = "";
-        LibRenderString += "<div class='LibDivRenderWraper'>";
+        LibRenderString += "<div class='LibDivRenderWrapper'>";
         LibRenderString += "<div class='warning'>";
         LibRenderString += document.getElementById("LibTemplateWarningInProgress").innerHTML;
         LibRenderString += "</div>";
         LibRenderString += "</div>";
-        LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWraper");
+        LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWrapper");
     }
 
     /**
@@ -398,7 +403,7 @@ class LibraryUI {
         let LibRenderResult = document.getElementById("LibRenderMetadata" + objbtn.dataset.libepubid);
         let LibMetadata = await LibraryStorage.LibGetMetadata(objbtn.dataset.libepubid);
         let LibRenderString = "";
-        LibRenderString += "<div class='LibDivRenderWraper'>";
+        LibRenderString += "<div class='LibDivRenderWrapper'>";
         LibRenderString += "<table>";
         LibRenderString += "<tbody>";
         LibRenderString += "<tr id='LibRenderMetadataSave"+objbtn.dataset.libepubid+"'>";
@@ -432,7 +437,7 @@ class LibraryUI {
         LibRenderString += "</tbody>";
         LibRenderString += "</table>";
         LibRenderString += "</div>";
-        LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWraper");
+        LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWrapper");
         document.getElementById("LibMetadataSave"+objbtn.dataset.libepubid).addEventListener("click", function() {LibraryStorage.LibSaveMetadataChange(this);});
     }
 
@@ -783,6 +788,11 @@ class LibraryUI {
             openStoryUrlIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT));
         }
 
+        let downloadEpubIcon = document.getElementById("LibDownloadEpubIcon" + bookId);
+        if (downloadEpubIcon && downloadEpubIcon.children.length === 0) {
+            downloadEpubIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
+        }
+
         if (showAdvancedOptions) {
             let mergeIcon = document.getElementById("LibMergeIcon" + bookId);
             if (mergeIcon && mergeIcon.children.length === 0) {
@@ -821,6 +831,15 @@ class LibraryUI {
             openStoryUrlMenuItem.onclick = (e) => {
                 e.stopPropagation();
                 LibraryUI.LibOpenStoryUrl(bookId);
+                LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
+            };
+        }
+
+        let downloadEpubMenuItem = document.getElementById("LibDownloadEpubMenuItem" + bookId);
+        if (downloadEpubMenuItem) {
+            downloadEpubMenuItem.onclick = (e) => {
+                e.stopPropagation();
+                LibraryUI.LibDownload(downloadEpubMenuItem);
                 LibraryUI.hideLibraryMoreActionsMenu(moreActionsMenu);
             };
         }
@@ -873,6 +892,26 @@ class LibraryUI {
     static hideLibraryMoreActionsMenu(menu) {
         if (menu) {
             menu.classList.remove("show");
+        }
+    }
+
+    /**
+     * Resize the compact spacer to match the height of the absolutely positioned compact wrapper
+     */
+    static resizeCompactSpacer() {
+        try {
+            let spacer = document.getElementById("lib-compact-spacer");
+            let wrapper = document.getElementById("lib-compact-wrapper");
+            
+            if (spacer && wrapper) {
+                // Use a brief delay to ensure images are rendered
+                setTimeout(() => {
+                    let wrapperHeight = wrapper.offsetHeight;
+                    spacer.style.height = wrapperHeight + "px";
+                }, 100);
+            }
+        } catch (error) {
+            console.error("Error resizing compact spacer:", error);
         }
     }
 }

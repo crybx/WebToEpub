@@ -405,8 +405,8 @@
         "description": "Label for checkbox to Show Advanced Library Options"
     },
     "__MSG_label_Lib_Compact_View__": {
-        "message": "Hiển thị thư viện ở định dạng gọn",
-        "description": "Label for checkbox to Show Advanced Library Options"
+        "message": "Chế độ xem thư viện gọn",
+        "description": "Label for checkbox to enable compact library view"
     },
     "__MSG_label_Lib_Download_Epub_After_Update__": {
         "message": "Tự động tải EPUB sau khi thêm các chương mới",

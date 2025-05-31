@@ -469,8 +469,8 @@
 		"description": "Label for checkbox to Show Advanced Library Options"
 	},
 	"__MSG_label_Lib_Compact_View__": {
-		"message": "Показати бібліотеку в компактному вигляді",
-		"description": "Label for checkbox to Show Advanced Library Options"
+		"message": "Компактний вигляд бібліотеки",
+		"description": "Label for checkbox to enable compact library view"
 	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
 		"message": "Автоматично завантажувати EPUB після додавання нових розділів",

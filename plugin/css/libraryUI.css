@@ -61,6 +61,147 @@
     /* Dynamic max-height and max-width will be set via JavaScript */
 }
 
+/* Library Section Container Constraints */
+#libraryExpandableSection {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+    clear: both;
+}
+
+/* Library Controls Container */
+.lib-controls-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    box-sizing: border-box;
+    position: relative;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+}
+
+/* Library Compact View Container */
+.lib-compact-view-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    box-sizing: border-box;
+    position: relative;
+    min-height: fit-content;
+}
+
+/* Library Table View Container */
+.lib-table-view-container {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Compact Spacer - Maintains Height Space for Absolutely Positioned Library */
+.lib-compact-spacer {
+    width: 100%;
+    height: 0;
+    position: relative;
+    /* This element maintains height in the document flow while library is positioned absolute */
+}
+
+/* Compact Grid Wrapper - Positioned to Not Affect Container Width */
+.lib-compact-wrapper {
+    /* Position absolutely within the container to remove from width calculation */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: visible;
+    box-sizing: border-box;
+    padding: 8px 0;
+    /* Subtle background to indicate scroll area */
+    background-color: rgba(0,0,0,0.02);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+/* Responsive Compact Grid Layout - Flexible Wrapping */
+.lib-compact-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 8px 0 16px 0;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+}
+
+/* Ensure elements after library don't overlap */
+#libraryExpandableSection + section,
+#libraryExpandableSection ~ section {
+    margin-top: 10px;
+    clear: both;
+    position: relative;
+    z-index: auto;
+}
+
+.lib-compact-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 0 0 auto;
+    width: 140px;
+    box-sizing: border-box;
+}
+
+/* Simple responsive sizing for mobile */
+@media (max-width: 480px) {
+    .lib-compact-item {
+        width: 120px;
+    }
+}
+
+.lib-compact-badge-container {
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.lib-compact-cover-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.lib-compact-item .LibCoverCompact {
+    max-width: 100%;
+    max-height: 150px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.lib-compact-item .LibCoverCompact:hover {
+    transform: scale(1.05);
+}
+
 /* Warning Messages */
 .warning-text {
     color: #B8860B; /* Dark goldenrod - much better contrast on light backgrounds */

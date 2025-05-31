@@ -469,8 +469,8 @@
 		"description": "Label for checkbox to Show Advanced Library Options"
 	},
 	"__MSG_label_Lib_Compact_View__": {
-		"message": "Показать библиотеку в компактном виде",
-		"description": "Label for checkbox to Show Advanced Library Options"
+		"message": "Компактный вид библиотеки",
+		"description": "Label for checkbox to enable compact library view"
 	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
 		"message": "Автоматически скачивать EPUB после добавления новых глав",
