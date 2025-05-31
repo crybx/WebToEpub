@@ -409,11 +409,6 @@ class LibraryUI {
         let LibRenderString = "";
         LibRenderString += "<div class='lib-metadata-wrapper'>";
         
-        // Save button section
-        LibRenderString += "<div class='lib-metadata-save'>";
-        LibRenderString += "<button data-libepubid="+objbtn.dataset.libepubid+" id='LibMetadataSave"+objbtn.dataset.libepubid+"'>"+LibTemplateMetadataSave+"</button>";
-        LibRenderString += "</div>";
-        
         // Title field
         LibRenderString += "<div class='lib-list-field'>";
         LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataTitle+"</label>";
@@ -454,9 +449,26 @@ class LibraryUI {
         LibRenderString += "</div>";
         LibRenderString += "</div>";
         
+        // Save and Close button section at the end
+        LibRenderString += "<div class='lib-metadata-save'>";
+        LibRenderString += "<button data-libepubid="+objbtn.dataset.libepubid+" id='LibMetadataClose"+objbtn.dataset.libepubid+"'>Close Metadata</button>";
+        LibRenderString += "<button data-libepubid="+objbtn.dataset.libepubid+" id='LibMetadataSave"+objbtn.dataset.libepubid+"'>"+LibTemplateMetadataSave+"</button>";
+        LibRenderString += "</div>";
+        
         LibRenderString += "</div>";
         LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "lib-metadata-wrapper");
+        document.getElementById("LibMetadataClose"+objbtn.dataset.libepubid).addEventListener("click", function() {LibraryUI.LibCloseMetadata(this);});
         document.getElementById("LibMetadataSave"+objbtn.dataset.libepubid).addEventListener("click", function() {LibraryStorage.LibSaveMetadataChange(this);});
+    }
+
+    /**
+     * Close metadata editing interface without saving
+     */
+    static LibCloseMetadata(objbtn) {
+        let metadataContainer = document.getElementById("LibRenderMetadata" + objbtn.dataset.libepubid);
+        if (metadataContainer) {
+            metadataContainer.innerHTML = "";
+        }
     }
 
     /**

@@ -382,12 +382,6 @@ class LibraryStorage {
             metadataFileReader.onload = function() {
                 chrome.storage.local.set({
                     ["LibEpub" + obj.dataset.libepubid]: metadataFileReader.result
-                }, function() {
-                    // Just close the metadata editing interface for this book
-                    let metadataContainer = document.getElementById("LibRenderMetadata" + obj.dataset.libepubid);
-                    if (metadataContainer) {
-                        metadataContainer.innerHTML = "";
-                    }
                 });
             };
         } catch {
