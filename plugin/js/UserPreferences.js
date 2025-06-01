@@ -34,15 +34,24 @@ class BoolUserPreference extends UserPreference {
     }
 
     readFromUi() {
-        this.value = this.getUiElement().checked;
+        let element = this.getUiElement();
+        if (element) {
+            this.value = element.checked;
+        }
     }
 
     writeToUi() {
-        this.getUiElement().checked = this.value;
+        let element = this.getUiElement();
+        if (element) {
+            element.checked = this.value;
+        }
     }
 
     hookupUi(readFromUi) {
-        this.getUiElement().onclick = readFromUi;
+        let element = this.getUiElement();
+        if (element) {
+            element.onclick = readFromUi;
+        }
     }
 }
 
@@ -59,19 +68,27 @@ class StringUserPreference extends UserPreference {
     }
 
     readFromUi() {
-        this.value = this.getUiElement().value;
+        let element = this.getUiElement();
+        if (element) {
+            this.value = element.value;
+        }
     }
 
     writeToUi() {
-        this.getUiElement().value = this.value;
+        let element = this.getUiElement();
+        if (element) {
+            element.value = this.value;
+        }
     }
 
     hookupUi(readFromUi) {
         let uiElement = this.getUiElement();
-        if (uiElement.tagName === "SELECT") {
-            uiElement.onchange = readFromUi;
-        } else {
-            uiElement.addEventListener("blur", readFromUi, true);
+        if (uiElement) {
+            if (uiElement.tagName === "SELECT") {
+                uiElement.onchange = readFromUi;
+            } else {
+                uiElement.addEventListener("blur", readFromUi, true);
+            }
         }
     }
 }

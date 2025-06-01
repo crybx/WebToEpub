@@ -754,16 +754,12 @@ const main = (function() {
         document.getElementById("reloadButton").onclick = populateControls;
         getManuallySelectParserTag().onchange = populateControls;
         document.getElementById("advancedOptionsButton").onclick = onAdvancedOptionsClick;
-        document.getElementById("hiddenBibButton").onclick = onLibraryClick;
+        document.getElementById("closeAdvancedOptionsButton").onclick = onAdvancedOptionsClick;
+        document.getElementById("libraryButton").onclick = onLibraryClick;
+        document.getElementById("closeLibraryButton").onclick = onLibraryClick;
         document.getElementById("cacheOptionsButton").onclick = onCacheOptionsClick;
         document.getElementById("ShowMoreMetadataOptionsCheckbox").addEventListener("change", function() {
             onShowMoreMetadataOptionsClick();
-        });
-        document.getElementById("LibShowAdvancedOptionsCheckbox").addEventListener("change", function() {
-            LibraryUI.LibRenderSavedEpubs();
-        });
-        document.getElementById("LibShowCompactViewCheckbox").addEventListener("change", function() {
-            LibraryUI.LibRenderSavedEpubs();
         });
         document.getElementById("LibAddToLibrary").addEventListener("click", fetchContentAndPackEpub);
         

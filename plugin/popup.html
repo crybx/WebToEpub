@@ -101,7 +101,7 @@
         <section id="libraryBookIndicator" class="library-book-banner" hidden="true">
             <div class="library-banner-top-row">
                 <div class="library-banner-left">
-                    <span class="library-banner-icon">📚</span>
+                    <span class="library-banner-icon" id="libraryBannerIcon"></span>
                     <span class="library-banner-text i18n">__MSG_label_library_mode__</span>
                 </div>
                 <button class="library-banner-button i18n" id="exitLibraryModeButton">__MSG_button_exit_library_mode__</button>
@@ -209,7 +209,7 @@
           </div>
         </section>
         <section class="HiddenButtonSection">
-            <button id="hiddenBibButton">__MSG_button_Lib_Library__</button>
+            <button id="libraryButton">__MSG_button_Lib_Library__</button>
             <button id="advancedOptionsButton">__MSG_button_Advanced_Options__</button>
             <button id="cacheOptionsButton">__MSG_button_Cache_Options__</button>
         </section>
@@ -298,26 +298,18 @@
                     </tbody>
                 </table>
             </div>
-            <table>
-                <tr>
-                    <td><input id="LibShowAdvancedOptionsCheckbox" type="checkbox" name="LibShowAdvancedOptionsCheckbox" checked="false"></td>
-                    <td><p>__MSG_label_Lib_Show_Advanced_Library_Options__</p></td>
-                </tr>
-                <tr id="LibShowCompactViewRow">
-                    <td><input id="LibShowCompactViewCheckbox" type="checkbox" name="LibShowCompactViewCheckbox" checked="false"></td>
-                    <td><p>__MSG_label_Lib_Compact_View__</p></td>
-                </tr>
-                <tr id="LibDownloadEpubAfterUpdateRow" hidden="true">
-                    <td><input id="LibDownloadEpubAfterUpdateCheckbox" type="checkbox" name="LibDownloadEpubAfterUpdateCheckbox" checked="true"></td>
-                    <td><p>__MSG_label_Lib_Download_Epub_After_Update__</p></td>
-                </tr>
-            </table>
             <div id="LibRenderResult">
+            </div>
+            <div id="libraryCloseSection">
+                <button id="closeLibraryButton">Close Library</button>
             </div>
         </section>
 
         <!-- Hidden Section - Advanced Options -->
         <section id="advancedOptionsSection" hidden="true">
+            <div class="advanced-options-header">
+                <div class="advanced-options-title-column">Advanced Options</div>
+            </div>
             <table id="AdditionalMetadatatable">
                 <tr>
                     <td>__MSG_label_Metadata_URL__</td>
@@ -342,7 +334,7 @@
                 </tr>
                 <tr>
                     <td>__MSG_label_Metadata_description__</td>
-                    <td><textarea rows="2" cols="60" id="descriptionInput" type="text" name="descriptionInput"></textarea></td>
+                    <td><textarea rows="4" cols="60" id="descriptionInput" type="text" name="descriptionInput"></textarea></td>
                 </tr>
                 <tr id="seriesRow">
                     <td>__MSG_label_Series__</td>
@@ -483,7 +475,7 @@
                 </tr>
                 <tr id="autoParserSelectIncludesBTSeriesPageRow">
                     <td><input id="autoParserSelectIncludesBTSeriesPageCheckbox" type="checkbox" name="autoParserSelectIncludesBTSeriesPage" value="false"></td>
-                    <td>__MSG_label_Auto_Parser_Select_Includes_Baka_Tsuki_Series_Page_Parser__ <button id="seriesPageHelpButton">__MSG_button_Help__</button></td>
+                    <td><span class="i18n">__MSG_label_Auto_Parser_Select_Includes_Baka_Tsuki_Series_Page_Parser__</span> <button id="seriesPageHelpButton">__MSG_button_Help__</button></td>
                 </tr>
                 <tr id="skipChaptersThatFailFetch">
                     <td><input id="skipChaptersThatFailFetchCheckbox" type="checkbox" name="skipChaptersThatFailFetchCheckbox" value="false"></td>
@@ -505,7 +497,7 @@
                 </tr>
                 <tr id="manualDelayPerChapter">
                     <td>
-                        <input id="manualDelayPerChapterTag" type="number" name="manualDelayPerChapterTag" style="width: 61px;">
+                        <input id="manualDelayPerChapterTag" type="number" name="manualDelayPerChapterTag">
                     </td>
                     <td>__MSG_label_Manual_Delay_Per_Chapter__</td>
                 </tr>
@@ -537,6 +529,9 @@
                     <td><input id="readOptionsInput" type="file" name="readOptionsInput"></td>
                 </tr>
             </table>
+            <div id="advancedOptionsCloseSection">
+                <button id="closeAdvancedOptionsButton">Close Advanced Options</button>
+            </div>
         </section>
 
         <!-- Hidden Section - Images -->
@@ -560,44 +555,43 @@
         <section id="chapterSelectionOptionsSection">
           <div id="findingChapterUrlsMessageRow" class="i18n warning">__MSG_Searching_For_URLs_Please_Wait__</div>
           <div id="chapterSelectControlsDiv">
-            <table id="rangeSelectTable">
-              <tr id="rangeStartChapterRow">
-                <td>__MSG_label_Range_Start_Chapter__</td>
-                <td><select id="selectRangeStartChapter" /></td>
-                <td><input id="showChapterUrlsCheckbox" type="checkbox" name="showChapterUrlsCheckbox" value="false"></td>
-                <td>__MSG_label_Show_Chapter_Urls__</td>
-              </tr>
-              <tr id="rangeEndChapterRow">
-                <td>__MSG_label_Range_End_Chapter__</td>
-                <td><select id="selectRangeEndChapter" /></td>
-                <td colspan="2">
+            <div id="rangeSelectTable">
+              <div id="rangeStartChapterRow" class="range-select-row">
+                <div class="range-label i18n">__MSG_label_Range_Start_Chapter__</div>
+                <div class="range-control"><select id="selectRangeStartChapter"></select></div>
+                <div class="range-checkbox-group">
+                  <input id="showChapterUrlsCheckbox" type="checkbox" name="showChapterUrlsCheckbox" value="false">
+                  <span class="range-checkbox-label i18n">__MSG_label_Show_Chapter_Urls__</span>
+                </div>
+              </div>
+              <div id="rangeEndChapterRow" class="range-select-row">
+                <div class="range-label i18n">__MSG_label_Range_End_Chapter__</div>
+                <div class="range-control"><select id="selectRangeEndChapter"></select></div>
+                <div class="range-filters">
                   <div class="tooltip-wrapper clickable-icon" id="viewFiltersButton">
                     <span id="viewFiltersIcon"></span>
                     <span class="tooltipText i18n">__MSG_button_View_Filters__</span>
                   </div>
-                </td>
-              </tr>
-              <tr id="rangeChapterCountRow">
-                <td>__MSG_label_Chapter_Count__</td>
-                <td colspan="3">
-                  <table width="100%">
-                    <tr>
-                      <td width="30%"><span id="spanChapterCount" />0</td>
-                      <td width="50%"><span id="spanParserName" /></td>
-                      <td width="20%"><span id="spanDelayMs" />0 ms</td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
+                </div>
+              </div>
+              <div id="rangeChapterCountRow" class="range-select-row">
+                <div class="range-stats">
+                  <div class="range-stats-item range-stats-count"><span class="i18n">__MSG_label_Chapter_Count__</span> <span id="spanChapterCount">0</span></div>
+                  <div class="range-stats-item range-stats-parser"><span id="spanParserName"></span></div>
+                  <div class="range-stats-item range-stats-delay"><span id="spanDelayMs">0 ms</span></div>
+                </div>
+              </div>
+            </div>
             <div id="chapterSelectControlButtons">
-              <label>
+              <label id="selectAllControl">
                 <input id="selectAllUrlsCheckbox" type="checkbox" />
                 <span class="i18n">__MSG_button_Select_All__</span>
               </label>
-              <button id="reverseChapterUrlsOrderButton">__MSG_button_Reverse_Chapter_Urls_Order__</button>
-              <button id="editChaptersUrlsButton">__MSG_button_Edit_Chapter_Urls__</button>
-              <button id="copyUrlsToClipboardButton">__MSG_button_Copy_Urls_To_Clipboard__</button>
+              <div id="chapterActionButtons">
+                <button id="reverseChapterUrlsOrderButton">__MSG_button_Reverse_Chapter_Urls_Order__</button>
+                <button id="editChaptersUrlsButton">__MSG_button_Edit_Chapter_Urls__</button>
+                <button id="copyUrlsToClipboardButton">__MSG_button_Copy_Urls_To_Clipboard__</button>
+              </div>
             </div>
           </div>
           <div>
@@ -672,33 +666,107 @@
             </div>
             <div id="cacheOptionsContent">
                 <div id="cacheOptionsContainer">
-                    <div class="cache-option-row">
-                        <div class="cache-option-label i18n">__MSG_label_Enable_Chapter_Caching__</div>
-                        <div class="cache-option-value">
+                    <div class="options-modal-row">
+                        <div class="options-modal-label i18n">__MSG_label_Enable_Chapter_Caching__</div>
+                        <div class="options-modal-value">
                             <input id="enableChapterCachingCheckbox" type="checkbox" name="enableChapterCachingCheckbox" checked="true">
                             <span id="toggleStateText">On</span>
                         </div>
                     </div>
-                    <div class="cache-option-row">
-                        <div class="cache-option-label i18n">__MSG_label_Cache_Retention_Days__</div>
-                        <div class="cache-option-value">
+                    <div class="options-modal-row">
+                        <div class="options-modal-label i18n">__MSG_label_Cache_Retention_Days__</div>
+                        <div class="options-modal-value">
                             <input id="cacheRetentionDays" type="number" name="cacheRetentionDays" value="30" min="1" max="365">
                         </div>
                     </div>
-                    <div class="cache-option-row">
-                        <div class="cache-option-label i18n">__MSG_label_Cached_Chapter_Count__</div>
-                        <div class="cache-option-value">
+                    <div class="options-modal-row">
+                        <div class="options-modal-label i18n">__MSG_label_Cached_Chapter_Count__</div>
+                        <div class="options-modal-value">
                             <span id="cachedChapterCount">Loading...</span>
                         </div>
                     </div>
-                    <div class="cache-option-row">
-                        <div class="cache-option-label i18n">__MSG_label_Chapter_Cache_Size__</div>
-                        <div class="cache-option-value"><span id="cacheSize">Loading...</span></div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label i18n">__MSG_label_Chapter_Cache_Size__</div>
+                        <div class="options-modal-value"><span id="cacheSize">Loading...</span></div>
                     </div>
-                    <div class="cache-option-row">
-                        <div class="cache-option-label"></div>
-                        <div class="cache-option-value">
+                    <div class="options-modal-row">
+                        <div class="options-modal-label"></div>
+                        <div class="options-modal-value">
                             <button id="clearAllCacheButton" class="i18n">__MSG_button_Delete_All_Cached_Chapters__</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Library Options Modal -->
+    <div id="libraryOptionsModal" class="modal-backdrop">
+        <div class="modal-container">
+            <div id="libraryOptionsTitleBar" class="modal-title-bar">
+                <h2 class="modal-title">Library Options</h2>
+                <button id="closeLibraryOptions" class="modal-close">✕</button>
+            </div>
+            <div id="libraryOptionsContent">
+                <div id="libraryOptionsContainer">
+                    <div class="options-modal-row">
+                        <div class="options-modal-label i18n">__MSG_label_Lib_Show_Advanced_Library_Options__</div>
+                        <div class="options-modal-value">
+                            <input id="LibShowAdvancedOptionsCheckbox" type="checkbox" name="LibShowAdvancedOptionsCheckbox" checked="false">
+                        </div>
+                    </div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label i18n">__MSG_label_Lib_Download_Epub_After_Update__</div>
+                        <div class="options-modal-value">
+                            <input id="LibDownloadEpubAfterUpdateCheckbox" type="checkbox" name="LibDownloadEpubAfterUpdateCheckbox" checked="true">
+                        </div>
+                    </div>
+                    <div class="options-modal-row" id="LibraryUsesRowModal">
+                        <div class="options-modal-label">Library uses:</div>
+                        <div class="options-modal-value">
+                            <span id="LibraryUsesModal">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label"></div>
+                        <div class="options-modal-value">
+                            <button id="libdeleteallModal" class="i18n">__MSG_button_Lib_Template_Clear_Library__</button>
+                        </div>
+                    </div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label"></div>
+                        <div class="options-modal-value">
+                            <button id="libexportallModal" class="i18n">__MSG_button_Lib_Template_Export_Library__</button>
+                        </div>
+                    </div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label"></div>
+                        <div class="options-modal-value">
+                            <label data-libbuttonid="LibImportLibraryButtonModal" data-libepubid="" id="LibImportLibraryLabelModal" for="LibImportLibraryFileModal" class="file-upload-label">
+                                <button id="LibImportLibraryButtonModal" class="disabled-button i18n">__MSG_button_Lib_Template_Import_Library__</button>
+                            </label>
+                            <input type="file" data-libepubid="LibImportLibrary" id="LibImportLibraryFileModal" hidden>
+                        </div>
+                    </div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label i18n">__MSG_label_Lib_Template_Upload_Epub_File_Label__</div>
+                        <div class="options-modal-value">
+                            <label data-libbuttonid="LibUploadEpubButtonModal" data-libepubid="" id="LibUploadEpubLabelModal" for="LibEpubNewUploadFileModal" class="file-upload-label">
+                                <button id="LibUploadEpubButtonModal" class="disabled-button i18n">__MSG_button_Lib_Template_Upload_Epub__</button>
+                            </label>
+                            <input type="file" data-libepubid="LibEpubNew" id="LibEpubNewUploadFileModal" hidden>
+                        </div>
+                    </div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label">Add novels to Library</div>
+                        <div class="options-modal-value">
+                            <textarea id="LibAddListToLibraryInput" type="text" placeholder="Add one novel URL per line"></textarea>
+                        </div>
+                    </div>
+                    <div class="options-modal-row">
+                        <div class="options-modal-label"></div>
+                        <div class="options-modal-value">
+                            <button id="LibAddListToLibraryButtonModal" class="i18n">__MSG_button_Lib_Template_Add_List_To_Library__</button>
                         </div>
                     </div>
                 </div>

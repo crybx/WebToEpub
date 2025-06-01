@@ -1,3 +1,30 @@
+#page-container {
+    border: 1px var(--border-color, #CCC) solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    border-radius: 4px;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 320px;
+    box-sizing: border-box;
+}
+
+#page-container section {
+    padding: 10px;
+}
+
+input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
+    padding: 4px;
+    border: 1px var(--border-color, #CCC) solid;
+    border-radius: 3px;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .expandedButton {
     padding: 5px 10px;
 }
@@ -24,10 +51,54 @@
     font-weight: bolder;
 }
 
-#advancedOptionsSection {
-    margin-top: 3px;
+#page-container #advancedOptionsSection {
     margin-bottom: 20px;
     border-bottom: 1px var(--border-color, #CCC) solid;
+    padding: 0;
+}
+
+/* Advanced Options Header */
+.advanced-options-header {
+    display: flex;
+    background-color: var(--header-bg, #f8f9fa);
+    border-top: 1px solid var(--border-color, #ccc);
+    border-bottom: 1px solid var(--border-color, #ccc);
+    font-weight: bold;
+    text-align: center;
+    padding: 5px 12px;
+    align-items: center;
+}
+
+.advanced-options-title-column {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: 600;
+    min-width: 100px;
+    padding: 4px 0;
+}
+
+#AdditionalMetadatatable,
+#advancedOptionsTable {
+    padding: 10px;
+}
+
+#AdditionalMetadatatable td:first-child,
+#advancedOptionsTable td:first-child {
+    text-align: right;
+}
+
+#maxChaptersPerEpubTag,
+#manualDelayPerChapterTag {
+    width: 100px;
+}
+
+/* Close Advanced Options Section */
+#advancedOptionsCloseSection {
+    border-bottom: 1px solid var(--border-color, #ccc);
+    text-align: center;
+    padding: 8px 12px;
 }
 
 progress {
@@ -78,35 +149,6 @@ td.disabled {
 
 button:disabled {
     opacity: 0.5;
-}
-
-/*----------------------------------------------------*/
-
-#page-container {
-    border: 1px var(--border-color, #CCC) solid;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: auto;
-    border-radius: 4px;
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    min-width: 320px;
-    box-sizing: border-box;
-}
-
-#page-container section {
-    padding: 10px;
-}
-
-input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
-    padding: 4px;
-    border: 1px var(--border-color, #CCC) solid;
-    border-radius: 3px;
-    max-width: 100%;
-    width: 100%;
-    box-sizing: border-box;
 }
 
 #advancedOptionsSection textarea, #advancedOptionsSection select, #manualDelayPerChapterTag {

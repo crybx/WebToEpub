@@ -1,4 +1,4 @@
-#chapterListSection {
+#page-container #chapterListSection {
     padding: 0;
     width: 100%;
 }
@@ -10,6 +10,10 @@
     margin: 0 0 0 4px;
     vertical-align: middle;
     cursor: pointer;
+}
+
+input#selectAllUrlsCheckbox {
+    margin-left: 0;
 }
 
 #selectAllUrlsCheckbox + span {
@@ -39,12 +43,13 @@
     border-color: var(--border-color);
 }
 
-#chapterSelectionOptionsSection {
+#page-container #chapterSelectionOptionsSection {
     display: flex;
     flex-direction: column;
     align-content: center;
     justify-content: center;
     width: 100%;
+    padding-bottom: 5px;
 }
 
 #chapterSelectControlsDiv {
@@ -52,16 +57,145 @@
     padding: 0 10px;
 }
 
+/* Range Select Table - Flex Layout */
+#rangeSelectTable {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.range-select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 32px;
+}
+
+.range-label {
+    flex: 0 0 auto;
+    min-width: 80px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.range-control {
+    flex: 1;
+}
+
+.range-control select {
+    width: 100%;
+}
+
+.range-checkbox-group {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.range-checkbox-label {
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.range-filters {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.range-stats {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.range-stats-item {
+    flex: 1;
+    font-size: 12px;
+    text-align: center;
+}
+
+.range-stats-count {
+    flex: 0 0 auto;
+    min-width: 60px;
+    text-align: left;
+}
+
+.range-stats-parser {
+    flex: 2;
+    text-align: center;
+}
+
+.range-stats-delay {
+    flex: 0 0 auto;
+    min-width: 60px;
+    text-align: right;
+}
+
+/* Responsive behavior for range select */
+@media (max-width: 480px) {
+    .range-select-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    .range-label {
+        min-width: auto;
+        font-weight: bold;
+    }
+    
+    .range-control {
+        max-width: none;
+    }
+    
+    .range-checkbox-group {
+        justify-content: flex-start;
+    }
+    
+    .range-stats {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    .range-stats-item {
+        text-align: left;
+    }
+}
+
 #chapterSelectControlButtons {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-end;
     gap: 4px;
     width: 100%;
 }
 
-#chapterSelectControlButtons button {
+#selectAllControl {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    order: 1;
+}
+
+#chapterActionButtons {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    gap: 4px;
+    flex: 2;
+    justify-content: flex-end;
+    order: 2;
+}
+
+#chapterActionButtons button {
     flex: 1;
     min-width: 130px;
     height: auto !important;
@@ -71,12 +205,8 @@
     line-height: 1.2;
 }
 
-#chapterSelectControlButtons label {
-    flex: 1;
-    min-width: 130px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#reverseChapterUrlsOrderButton {
+    flex: 1 1 250px;
 }
 
 .chapter-section-padding {

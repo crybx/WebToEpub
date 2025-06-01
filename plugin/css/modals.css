@@ -98,20 +98,20 @@ body.modal-open {
         border-radius: 0;
     }
     
-    .cache-option-row {
+    .options-modal-row {
         flex-direction: column;
         align-items: stretch;
         gap: 5px;
     }
     
-    .cache-option-label {
+    .options-modal-label {
         flex: none;
         text-align: left;
         padding-right: 0;
         font-weight: bold;
     }
     
-    .cache-option-value {
+    .options-modal-value {
         flex: none;
         justify-content: flex-start;
     }
@@ -178,22 +178,46 @@ body.modal-open {
     gap: 10px;
 }
 
-.cache-option-row {
+.options-modal-row {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.cache-option-label {
+.options-modal-label {
     flex: 0 0 50%;
     text-align: right;
     padding-right: 10px;
 }
 
-.cache-option-value {
+.options-modal-value {
     flex: 0 0 50%;
     display: flex;
     align-items: center;
+    gap: 8px;
+}
+
+.options-modal-value textarea {
+    min-height: 60px;
+    width: auto;
+    min-width: 200px;
+    resize: vertical;
+}
+
+/* Library Options Modal specific styling */
+#libraryOptionsModal .modal-container {
+    width: 600px;
+    max-width: 90%;
+    max-height: 80vh;
+}
+
+#libraryOptionsContent {
+    padding: 20px;
+}
+
+#libraryOptionsContainer {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
 }
 

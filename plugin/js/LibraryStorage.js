@@ -26,7 +26,7 @@ class LibraryStorage {
         }
         if (LibidURL == -1) {
             LibraryStorage.LibHandelUpdate(-1, AddEpub, main.getValueFromUiField("startingUrlInput"), fileName.replace(".epub", ""), LibidURL);
-            if (document.getElementById("LibDownloadEpubAfterUpdateCheckbox").checked) {
+            if (userPreferences.LibDownloadEpubAfterUpdate.value) {
                 return Download.save(AddEpub, fileName, overwriteExisting, backgroundDownload);
             } else {
                 return new Promise((resolve) => {resolve();});
@@ -35,7 +35,7 @@ class LibraryStorage {
 
         let PreviousEpubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + LibidURL);
         let MergedEpub = await LibraryStorage.LibMergeEpub(PreviousEpubBase64, AddEpub, LibidURL);
-        if (document.getElementById("LibDownloadEpubAfterUpdateCheckbox").checked) {
+        if (userPreferences.LibDownloadEpubAfterUpdate.value) {
             fileName = EpubPacker.addExtensionIfMissing(await LibraryStorage.LibGetFromStorage("LibFilename" + LibidURL));
             if (Download.isFileNameIllegalOnWindows(fileName)) {
                 ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorIllegalFileName",

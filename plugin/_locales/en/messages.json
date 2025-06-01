@@ -16,8 +16,8 @@
 		"description": "Label for checkbox to enable compact library view"
 	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
-		"message": "Automatically Download Epubs After Adding New Chapters",
-		"description": "Label for checkbox to Download Epubs after update"
+		"message": "Automatically Download EPUBs After Adding New Chapters",
+		"description": "Label for checkbox to Download EPUBs after update"
 	},
 	"__MSG_label_Lib_Warning_In_Progress___": {
 		"message": "In Progress....",
@@ -100,7 +100,7 @@
 		"description": "Label for Warning if user changes URL in Library"
 	},
 	"__MSG_label_Lib_Template_Upload_Epub_File_Label__": {
-		"message": "Upload an Epub File to the Library.",
+		"message": "Upload an EPUB to the Library",
 		"description": "Label for Upload Epub file in Library"
 	},
 	"__MSG_button_Lib_Template_": {
@@ -344,12 +344,12 @@
 		"description": "Label in front input for language EPUB will be in"
 	},
 	"__MSG_label_no_additional_metadata__": {
-		"message": "no Additional Metadata",
+		"message": "no additional metadata",
 		"description": "No tags and description in metadata"
 	},
 	"__MSG_label_auto_search_metadata__": {
-		"message": "auto search Metadata on novelupdates (long loading time)",
-		"description": "auto search Metadata on novelupdates"
+		"message": "auto search metadata on novelupdates.com (long load time)",
+		"description": "auto search metadata on novelupdates.com"
 	},
 	"__MSG_label_less_tags__": {
 		"message": "less tags",
