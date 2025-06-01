@@ -115,9 +115,9 @@ var addToZipFile = function(zip, nameInZip, filePath) {
 var writeZipToDisk = function(zip, filePath) {
     console.log("writeZipToDisk " + filePath);
     return zip.close().then(function (buffer) {
-        buffer.arrayBuffer().then(function (arraybuffer) {
+        return buffer.arrayBuffer().then(function (arraybuffer) {
             return writeFilePromise(filePath, arraybuffer);
-        })
+        });
     });
 }
 
@@ -172,22 +172,6 @@ var addCssFileToZip = function(zip, fileName) {
 var packNonManifestExtensionFiles = function(zip, packedFileName) {
     return addBinaryFileToZip(zip, "../plugin/book128.png", "book128.png")
         .then(function () {
-            return addImageFileToZip(zip, "ChapterStateDownloading.svg");
-        }).then(function () {
-            return addImageFileToZip(zip, "ChapterStateLoaded.svg");
-        }).then(function () {
-            return addImageFileToZip(zip, "ChapterStateNone.svg");
-        }).then(function () {
-            return addImageFileToZip(zip, "ChapterStateSleeping.svg");
-        }).then(function () {
-            return addImageFileToZip(zip, "FileEarmarkCheck.svg");
-        }).then(function () {
-            return addImageFileToZip(zip, "FileEarmarkCheckFill.svg");
-        }).then(function () {
-            return addImageFileToZip(zip, "EyeFill.svg");
-        }).then(function () {
-            return addImageFileToZip(zip, "Trash3Fill.svg");
-        }).then(function () {
             return addCssFileToZip(zip, "themeBase.css");
         }).then(function () {
             return addCssFileToZip(zip, "default.css");
