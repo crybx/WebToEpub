@@ -414,7 +414,9 @@ class LibraryStorage {
      * Handle file reader load event
      */
     static async LibFileReaderload() {
-        if (-1 == LibFileReader.LibStorageValueId) {
+        let isNewBook = false;
+        if (LibFileReader.LibStorageValueId === -1) {
+            isNewBook = true;
             let CurrentLibKeys = await LibraryStorage.LibGetAllLibStorageKeys("LibEpub");
             let HighestLibEpub = 0;
             CurrentLibKeys.forEach(element => {
@@ -424,7 +426,7 @@ class LibraryStorage {
                 }
             });
             LibFileReader.LibStorageValueId = HighestLibEpub;
-            if (LibFileReader.LibStorageValueURL == "") {
+            if (LibFileReader.LibStorageValueURL === "") {
                 LibFileReader.LibStorageValueURL = await LibraryStorage.LibGetSourceURL(LibFileReader.result);
             }
         }
@@ -445,6 +447,18 @@ class LibraryStorage {
             await LibraryStorage.LibSaveCoverImgInStorage(LibFileReader.LibStorageValueId);
             await LibraryStorage.LibCreateStorageIDs(parseInt(LibFileReader.LibStorageValueId));
             LibraryUI.LibRenderSavedEpubs();
+            
+            // If this was a new book added to library, automatically switch to Library Mode
+            if (isNewBook) {
+                try {
+                    // Load the newly added book in the main UI
+                    await LibraryBookData.loadLibraryBookInMainUI(LibFileReader.LibStorageValueId.toString());
+                } catch (error) {
+                    console.error("Error switching to library mode after adding book:", error);
+                    // If automatic loading fails, just show the library banner
+                    LibraryUI.LibShowBookIndicator(LibFileReader.LibStorageValueId.toString());
+                }
+            }
         });
     }
     
