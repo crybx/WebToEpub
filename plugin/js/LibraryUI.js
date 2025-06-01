@@ -598,15 +598,26 @@ class LibraryUI {
      * Delete an EPUB from library
      */
     static async LibDeleteEpub(objbtn) {
-        await LibraryStorage.LibRemoveStorageIDs(objbtn.dataset.libepubid);
-        let LibRemove = ["LibEpub" + objbtn.dataset.libepubid, "LibStoryURL" + objbtn.dataset.libepubid, "LibFilename" + objbtn.dataset.libepubid, "LibCover" + objbtn.dataset.libepubid, "LibNewChapterCount" + objbtn.dataset.libepubid];
+        let bookId = objbtn.dataset.libepubid;
+        
+        // Check if the book being deleted is currently selected in the main UI
+        let isCurrentlySelected = window.currentLibraryBook && window.currentLibraryBook.id === bookId;
+        
+        await LibraryStorage.LibRemoveStorageIDs(bookId);
+        let LibRemove = ["LibEpub" + bookId, "LibStoryURL" + bookId, "LibFilename" + bookId, "LibCover" + bookId, "LibNewChapterCount" + bookId];
         
         // Get story URL from storage or DOM element (compact view doesn't have DOM elements)
-        let storyUrlElement = document.getElementById("LibStoryURL" + objbtn.dataset.libepubid);
-        let storyUrl = storyUrlElement ? storyUrlElement.value : await LibraryStorage.LibGetFromStorage("LibStoryURL" + objbtn.dataset.libepubid);
+        let storyUrlElement = document.getElementById("LibStoryURL" + bookId);
+        let storyUrl = storyUrlElement ? storyUrlElement.value : await LibraryStorage.LibGetFromStorage("LibStoryURL" + bookId);
         
         UserPreferences.readFromLocalStorage().readingList.tryDeleteEpubAndSave(storyUrl);
         chrome.storage.local.remove(LibRemove);
+        
+        // If the deleted book was currently selected, exit library mode
+        if (isCurrentlySelected) {
+            LibraryUI.LibExitLibraryMode();
+        }
+        
         LibraryUI.LibRenderSavedEpubs();
     }
 
