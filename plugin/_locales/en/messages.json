@@ -903,5 +903,9 @@
 	"__MSG_button_exit_library_mode__": {
 		"message": "Exit Library View",
 		"description": "Button to exit library view and load chapters from the website"
+	},
+	"__MSG_label_library_no_books__": {
+		"message": "You have no books in your library.",
+		"description": "Message shown when the library is empty"
 	}
 }

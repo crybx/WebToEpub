@@ -572,3 +572,11 @@
     transform: translateY(0) !important;
 }
 
+/* Empty library message */
+.lib-empty-message {
+    text-align: center;
+    color: var(--color-neutral-600);
+    font-style: italic;
+    padding: 20px;
+}
+

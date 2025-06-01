@@ -49,9 +49,13 @@ class LibraryUI {
         if (ShowCompactView) {
             // Library Compact View Container
             LibRenderString += "<div class='lib-compact-view-container'>";
-            LibRenderString += "<div class='lib-compact-spacer' id='lib-compact-spacer'></div>";
-            LibRenderString += "<div class='lib-compact-wrapper' id='lib-compact-wrapper'>";
-            LibRenderString += "<div class='lib-compact-grid'>";
+            if (CurrentLibKeys.length === 0) {
+                LibRenderString += "<div class='lib-empty-message'>" + chrome.i18n.getMessage("__MSG_label_library_no_books__") + "</div>";
+            } else {
+                LibRenderString += "<div class='lib-compact-spacer' id='lib-compact-spacer'></div>";
+                LibRenderString += "<div class='lib-compact-wrapper' id='lib-compact-wrapper'>";
+                LibRenderString += "<div class='lib-compact-grid'>";
+            }
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 LibRenderString += "<div class='lib-compact-item' data-libepubid='"+CurrentLibKeys[i]+"'>";
                 LibRenderString += "<div class='lib-compact-badge-container'>";
@@ -62,8 +66,10 @@ class LibraryUI {
                 LibRenderString += "</div>";
                 LibRenderString += "</div>";
             }
-            LibRenderString += "</div>";
-            LibRenderString += "</div>";
+            if (CurrentLibKeys.length > 0) {
+                LibRenderString += "</div>";
+                LibRenderString += "</div>";
+            }
             LibRenderString += "</div>";
             // Clear existing content and add both controls and library sections
             LibRenderResult.innerHTML = LibRenderString;
@@ -84,6 +90,9 @@ class LibraryUI {
         } else {
             // Library List View Container (flex-based)
             LibRenderString += "<div class='lib-list-view-container'>";
+            if (CurrentLibKeys.length === 0) {
+                LibRenderString += "<div class='lib-empty-message'>" + chrome.i18n.getMessage("__MSG_label_library_no_books__") + "</div>";
+            }
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 LibRenderString += "<div class='lib-list-item'>";
                 

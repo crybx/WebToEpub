@@ -587,5 +587,9 @@
 	"__MSG_tooltip_More_Actions__": {
 		"message": "Додаткові дії",
 		"description": "Tooltip for more actions menu button"
+	},
+	"__MSG_label_library_no_books__": {
+		"message": "У вашій бібліотеці немає книг.",
+		"description": "Message shown when the library is empty"
 	}
 }
