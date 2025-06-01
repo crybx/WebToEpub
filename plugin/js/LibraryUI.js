@@ -1084,10 +1084,6 @@ class LibraryUI {
             
             // Show the banner
             let indicator = document.getElementById("libraryBookIndicator");
-            let titleElement = document.getElementById("libraryBookTitle");
-            
-            // Always update the title text (for when switching between books)
-            titleElement.textContent = bookTitle || `Book ${bookId}`;
             indicator.hidden = false;
             
             // Store current library book for reference

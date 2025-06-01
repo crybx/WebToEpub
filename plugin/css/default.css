@@ -16,6 +16,10 @@
     padding: 10px;
 }
 
+#page-container #libraryBookIndicator {
+    padding: 8px 10px;
+}
+
 input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     padding: 4px;
     border: 1px var(--border-color, #CCC) solid;
@@ -87,6 +91,11 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
 #AdditionalMetadatatable td:first-child,
 #advancedOptionsTable td:first-child {
     text-align: right;
+}
+
+#metadataUrlInput,
+#CustomFilenameInput {
+    margin-bottom: 4px;
 }
 
 #maxChaptersPerEpubTag,

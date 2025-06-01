@@ -85,6 +85,169 @@ class ChapterUrlsUI {
         ChapterUrlsUI.updateSelectAllCheckboxState();
     }
 
+    /**
+     * Update chapter table incrementally instead of full re-render
+     * @param {Array} newChapters - New or updated chapters to merge
+     */
+    updateChapterTableIncremental(newChapters) {
+        ChapterUrlsUI.getPleaseWaitMessageRow().hidden = true;
+        let chapterList = ChapterUrlsUI.getChapterUrlsTable();
+        let existingRows = Array.from(chapterList.querySelectorAll('.chapter-row'));
+        let rangeStart = ChapterUrlsUI.getRangeStartChapterSelect();
+        let rangeEnd = ChapterUrlsUI.getRangeEndChapterSelect();
+        let memberForTextOption = ChapterUrlsUI.textToShowInRange();
+        
+        // Clear existing range options
+        rangeStart.innerHTML = '';
+        rangeEnd.innerHTML = '';
+        
+        // Update existing rows and add new ones
+        newChapters.forEach((chapter, index) => {
+            let existingRow = existingRows[index];
+            
+            if (existingRow) {
+                // Update existing row
+                this.updateExistingChapterRow(existingRow, chapter, index);
+            } else {
+                // Create new row
+                let row = document.createElement("div");
+                row.className = "chapter-row";
+                row.rowIndex = index;
+                ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
+                ChapterUrlsUI.appendInputTextToRow(row, chapter);
+                chapter.row = row;
+                ChapterUrlsUI.appendColumnDataToRow(row, chapter);
+                ChapterUrlsUI.appendChapterStatusColumnToRow(row, chapter).then(async () => {
+                    // Set checkbox state after creation - library chapters start unchecked but are selectable
+                    let checkbox = row.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        // In library mode, only new website chapters start checked
+                        // In normal mode, all chapters start checked (original behavior)
+                        let shouldBeChecked = chapter.source ? 
+                            (chapter.source === 'website') : // Library mode: only new chapters
+                            true; // Normal mode: all chapters checked
+                        checkbox.checked = shouldBeChecked;
+                        chapter.isIncludeable = shouldBeChecked;
+                        checkbox.disabled = false; // All chapters are selectable
+                    }
+                    
+                    // Add library-specific visual enhancements
+                    let statusColumn = row.querySelector('.chapter-status-column');
+                    if (statusColumn) {
+                        ChapterUrlsUI.addLibraryStatusEnhancements(statusColumn, chapter);
+                    }
+                    
+                    await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+                });
+                chapterList.appendChild(row);
+            }
+            
+            // Add to range selectors
+            ChapterUrlsUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
+            ChapterUrlsUI.appendOptionToSelect(rangeEnd, index, chapter, memberForTextOption);
+        });
+        
+        // Remove extra rows if we have fewer chapters now
+        for (let i = newChapters.length; i < existingRows.length; i++) {
+            existingRows[i].remove();
+        }
+        
+        ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
+        this.showHideChapterUrlsColumn();
+        ChapterUrlsUI.updateSelectAllCheckboxState();
+    }
+
+    /**
+     * Update an existing chapter row with new data
+     * @param {HTMLElement} row - Existing row element
+     * @param {Object} chapter - Chapter data
+     * @param {number} index - Chapter index
+     */
+    updateExistingChapterRow(row, chapter, index) {
+        row.rowIndex = index;
+        chapter.row = row;
+        
+        // Update checkbox state - library chapters start unchecked but are selectable
+        let checkbox = row.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            // In library mode, only new website chapters start checked
+            // In normal mode, all chapters start checked (original behavior)
+            let shouldBeChecked = chapter.source ? 
+                (chapter.source === 'website') : // Library mode: only new chapters
+                true; // Normal mode: all chapters checked
+            checkbox.checked = shouldBeChecked;
+            chapter.isIncludeable = shouldBeChecked;
+            checkbox.disabled = false; // All chapters are selectable
+        }
+        
+        // Update title
+        let titleInput = row.querySelector('.chapter-title-column input');
+        if (titleInput) {
+            titleInput.value = chapter.title;
+        }
+        
+        // Update source URL display
+        let urlColumn = row.querySelector('.chapter-url-column');
+        if (urlColumn) {
+            urlColumn.textContent = chapter.sourceUrl || '';
+        }
+        
+        // Update status column with library indicators
+        this.updateChapterStatusColumn(row, chapter);
+    }
+
+    /**
+     * Update chapter status column with library-specific indicators and interactive functionality
+     * @param {HTMLElement} row - Chapter row element
+     * @param {Object} chapter - Chapter data
+     */
+    updateChapterStatusColumn(row, chapter) {
+        // Remove all existing status columns from the row
+        let statusColumns = row.querySelectorAll('.chapter-status-column');
+        statusColumns.forEach(col => col.remove());
+        
+        // Re-create the status column using existing method
+        ChapterUrlsUI.appendChapterStatusColumnToRow(row, chapter).then(async () => {
+            // Add library-specific enhancements after the normal status is created
+            let statusColumn = row.querySelector('.chapter-status-column');
+            ChapterUrlsUI.addLibraryStatusEnhancements(statusColumn, chapter);
+            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        });
+    }
+
+    /**
+     * Add library-specific visual enhancements to existing status column
+     * @param {HTMLElement} statusColumn - Status column element
+     * @param {Object} chapter - Chapter data
+     */
+    static addLibraryStatusEnhancements(statusColumn, chapter) {
+        // Add library indicator as a small badge/overlay
+        if (chapter.isInBook || chapter.source === 'library-only') {
+            let libraryBadge = document.createElement('div');
+            libraryBadge.className = 'library-status-badge';
+            
+            // Add different indicators based on source and duplicate status
+            if (chapter.isDuplicate) {
+                // Show duplicate count and occurrence info
+                libraryBadge.classList.add('duplicate');
+                libraryBadge.textContent = `${chapter.duplicateInfo.occurrenceNumber}/${chapter.duplicateInfo.totalCount}`;
+                libraryBadge.title = `Duplicate chapter: occurrence ${chapter.duplicateInfo.occurrenceNumber} of ${chapter.duplicateInfo.totalCount} in book`;
+            } else if (chapter.source === 'library-only') {
+                libraryBadge.classList.add('library-only');
+                libraryBadge.innerHTML = '📚';
+                libraryBadge.title = 'Library-only chapter (not available on website)';
+            } else if (chapter.source === 'both') {
+                libraryBadge.classList.add('both');
+                libraryBadge.innerHTML = '✓';
+                libraryBadge.title = 'Chapter is in your library and available on website';
+            }
+            
+            // Make status column position relative for absolute positioning of badge
+            statusColumn.style.position = 'relative';
+            statusColumn.appendChild(libraryBadge);
+        }
+    }
+
     showTocProgress(chapters) {
         let chapterList = ChapterUrlsUI.getChapterUrlsTable();
         chapters.forEach(function(chapter) {

@@ -188,7 +188,10 @@ const main = (function() {
             }
             return Download.save(content, fileName, overwriteExisting, backgroundDownload);
         }).then(function() {
-            parser.updateReadingList();
+            // Update Reading List if user has manually checked the checkbox
+            if (document.getElementById("includeInReadingListCheckbox")?.checked) {
+                parser.updateReadingList();
+            }
             if (util.sleepController.signal.aborted) {
                 util.sleepController = new AbortController;
                 // Don't reset UI completely - just update button states

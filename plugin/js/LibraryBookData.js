@@ -54,40 +54,92 @@ class LibraryBookData {
             let title = await LibraryStorage.LibGetFromStorage("LibFilename" + bookId) || "Unknown Title";
             let storyUrl = await LibraryStorage.LibGetFromStorage("LibStoryURL" + bookId) || "";
             
+            // Initialize metadata with empty defaults
+            let metadata = {
+                title: title.replace(".epub", ""),
+                author: "",
+                sourceUrl: storyUrl,
+                language: "",
+                filename: title.replace(".epub", ""),
+                coverUrl: "",
+                description: "",
+                subject: "",
+                seriesName: "",
+                seriesIndex: ""
+            };
+            
             // Try to get additional metadata from content.opf
             let epubPaths = util.getEpubStructure();
             let opfFile = epubContent.find(entry => entry.filename === epubPaths.contentOpf);
             if (opfFile) {
                 let opfContent = await opfFile.getData(new zip.TextWriter());
                 
-                // Extract author if available
-                let authorMatch = opfContent.match(/<dc:creator[^>]*>([^<]+)<\/dc:creator>/);
-                let author = authorMatch ? authorMatch[1] : "Unknown Author";
-                
-                // Extract title from OPF if different
+                // Extract title from OPF
                 let titleMatch = opfContent.match(/<dc:title[^>]*>([^<]+)<\/dc:title>/);
                 if (titleMatch && titleMatch[1]) {
-                    title = titleMatch[1];
+                    metadata.title = titleMatch[1];
                 }
-
-                return {
-                    title: title.replace(".epub", ""),
-                    author: author,
-                    sourceUrl: storyUrl
-                };
+                
+                // Extract author
+                let authorMatch = opfContent.match(/<dc:creator[^>]*>([^<]+)<\/dc:creator>/);
+                if (authorMatch && authorMatch[1]) {
+                    metadata.author = authorMatch[1];
+                }
+                
+                // Extract language
+                let languageMatch = opfContent.match(/<dc:language[^>]*>([^<]+)<\/dc:language>/);
+                if (languageMatch && languageMatch[1]) {
+                    metadata.language = languageMatch[1];
+                }
+                
+                // Extract description
+                let descriptionMatch = opfContent.match(/<dc:description[^>]*>([^<]+)<\/dc:description>/);
+                if (descriptionMatch && descriptionMatch[1]) {
+                    metadata.description = descriptionMatch[1];
+                }
+                
+                // Extract subject/tags
+                let subjectMatch = opfContent.match(/<dc:subject[^>]*>([^<]+)<\/dc:subject>/);
+                if (subjectMatch && subjectMatch[1]) {
+                    metadata.subject = subjectMatch[1];
+                }
+                
+                // Extract series information from meta tags
+                let seriesMatch = opfContent.match(/<meta name="calibre:series"[^>]*content="([^"]+)"/);
+                if (seriesMatch && seriesMatch[1]) {
+                    metadata.seriesName = seriesMatch[1];
+                }
+                
+                let seriesIndexMatch = opfContent.match(/<meta name="calibre:series_index"[^>]*content="([^"]+)"/);
+                if (seriesIndexMatch && seriesIndexMatch[1]) {
+                    metadata.seriesIndex = seriesIndexMatch[1];
+                }
+            }
+            
+            // Get cover image from stored data
+            try {
+                let coverData = await LibraryStorage.LibGetFromStorage("LibCover" + bookId);
+                if (coverData && coverData.trim() !== "") {
+                    metadata.coverUrl = coverData;
+                }
+            } catch (error) {
+                console.error("Error getting cover data:", error);
             }
 
-            return {
-                title: title.replace(".epub", ""),
-                author: "Unknown Author", 
-                sourceUrl: storyUrl
-            };
+            return metadata;
         } catch (error) {
             console.error("Error extracting metadata:", error);
             return {
-                title: "Unknown Title",
-                author: "Unknown Author",
-                sourceUrl: ""
+                title: "",
+                author: "",
+                sourceUrl: "",
+                language: "",
+                filename: "",
+                coverUrl: "",
+                description: "",
+                subject: "",
+                seriesName: "",
+                seriesIndex: ""
             };
         }
     }
@@ -279,7 +331,7 @@ class LibraryBookData {
      * @param {Object} bookData - Extracted book data with metadata and chapters
      */
     static populateMainUIWithBookData(bookData) {
-        // Populate metadata fields using main.js API
+        // Populate main metadata fields using main.js API
         if (bookData.metadata.sourceUrl) {
             main.setUiFieldToValue("startingUrlInput", bookData.metadata.sourceUrl);
         }
@@ -288,6 +340,29 @@ class LibraryBookData {
         }
         if (bookData.metadata.author) {
             main.setUiFieldToValue("authorInput", bookData.metadata.author);
+        }
+        if (bookData.metadata.language) {
+            main.setUiFieldToValue("languageInput", bookData.metadata.language);
+        }
+        if (bookData.metadata.filename) {
+            main.setUiFieldToValue("fileNameInput", bookData.metadata.filename);
+        }
+        if (bookData.metadata.coverUrl) {
+            main.setUiFieldToValue("coverImageUrlInput", bookData.metadata.coverUrl);
+        }
+        
+        // Populate advanced metadata fields (only visible when "Show more Metadata options" is checked)
+        if (bookData.metadata.subject) {
+            main.setUiFieldToValue("subjectInput", bookData.metadata.subject);
+        }
+        if (bookData.metadata.description) {
+            main.setUiFieldToValue("descriptionInput", bookData.metadata.description);
+        }
+        if (bookData.metadata.seriesName) {
+            main.setUiFieldToValue("seriesNameInput", bookData.metadata.seriesName);
+        }
+        if (bookData.metadata.seriesIndex) {
+            main.setUiFieldToValue("seriesIndexInput", bookData.metadata.seriesIndex);
         }
         
         // Create a mock parser to work with existing UI
@@ -385,48 +460,143 @@ class LibraryBookData {
     }
 
     /**
-     * Compare website chapters against actual book content to detect new chapters
+     * Normalize URL by decoding HTML entities (e.g., &amp; -> &)
+     * @param {string} url - The URL to normalize
+     * @returns {string} Normalized URL
+     */
+    static normalizeUrl(url) {
+        if (!url || typeof url !== 'string') {
+            return url;
+        }
+        
+        // Decode HTML entities
+        return url
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'");
+    }
+
+    /**
+     * Compare website chapters against actual book content to show ALL chapters in book order
      * REPLACES BRITTLE READING LIST DEPENDENCY
      * @param {string} bookId - The Library book ID
      * @param {Array} websiteChapters - Chapters found on the website
-     * @returns {Array} Chapters with isInBook and isIncludeable flags set
+     * @returns {Array} All chapters in book order with website chapters added at end
      */
     static async detectNewChapters(bookId, websiteChapters) {
         try {
-            // Get full book data to map URLs to library chapter indices
+            // Get full book data to show all chapters in order
             let bookData = await LibraryBookData.extractBookData(bookId);
-            let bookChapterMap = new Map();
             
+            // Normalize URLs for comparison
+            let normalizedWebsiteUrls = new Set(websiteChapters.map(ch => LibraryBookData.normalizeUrl(ch.sourceUrl)));
+            let finalChapters = [];
+            
+            // Track URL occurrences to detect duplicates (using normalized URLs)
+            let urlCounts = new Map();
+            let urlFirstOccurrence = new Map();
+            
+            // First pass: count URL occurrences and track first occurrence
             bookData.chapters.forEach((bookChapter, index) => {
                 if (bookChapter.sourceUrl && !bookChapter.sourceUrl.startsWith('library://')) {
-                    bookChapterMap.set(bookChapter.sourceUrl, {
-                        libraryChapterIndex: index,
-                        title: bookChapter.title
+                    let normalizedUrl = LibraryBookData.normalizeUrl(bookChapter.sourceUrl);
+                    let count = urlCounts.get(normalizedUrl) || 0;
+                    urlCounts.set(normalizedUrl, count + 1);
+                    
+                    // Track first occurrence index
+                    if (!urlFirstOccurrence.has(normalizedUrl)) {
+                        urlFirstOccurrence.set(normalizedUrl, index);
+                    }
+                }
+            });
+            
+            // 1. Add ALL library chapters in book order (including duplicates with detection)
+            bookData.chapters.forEach((bookChapter, index) => {
+                let normalizedBookUrl = LibraryBookData.normalizeUrl(bookChapter.sourceUrl);
+                let isOnWebsite = normalizedWebsiteUrls.has(normalizedBookUrl);
+                
+                // Determine source type
+                let source;
+                if (!bookChapter.sourceUrl || bookChapter.sourceUrl.startsWith('library://')) {
+                    source = 'library-only'; // Generated content like Information pages
+                } else if (isOnWebsite) {
+                    source = 'both'; // Available on both website and in book
+                } else {
+                    source = 'library-only'; // Only in book (removed from website or historical)
+                }
+                
+                // Check if this is a duplicate (using normalized URLs)
+                let isDuplicate = false;
+                let duplicateInfo = null;
+                if (bookChapter.sourceUrl && !bookChapter.sourceUrl.startsWith('library://')) {
+                    let normalizedUrl = LibraryBookData.normalizeUrl(bookChapter.sourceUrl);
+                    let totalCount = urlCounts.get(normalizedUrl) || 1;
+                    let isFirstOccurrence = urlFirstOccurrence.get(normalizedUrl) === index;
+                    
+                    if (totalCount > 1) {
+                        isDuplicate = true;
+                        duplicateInfo = {
+                            totalCount: totalCount,
+                            isFirstOccurrence: isFirstOccurrence,
+                            occurrenceNumber: [...bookData.chapters].slice(0, index + 1)
+                                .filter(ch => LibraryBookData.normalizeUrl(ch.sourceUrl) === normalizedUrl).length
+                        };
+                    }
+                }
+                
+                finalChapters.push({
+                    sourceUrl: bookChapter.sourceUrl,
+                    title: bookChapter.title,
+                    isInBook: true,
+                    previousDownload: true,
+                    libraryChapterIndex: index,
+                    libraryBookId: bookId,
+                    source: source,
+                    // Duplicate detection properties
+                    isDuplicate: isDuplicate,
+                    duplicateInfo: duplicateInfo,
+                    // Add library-specific properties for ChapterViewer compatibility
+                    chapterIndex: index,
+                    rawDom: null, // Will be loaded on demand
+                    // Add properties needed for normal chapter UI functionality
+                    isValid: true,
+                    isIncludeable: source === 'library-only' // Library-only chapters start unchecked
+                });
+            });
+            
+            // 2. Add website-only chapters at the end (new chapters not in book)
+            websiteChapters.forEach(websiteChapter => {
+                // Skip if this URL already appears in the book (using normalized URLs)
+                let normalizedWebsiteUrl = LibraryBookData.normalizeUrl(websiteChapter.sourceUrl);
+                let alreadyInBook = bookData.chapters.some(bookCh => 
+                    LibraryBookData.normalizeUrl(bookCh.sourceUrl) === normalizedWebsiteUrl
+                );
+                if (!alreadyInBook) {
+                    finalChapters.push({
+                        ...websiteChapter,
+                        isInBook: false,
+                        previousDownload: false,
+                        libraryBookId: bookId,
+                        source: 'website',
+                        // New website chapters start checked for inclusion
+                        isIncludeable: websiteChapter.isIncludeable !== undefined ? websiteChapter.isIncludeable : true
                     });
                 }
             });
             
-            return websiteChapters.map(chapter => {
-                let libraryInfo = bookChapterMap.get(chapter.sourceUrl);
-                let isInBook = libraryInfo !== undefined;
-                
-                return {
-                    ...chapter,
-                    isInBook: isInBook,
-                    isIncludeable: !isInBook, // Only new chapters selectable
-                    previousDownload: isInBook, // For compatibility with existing UI
-                    libraryChapterIndex: libraryInfo?.libraryChapterIndex,
-                    libraryBookId: bookId
-                };
-            });
+            return finalChapters;
+            
         } catch (error) {
-            console.error("Error detecting new chapters:", error);
-            // Fallback: mark all chapters as new if detection fails
+            console.error("Error merging chapters:", error);
+            // Fallback: mark all website chapters as new if merging fails
             return websiteChapters.map(chapter => ({
                 ...chapter,
                 isInBook: false,
                 isIncludeable: true,
-                previousDownload: false
+                previousDownload: false,
+                source: 'website'
             }));
         }
     }
@@ -440,25 +610,55 @@ class LibraryBookData {
             // Show loading indicator
             LibraryUI.LibShowLoadingText();
 
-            // 1. Get book metadata and stored URL
-            let storyUrl = await LibraryStorage.LibGetFromStorage("LibStoryURL" + bookId);
-            if (!storyUrl) {
-                throw new Error("No story URL found for this book");
-            }
-
-            // 2. Immediately show library chapters with mock parser
+            // 1. Extract EPUB metadata and populate UI with it
+            let bookData = await LibraryBookData.extractBookData(bookId);
             main.resetUI();
-            main.setUiFieldToValue("startingUrlInput", storyUrl);
+            LibraryBookData.populateMainUIWithBookData(bookData);
+            
+            // 2. Load library chapters with mock parser
             await LibraryBookData.loadBookWithMockParser(bookId);
             
             // 3. Clear loading indicator and switch to main UI early
             LibraryUI.LibRenderSavedEpubs();
             LibraryBookData.switchToMainUI();
             
-            // 4. Fetch website chapters in background and merge when ready
+            // 4. Fetch website chapters in background and merge when ready (preserving EPUB metadata)
             try {
+                // Store actual EPUB metadata (not defaults) before website fetch
+                let epubMetadata = bookData.metadata;
+                
                 // Try to load real parser for website
                 await main.onLoadAndAnalyseButtonClick();
+                
+                // Restore only non-empty EPUB metadata after website parsing
+                // Only override website data if we have actual EPUB metadata values
+                if (epubMetadata.title && epubMetadata.title.trim() !== "") {
+                    main.setUiFieldToValue("titleInput", epubMetadata.title);
+                }
+                if (epubMetadata.author && epubMetadata.author.trim() !== "") {
+                    main.setUiFieldToValue("authorInput", epubMetadata.author);
+                }
+                if (epubMetadata.language && epubMetadata.language.trim() !== "") {
+                    main.setUiFieldToValue("languageInput", epubMetadata.language);
+                }
+                if (epubMetadata.filename && epubMetadata.filename.trim() !== "") {
+                    main.setUiFieldToValue("fileNameInput", epubMetadata.filename);
+                }
+                if (epubMetadata.coverUrl && epubMetadata.coverUrl.trim() !== "") {
+                    main.setUiFieldToValue("coverImageUrlInput", epubMetadata.coverUrl);
+                }
+                if (epubMetadata.subject && epubMetadata.subject.trim() !== "") {
+                    main.setUiFieldToValue("subjectInput", epubMetadata.subject);
+                }
+                if (epubMetadata.description && epubMetadata.description.trim() !== "") {
+                    main.setUiFieldToValue("descriptionInput", epubMetadata.description);
+                }
+                if (epubMetadata.seriesName && epubMetadata.seriesName.trim() !== "") {
+                    main.setUiFieldToValue("seriesNameInput", epubMetadata.seriesName);
+                }
+                if (epubMetadata.seriesIndex && epubMetadata.seriesIndex.trim() !== "") {
+                    main.setUiFieldToValue("seriesIndexInput", epubMetadata.seriesIndex);
+                }
                 
                 // Get chapters from website using real parser
                 if (window.parser && window.parser.state && window.parser.state.webPages) {
@@ -473,9 +673,9 @@ class LibraryBookData {
                         window.parser.state.webPages.set(index, chapter);
                     });
                     
-                    // Re-populate chapter table with merged data
+                    // Update chapter table incrementally with merged data
                     let chapterUrlsUI = new ChapterUrlsUI(window.parser);
-                    await chapterUrlsUI.populateChapterUrlsTable(updatedChapters);
+                    await chapterUrlsUI.updateChapterTableIncremental(updatedChapters);
                     
                     // Add library-specific visual indicators
                     await LibraryBookData.addLibraryChapterIndicators(bookId, updatedChapters);

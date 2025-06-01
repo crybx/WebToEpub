@@ -12,9 +12,6 @@ class LibraryStorage {
      */
     static async LibAddToLibrary(AddEpub, fileName, startingUrlInput, overwriteExisting, backgroundDownload, userPreferences) {
         LibraryUI.LibShowLoadingText();
-        if (!document.getElementById("includeInReadingListCheckbox")?.checked) {
-            document.getElementById("includeInReadingListCheckbox")?.click();
-        }
         let CurrentLibStoryURLKeys = await LibraryStorage.LibGetAllLibStorageKeys("LibStoryURL");
         let CurrentLibStoryURLs = await LibraryStorage.LibGetFromStorageArray(CurrentLibStoryURLKeys);
         let LibidURL = -1;

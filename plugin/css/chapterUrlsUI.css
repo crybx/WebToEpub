@@ -542,5 +542,42 @@ svg {
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
 }
 
+/* Library Status Badge Styles */
+.library-status-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid var(--color-surface-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    z-index: 1;
+    font-weight: bold;
+}
+
+/* Duplicate chapter badge */
+.library-status-badge.duplicate {
+    background: var(--color-warning);
+    color: #000;
+    width: 18px;
+    font-size: 7px;
+}
+
+/* Library-only chapter badge */
+.library-status-badge.library-only {
+    background: var(--color-info);
+    color: var(--color-surface-primary);
+}
+
+/* Both library and website chapter badge */
+.library-status-badge.both {
+    background: var(--color-success);
+    color: var(--color-surface-primary);
+}
+
 
 

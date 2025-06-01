@@ -897,7 +897,7 @@
 		}
 	},
 	"__MSG_label_library_mode__": {
-		"message": "You are viewing a book from your Library:",
+		"message": "You are viewing a book in your Library",
 		"description": "Label indicating the user is viewing a library book"
 	},
 	"__MSG_button_exit_library_mode__": {
