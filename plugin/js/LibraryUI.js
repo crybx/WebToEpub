@@ -9,12 +9,16 @@ class LibraryUI {
      * Render all saved EPUBs in the library UI
      */
     static async LibRenderSavedEpubs() {
+        let LibRenderResult = document.getElementById("LibRenderResult");
+        if (!LibRenderResult) {
+            return; // Library section not available/initialized
+        }
+        
         let LibArray = await LibraryStorage.LibGetStorageIDs();
         let userPreferences = main.getUserPreferences();
         let ShowAdvancedOptions = userPreferences.LibShowAdvancedOptions.value;
         let ShowCompactView = userPreferences.LibShowCompactView.value;
         let CurrentLibKeys = LibArray;
-        let LibRenderResult = document.getElementById("LibRenderResult");
         let LibRenderString = "";
         let LibTemplateDeleteEpub = document.getElementById("LibTemplateDeleteEpub").innerHTML;
         let LibTemplateSearchNewChapter = document.getElementById("LibTemplateSearchNewChapter").innerHTML;
@@ -596,7 +600,12 @@ class LibraryUI {
     static async LibDeleteEpub(objbtn) {
         await LibraryStorage.LibRemoveStorageIDs(objbtn.dataset.libepubid);
         let LibRemove = ["LibEpub" + objbtn.dataset.libepubid, "LibStoryURL" + objbtn.dataset.libepubid, "LibFilename" + objbtn.dataset.libepubid, "LibCover" + objbtn.dataset.libepubid, "LibNewChapterCount" + objbtn.dataset.libepubid];
-        UserPreferences.readFromLocalStorage().readingList.tryDeleteEpubAndSave(document.getElementById("LibStoryURL" + objbtn.dataset.libepubid).value);
+        
+        // Get story URL from storage or DOM element (compact view doesn't have DOM elements)
+        let storyUrlElement = document.getElementById("LibStoryURL" + objbtn.dataset.libepubid);
+        let storyUrl = storyUrlElement ? storyUrlElement.value : await LibraryStorage.LibGetFromStorage("LibStoryURL" + objbtn.dataset.libepubid);
+        
+        UserPreferences.readFromLocalStorage().readingList.tryDeleteEpubAndSave(storyUrl);
         chrome.storage.local.remove(LibRemove);
         LibraryUI.LibRenderSavedEpubs();
     }
