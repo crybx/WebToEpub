@@ -130,13 +130,7 @@ class ChapterUrlsUI {
                         chapter.isIncludeable = shouldBeChecked;
                         checkbox.disabled = false; // All chapters are selectable
                     }
-                    
-                    // Add library-specific visual enhancements
-                    let statusColumn = row.querySelector('.chapter-status-column');
-                    if (statusColumn) {
-                        ChapterUrlsUI.addLibraryStatusEnhancements(statusColumn, chapter);
-                    }
-                    
+
                     await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
                 });
                 chapterList.appendChild(row);
@@ -208,43 +202,68 @@ class ChapterUrlsUI {
         
         // Re-create the status column using existing method
         ChapterUrlsUI.appendChapterStatusColumnToRow(row, chapter).then(async () => {
-            // Add library-specific enhancements after the normal status is created
-            let statusColumn = row.querySelector('.chapter-status-column');
-            ChapterUrlsUI.addLibraryStatusEnhancements(statusColumn, chapter);
             await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
         });
     }
 
     /**
-     * Add library-specific visual enhancements to existing status column
-     * @param {HTMLElement} statusColumn - Status column element
-     * @param {Object} chapter - Chapter data
+     * Add library chapter indicators to the chapter list UI
+     * @param {string} bookId - The Library book ID  
+     * @param {Array} chapters - Enhanced chapters array
      */
-    static addLibraryStatusEnhancements(statusColumn, chapter) {
-        // Add library indicator as a small badge/overlay
-        if (chapter.isInBook || chapter.source === 'library-only') {
-            let libraryBadge = document.createElement('div');
-            libraryBadge.className = 'library-status-badge';
+    static async addLibraryChapterIndicators(bookId, chapters) {
+        try {
+            // Wait a moment for the chapter table to be fully rendered
+            await new Promise(resolve => setTimeout(resolve, 200));
             
-            // Add different indicators based on source and duplicate status
-            if (chapter.isDuplicate) {
-                // Show duplicate count and occurrence info
-                libraryBadge.classList.add('duplicate');
-                libraryBadge.textContent = `${chapter.duplicateInfo.occurrenceNumber}/${chapter.duplicateInfo.totalCount}`;
-                libraryBadge.title = `Duplicate chapter: occurrence ${chapter.duplicateInfo.occurrenceNumber} of ${chapter.duplicateInfo.totalCount} in book`;
-            } else if (chapter.source === 'library-only') {
-                libraryBadge.classList.add('library-only');
-                libraryBadge.innerHTML = '📚';
-                libraryBadge.title = 'Library-only chapter (not available on website)';
-            } else if (chapter.source === 'both') {
-                libraryBadge.classList.add('both');
-                libraryBadge.innerHTML = '✓';
-                libraryBadge.title = 'Chapter is in your library and available on website';
-            }
+            chapters.forEach((chapter, index) => {
+                // Find row by rowIndex property
+                let rows = document.querySelectorAll('.chapter-row');
+                let row = Array.from(rows).find(r => r.rowIndex === index);
+
+                if (row && chapter.isInBook) {
+                    // Replace cache eye icon with library book icon for chapters that exist in book
+                    let statusColumn = row.querySelector(".chapter-status-column");
+                    if (statusColumn) {
+                        // Remove existing cache icon and its tooltip wrapper if present
+                        let existingWrapper = statusColumn.querySelector(".tooltip-wrapper");
+                        if (existingWrapper) {
+                            existingWrapper.remove();
+                        }
+                        
+                        // Add library book icon with tooltip wrapper (same structure as cache icon)
+                        if (!statusColumn.querySelector(".library-chapter-view-icon")) {
+                            let tooltipWrapper = document.createElement("div");
+                            tooltipWrapper.classList.add("tooltip-wrapper", "clickable-icon");
+                            
+                            let bookIcon = SvgIcons.createSvgElement(SvgIcons.BOOK);
+                            bookIcon.classList.add("library-chapter-view-icon", "chapter-status-icon");
+                            
+                            let tooltip = document.createElement("span");
+                            tooltip.classList.add("tooltipText");
+                            tooltip.textContent = "View chapter from library book";
+                            
+                            tooltipWrapper.onclick = (e) => {
+                                e.stopPropagation();
+                                ChapterViewer.openLibraryChapter(bookId, chapter.libraryChapterIndex);
+                            };
+                            
+                            tooltipWrapper.appendChild(bookIcon);
+                            tooltipWrapper.appendChild(tooltip);
+                            statusColumn.insertBefore(tooltipWrapper, statusColumn.firstChild);
+                        }
+                    }
+                    
+                    // Mark row as "in library" for CSS styling
+                    row.classList.add("chapter-in-library");
+                } else if (row && !chapter.isInBook) {
+                    // Mark new chapters for visual distinction
+                    row.classList.add("chapter-new-on-website");
+                }
+            });
             
-            // Make status column position relative for absolute positioning of badge
-            statusColumn.style.position = 'relative';
-            statusColumn.appendChild(libraryBadge);
+        } catch (error) {
+            console.error("Error adding library chapter indicators:", error);
         }
     }
 

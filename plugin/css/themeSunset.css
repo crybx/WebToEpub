@@ -264,6 +264,9 @@ input[type=checkbox].greenBox {
     --library-banner-button-text: white;
     --library-banner-button-border: var(--color-primary);
     --library-banner-button-hover: var(--color-primary-hover);
+    
+    /* Sunset Library Icons */
+    --library-chapter-icon: var(--color-primary);
 }
 
 .library-banner-button {

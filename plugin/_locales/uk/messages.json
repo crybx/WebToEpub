@@ -59,6 +59,14 @@
 		"message": "Завантажити розділи",
 		"description": "Label on button to download chapters without packing into EPUB"
 	},
+	"__MSG_button_Add_to_Library__": {
+		"message": "Додати до бібліотеки",
+		"description": "Label on button to create the EPUB and Add it to the Library"
+	},
+	"__MSG_button_Update_Library_Book__": {
+		"message": "Оновити книгу бібліотеки",
+		"description": "Label on button to add chapters to the currently selected library book"
+	},
 	"__MSG_button_Reset__": {
 		"message": "Очистити",
 		"description": "Label on button that clears the dialog"

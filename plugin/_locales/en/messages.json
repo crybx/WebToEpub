@@ -179,6 +179,10 @@
 		"message": "Add to Library",
 		"description": "Label on button to create the EPUB and Add it to the Library"
 	},
+	"__MSG_button_Update_Library_Book__": {
+		"message": "Update Library Book",
+		"description": "Label on button to add chapters to the currently selected library book"
+	},
 	"__MSG_button_Stop_Download__": {
 		"message": "Stop",
 		"description": "Label on button to stop/cancel the download"

@@ -1089,6 +1089,11 @@ class LibraryUI {
             // Store current library book for reference
             window.currentLibraryBook = { id: bookId, title: bookTitle };
             
+            // Update library button text
+            if (typeof main !== 'undefined' && main.updateLibraryButtonText) {
+                main.updateLibraryButtonText();
+            }
+            
         } catch (error) {
             console.error("Error showing library book indicator:", error);
         }
@@ -1103,6 +1108,11 @@ class LibraryUI {
         indicator.hidden = true;
         window.currentLibraryBook = null;
         window.isLoadingLibraryBook = false;
+        
+        // Update library button text
+        if (typeof main !== 'undefined' && main.updateLibraryButtonText) {
+            main.updateLibraryButtonText();
+        }
         
         // Set a flag to bypass library detection on next load
         window.bypassLibraryDetection = true;

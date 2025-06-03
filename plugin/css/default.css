@@ -340,7 +340,7 @@ button:active {
 
 .progressButtonRow .expandedButton {
     flex: 1;
-    min-width: 130px;
+    min-width: 132px;
 }
 
 #coverUrlSection img {
@@ -433,7 +433,7 @@ button:active {
 .sidebar label {
     display: block;
     width: 100%;
-    font-size: 16px;
+    font-size: 14px;
     padding-bottom: 5px;
     user-select: none;
 }
@@ -653,6 +653,11 @@ input[type=checkbox].greenBox {
 
 .warning-text {
     color: var(--lib-warning-text);
+}
+
+/* Library chapter icons */
+.library-chapter-view-icon {
+    fill: var(--library-chapter-icon) !important;
 }
 
 /* Shared more actions dropdown menu styles */

@@ -121,6 +121,9 @@
     --library-banner-button-hover: var(--color-primary-hover);
     --library-banner-button-hover-text: var(--color-primary-dark);
     
+    /* Library icons */
+    --library-chapter-icon: var(--color-primary);
+    
     /* Common UI variables */
     --header-bg: var(--color-neutral-50);
     --row-hover-bg: var(--color-neutral-50);

@@ -56,6 +56,9 @@
     --library-banner-button-text: white;
     --library-banner-button-hover: linear-gradient(45deg, #8b00ffcc, #00ffff88);
     --library-banner-button-hover-text: var(--color-secondary);
+    
+    /* Cyberpunk Library Icons */
+    --library-chapter-icon: #00ffff;
 }
 
 body {
@@ -254,8 +257,13 @@ input[type=checkbox].greenBox {
 /* Library Chapter Highlighting - Cyberpunk */
 .chapter-in-library {
     background: linear-gradient(90deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 255, 127, 0.05) 100%) !important;
-    box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.2);
     border-left: 1px solid #00ff7f;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
+}
+
+.chapter-in-library .chapter-title {
+    color: #00ffff !important;
+    text-shadow: 0 0 2px rgba(0, 255, 255, 0.5);
 }
 
 .chapter-in-library:hover {
@@ -335,17 +343,7 @@ input[type=checkbox].greenBox {
     text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
 }
 
-/* Library Chapter Status Indicators - Cyberpunk Theme */
-.chapter-in-library {
-    background-color: rgba(0, 255, 255, 0.1) !important;
-    border-left: 1px solid #00ffff !important;
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
-}
 
-.chapter-in-library .chapter-title {
-    color: #00ffff !important;
-    text-shadow: 0 0 2px rgba(0, 255, 255, 0.5);
-}
 
 .chapter-new-on-website {
     background-color: rgba(139, 0, 255, 0.1) !important;

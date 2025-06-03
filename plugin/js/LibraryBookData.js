@@ -427,7 +427,7 @@ class LibraryBookData {
         // Hide library section if visible
         let librarySection = document.getElementById("libraryExpandableSection");
         if (librarySection && !librarySection.hidden) {
-            let libraryButton = document.getElementById("hiddenBibButton");
+            let libraryButton = document.getElementById("libraryButton");
             if (libraryButton) {
                 libraryButton.click();
             }
@@ -678,7 +678,7 @@ class LibraryBookData {
                     await chapterUrlsUI.updateChapterTableIncremental(updatedChapters);
                     
                     // Add library-specific visual indicators
-                    await LibraryBookData.addLibraryChapterIndicators(bookId, updatedChapters);
+                    await ChapterUrlsUI.addLibraryChapterIndicators(bookId, updatedChapters);
                 }
                 
             } catch (parserError) {
@@ -697,62 +697,6 @@ class LibraryBookData {
      * @param {string} bookId - The Library book ID  
      * @param {Array} chapters - Enhanced chapters array
      */
-    static async addLibraryChapterIndicators(bookId, chapters) {
-        try {
-            // Wait a moment for the chapter table to be fully rendered
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            chapters.forEach((chapter, index) => {
-                // Find row by rowIndex property
-                let rows = document.querySelectorAll('.chapter-row');
-                let row = Array.from(rows).find(r => r.rowIndex === index);
-
-                if (row && chapter.isInBook) {
-                    // Replace cache eye icon with library eye icon for chapters that exist in book
-                    let statusColumn = row.querySelector(".chapter-status-column");
-                    if (statusColumn) {
-                        // Remove existing cache icon and its tooltip wrapper if present
-                        let existingWrapper = statusColumn.querySelector(".tooltip-wrapper");
-                        if (existingWrapper) {
-                            existingWrapper.remove();
-                        }
-                        
-                        // Add library eye icon with tooltip wrapper (same structure as cache icon)
-                        if (!statusColumn.querySelector(".library-chapter-view-icon")) {
-                            let tooltipWrapper = document.createElement("div");
-                            tooltipWrapper.classList.add("tooltip-wrapper", "clickable-icon");
-                            
-                            let eyeIcon = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
-                            eyeIcon.classList.add("library-chapter-view-icon", "chapter-status-icon");
-                            eyeIcon.style.fill = "#28a745"; // Green color for library icon
-                            
-                            let tooltip = document.createElement("span");
-                            tooltip.classList.add("tooltipText");
-                            tooltip.textContent = "View chapter from library book";
-                            
-                            tooltipWrapper.onclick = (e) => {
-                                e.stopPropagation();
-                                ChapterViewer.openLibraryChapter(bookId, chapter.libraryChapterIndex);
-                            };
-                            
-                            tooltipWrapper.appendChild(eyeIcon);
-                            tooltipWrapper.appendChild(tooltip);
-                            statusColumn.insertBefore(tooltipWrapper, statusColumn.firstChild);
-                        }
-                    }
-                    
-                    // Mark row as "in library" for CSS styling
-                    row.classList.add("chapter-in-library");
-                } else if (row && !chapter.isInBook) {
-                    // Mark new chapters for visual distinction
-                    row.classList.add("chapter-new-on-website");
-                }
-            });
-            
-        } catch (error) {
-            console.error("Error adding library chapter indicators:", error);
-        }
-    }
 
     /**
      * Fallback method when real parser fails - uses mock parser with library content
