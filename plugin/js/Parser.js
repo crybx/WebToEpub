@@ -577,7 +577,13 @@ class Parser {
         {
             let group = this.groupPagesToFetch(pagesToFetch, index);
             while (0 < group.length) {
-                await Promise.all(group.map(async (webPage) => this.fetchWebPageContent(webPage)));
+                await Promise.all(group.map(async (webPage) => {
+                    await this.fetchWebPageContent(webPage);
+                    // Process and cache content immediately after download (like Download Chapters does)
+                    if (webPage.rawDom && !webPage.error) {
+                        this.convertRawDomToContent(webPage);
+                    }
+                }));
                 index += group.length;
                 group = this.groupPagesToFetch(pagesToFetch, index);
                 if (util.sleepController.signal.aborted) {
