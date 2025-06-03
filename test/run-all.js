@@ -57,13 +57,15 @@ async function main() {
     console.log('• Core utility functions');
     console.log('• EPUB structure preferences (OEBPS/EPUB)');
     console.log('• Path generation logic');
+    console.log('• Chapter inclusion logic for library mode');
     console.log('• Regression prevention for structure changes');
     console.log('• Test framework compatibility');
     
     const tests = [
         'simple.test.js',
         'util.test.js',
-        'epub-structure.test.js'
+        'epub-structure.test.js',
+        'chapter-inclusion.test.js'
     ];
     
     let allPassed = true;

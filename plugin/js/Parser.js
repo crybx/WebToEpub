@@ -102,7 +102,7 @@ class Parser {
 
     isWebPagePackable(webPage) {
         return ((webPage.isIncludeable)
-         && ((webPage.rawDom != null) || (webPage.error != null)));
+         && ((webPage.rawDom != null) || (webPage.error != null) || (webPage.isInBook === true)));
     }
 
     convertRawDomToContent(webPage) {
@@ -419,8 +419,24 @@ class Parser {
         let epubItems = [];
         let index = 0;
 
+        // Skip Information page generation when UPDATING an existing library book
+        // (but allow it when adding a new book to library if user preference is enabled)
+        let isLibraryBookUpdate = false;
+        try {
+            // Check if this is an update to an existing library book by looking for library chapters
+            // that already exist in a book (have isInBook === true)
+            let hasExistingLibraryChapters = [...this.state.webPages.values()].some(chapter => 
+                chapter.isInBook === true || chapter.source === 'library-only'
+            );
+            isLibraryBookUpdate = hasExistingLibraryChapters;
+        } catch (e) {
+            // Fallback: assume not a library update if detection fails
+            isLibraryBookUpdate = false;
+        }
+
         if (this.userPreferences.addInformationPage.value &&
-            this.getInformationEpubItemChildNodes !== undefined) {
+            this.getInformationEpubItemChildNodes !== undefined &&
+            !isLibraryBookUpdate) {
             epubItems.push(this.makeInformationEpubItem(this.state.firstPageDom));
             ++index;
         }

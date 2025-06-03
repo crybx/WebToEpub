@@ -490,11 +490,14 @@ class LibraryBookData {
             // Get full book data to show all chapters in order
             let bookData = await LibraryBookData.extractBookData(bookId);
             
-            // Normalize URLs for comparison
-            let normalizedWebsiteUrls = new Set(websiteChapters.map(ch => LibraryBookData.normalizeUrl(ch.sourceUrl)));
-            let finalChapters = [];
+            // Use the new ChapterInclusionLogic for core merge logic
+            let mergedChapters = ChapterInclusionLogic.mergeChaptersForLibrary(
+                bookData.chapters, 
+                websiteChapters, 
+                bookId
+            );
             
-            // Track URL occurrences to detect duplicates (using normalized URLs)
+            // Add duplicate detection logic (kept separate as it's UI-specific)
             let urlCounts = new Map();
             let urlFirstOccurrence = new Map();
             
@@ -512,78 +515,33 @@ class LibraryBookData {
                 }
             });
             
-            // 1. Add ALL library chapters in book order (including duplicates with detection)
-            bookData.chapters.forEach((bookChapter, index) => {
-                let normalizedBookUrl = LibraryBookData.normalizeUrl(bookChapter.sourceUrl);
-                let isOnWebsite = normalizedWebsiteUrls.has(normalizedBookUrl);
-                
-                // Determine source type
-                let source;
-                if (!bookChapter.sourceUrl || bookChapter.sourceUrl.startsWith('library://')) {
-                    source = 'library-only'; // Generated content like Information pages
-                } else if (isOnWebsite) {
-                    source = 'both'; // Available on both website and in book
-                } else {
-                    source = 'library-only'; // Only in book (removed from website or historical)
-                }
-                
-                // Check if this is a duplicate (using normalized URLs)
+            // Add duplicate detection to merged chapters
+            let finalChapters = mergedChapters.map((chapter, mergedIndex) => {
                 let isDuplicate = false;
                 let duplicateInfo = null;
-                if (bookChapter.sourceUrl && !bookChapter.sourceUrl.startsWith('library://')) {
-                    let normalizedUrl = LibraryBookData.normalizeUrl(bookChapter.sourceUrl);
+                
+                if (chapter.isInBook && chapter.sourceUrl && !chapter.sourceUrl.startsWith('library://')) {
+                    let normalizedUrl = LibraryBookData.normalizeUrl(chapter.sourceUrl);
                     let totalCount = urlCounts.get(normalizedUrl) || 1;
-                    let isFirstOccurrence = urlFirstOccurrence.get(normalizedUrl) === index;
+                    let bookIndex = chapter.libraryChapterIndex;
+                    let isFirstOccurrence = urlFirstOccurrence.get(normalizedUrl) === bookIndex;
                     
                     if (totalCount > 1) {
                         isDuplicate = true;
                         duplicateInfo = {
                             totalCount: totalCount,
                             isFirstOccurrence: isFirstOccurrence,
-                            occurrenceNumber: [...bookData.chapters].slice(0, index + 1)
+                            occurrenceNumber: [...bookData.chapters].slice(0, bookIndex + 1)
                                 .filter(ch => LibraryBookData.normalizeUrl(ch.sourceUrl) === normalizedUrl).length
                         };
                     }
                 }
                 
-                finalChapters.push({
-                    sourceUrl: bookChapter.sourceUrl,
-                    title: bookChapter.title,
-                    isInBook: true,
-                    previousDownload: true,
-                    libraryChapterIndex: index,
-                    libraryBookId: bookId,
-                    source: source,
-                    // Duplicate detection properties
+                return {
+                    ...chapter,
                     isDuplicate: isDuplicate,
-                    duplicateInfo: duplicateInfo,
-                    // Add library-specific properties for ChapterViewer compatibility
-                    chapterIndex: index,
-                    rawDom: null, // Will be loaded on demand
-                    // Add properties needed for normal chapter UI functionality
-                    isValid: true,
-                    isIncludeable: source === 'library-only' // Library-only chapters start unchecked
-                });
-            });
-            
-            // 2. Add website-only chapters at the end (new chapters not in book)
-            websiteChapters.forEach(websiteChapter => {
-                // Skip if this URL already appears in the book (using normalized URLs)
-                let normalizedWebsiteUrl = LibraryBookData.normalizeUrl(websiteChapter.sourceUrl);
-                let alreadyInBook = bookData.chapters.some(bookCh => 
-                    LibraryBookData.normalizeUrl(bookCh.sourceUrl) === normalizedWebsiteUrl
-                );
-                if (!alreadyInBook) {
-                    finalChapters.push({
-                        ...websiteChapter,
-                        isInBook: false,
-                        previousDownload: false,
-                        libraryBookId: bookId,
-                        source: 'website',
-                        // New website chapters start checked for inclusion
-                        isIncludeable: websiteChapter.isIncludeable !== undefined ? websiteChapter.isIncludeable : true
-                    });
-                }
+                    duplicateInfo: duplicateInfo
+                };
             });
             
             return finalChapters;

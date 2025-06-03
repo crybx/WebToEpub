@@ -118,16 +118,20 @@ class ChapterUrlsUI {
                 chapter.row = row;
                 ChapterUrlsUI.appendColumnDataToRow(row, chapter);
                 ChapterUrlsUI.appendChapterStatusColumnToRow(row, chapter).then(async () => {
-                    // Set checkbox state after creation - library chapters start unchecked but are selectable
+                    // Set checkbox state after creation - preserve existing selections, set defaults for new chapters
                     let checkbox = row.querySelector('input[type="checkbox"]');
                     if (checkbox) {
-                        // In library mode, only new website chapters start checked
-                        // In normal mode, all chapters start checked (original behavior)
-                        let shouldBeChecked = chapter.source ? 
-                            (chapter.source === 'website') : // Library mode: only new chapters
-                            true; // Normal mode: all chapters checked
-                        checkbox.checked = shouldBeChecked;
-                        chapter.isIncludeable = shouldBeChecked;
+                        // Preserve existing user selections (don't override if user has already made a choice)
+                        if (chapter.isIncludeable === undefined) {
+                            // Use ChapterInclusionLogic for consistent inclusion logic
+                            let isLibraryMode = chapter.source !== undefined; // Library mode chapters have source property
+                            chapter.isIncludeable = ChapterInclusionLogic.shouldChapterBeIncluded(
+                                chapter.source || 'unknown', 
+                                isLibraryMode, 
+                                chapter.isIncludeable
+                            );
+                        }
+                        checkbox.checked = chapter.isIncludeable;
                         checkbox.disabled = false; // All chapters are selectable
                     }
 
@@ -161,16 +165,20 @@ class ChapterUrlsUI {
         row.rowIndex = index;
         chapter.row = row;
         
-        // Update checkbox state - library chapters start unchecked but are selectable
+        // Update checkbox state - preserve existing user selections, only set defaults for new chapters
         let checkbox = row.querySelector('input[type="checkbox"]');
         if (checkbox) {
-            // In library mode, only new website chapters start checked
-            // In normal mode, all chapters start checked (original behavior)
-            let shouldBeChecked = chapter.source ? 
-                (chapter.source === 'website') : // Library mode: only new chapters
-                true; // Normal mode: all chapters checked
-            checkbox.checked = shouldBeChecked;
-            chapter.isIncludeable = shouldBeChecked;
+            // Preserve existing user selections (don't override if user has already made a choice)
+            if (chapter.isIncludeable === undefined) {
+                // Use ChapterInclusionLogic for consistent inclusion logic
+                let isLibraryMode = chapter.source !== undefined; // Library mode chapters have source property
+                chapter.isIncludeable = ChapterInclusionLogic.shouldChapterBeIncluded(
+                    chapter.source || 'unknown', 
+                    isLibraryMode, 
+                    chapter.isIncludeable
+                );
+            }
+            checkbox.checked = chapter.isIncludeable;
             checkbox.disabled = false; // All chapters are selectable
         }
         
@@ -402,15 +410,54 @@ class ChapterUrlsUI {
     }
 
     /** @private */
-    static setAllUrlsSelectState(select) {
+    static async setAllUrlsSelectState(select) {
         // Set flag to prevent recursive updates
         ChapterUrlsUI._updatingSelectAll = true;
         
-        for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
+        // Collect library chapters for bulk caching
+        let libraryChaptersToCache = [];
+        let allRows = ChapterUrlsUI.getTableRowsWithChapters();
+        
+        for (let i = 0; i < allRows.length; i++) {
+            let row = allRows[i];
             ChapterUrlsUI.setRowCheckboxState(row, select);
             row.hidden = false;
+            
+            // If selecting library chapters, collect them for bulk caching
+            if (select && window.parser && window.parser.state && window.parser.state.webPages) {
+                let chapter = [...window.parser.state.webPages.values()][i];
+                if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                    libraryChaptersToCache.push({chapter, row});
+                }
+            }
         }
+        
         ChapterUrlsUI.setRangeOptionsToFirstAndLastChapters();
+        
+        // Bulk cache library chapters if selecting all
+        if (libraryChaptersToCache.length > 0) {
+            try {
+                await Promise.all(libraryChaptersToCache.map(async ({chapter, row}) => {
+                    try {
+                        // Check if already cached
+                        let cachedContent = await ChapterCache.get(chapter.sourceUrl);
+                        if (!cachedContent) {
+                            // Get library chapter content and cache it
+                            let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+                            if (content) {
+                                await ChapterCache.set(chapter.sourceUrl, content);
+                                // Update visual status
+                                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Failed to cache library chapter in select all:", error);
+                    }
+                }));
+            } catch (error) {
+                console.error("Error in select all bulk caching:", error);
+            }
+        }
         
         // Update select all checkbox state and clear flag
         ChapterUrlsUI._updatingSelectAll = false;
@@ -418,18 +465,56 @@ class ChapterUrlsUI {
     }
 
     /** Handle the select all checkbox click */
-    static handleSelectAllCheckbox() {
+    static async handleSelectAllCheckbox() {
         const selectAllCheckbox = document.getElementById("selectAllUrlsCheckbox");
         const newState = selectAllCheckbox.checked;
         
         // Set flag to prevent recursive updates
         ChapterUrlsUI._updatingSelectAll = true;
         
+        // Collect library chapters for bulk caching
+        let libraryChaptersToCache = [];
+        let allRows = ChapterUrlsUI.getTableRowsWithChapters();
+        
         // Only affect chapters in the current range
         let rc = new ChapterUrlsUI.RangeCalculator();
-        for (let row of ChapterUrlsUI.getTableRowsWithChapters()) {
+        for (let i = 0; i < allRows.length; i++) {
+            let row = allRows[i];
             if (rc.rowInRange(row)) {
                 ChapterUrlsUI.setRowCheckboxState(row, newState);
+                
+                // If selecting library chapters, collect them for bulk caching
+                if (newState && window.parser && window.parser.state && window.parser.state.webPages) {
+                    let chapter = [...window.parser.state.webPages.values()][i];
+                    if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                        libraryChaptersToCache.push({chapter, row});
+                    }
+                }
+            }
+        }
+        
+        // Bulk cache library chapters if selecting
+        if (libraryChaptersToCache.length > 0) {
+            try {
+                await Promise.all(libraryChaptersToCache.map(async ({chapter, row}) => {
+                    try {
+                        // Check if already cached
+                        let cachedContent = await ChapterCache.get(chapter.sourceUrl);
+                        if (!cachedContent) {
+                            // Get library chapter content and cache it
+                            let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+                            if (content) {
+                                await ChapterCache.set(chapter.sourceUrl, content);
+                                // Update visual status
+                                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Failed to cache library chapter in select all range:", error);
+                    }
+                }));
+            } catch (error) {
+                console.error("Error in select all range bulk caching:", error);
             }
         }
         
@@ -480,7 +565,14 @@ class ChapterUrlsUI {
     * @private
     */
     static appendCheckBoxToRow(row, chapter) {
-        chapter.isIncludeable = chapter.isIncludeable ?? true;
+        // Use ChapterInclusionLogic for default inclusion state
+        if (chapter.isIncludeable === undefined) {
+            let isLibraryMode = chapter.source !== undefined;
+            chapter.isIncludeable = ChapterInclusionLogic.shouldChapterBeIncluded(
+                chapter.source || 'unknown', 
+                isLibraryMode
+            );
+        }
         chapter.previousDownload = chapter.previousDownload ?? false;
 
         const col = document.createElement("div");
@@ -489,7 +581,7 @@ class ChapterUrlsUI {
         checkbox.type = "checkbox";
         checkbox.classList.add("chapterSelectCheckbox");
         checkbox.checked = chapter.isIncludeable;
-        checkbox.onclick = function(event) { 
+        checkbox.onclick = async function(event) { 
             chapter.isIncludeable = checkbox.checked;
             if (!event) return;
 
@@ -499,6 +591,25 @@ class ChapterUrlsUI {
                 ChapterUrlsUI.updateRange(ChapterUrlsUI.lastSelectedRow, row.rowIndex, checkbox.checked);
             } else {
                 ChapterUrlsUI.lastSelectedRow = row.rowIndex;
+            }
+            
+            // Pre-cache library chapter content when selected for inclusion
+            if (checkbox.checked && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                try {
+                    // Check if already cached to avoid redundant work
+                    let cachedContent = await ChapterCache.get(chapter.sourceUrl);
+                    if (!cachedContent) {
+                        // Get library chapter content and cache it
+                        let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+                        if (content) {
+                            await ChapterCache.set(chapter.sourceUrl, content);
+                            // Update visual status to show it's cached
+                            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to cache library chapter:", error);
+                }
             }
             
             // Update the select all checkbox state (only if not in bulk update mode)
@@ -965,17 +1076,53 @@ class ChapterUrlsUI {
     }
 
     /** @private */
-    static updateRange(startRowIndex, endRowIndex, state) {
+    static async updateRange(startRowIndex, endRowIndex, state) {
         let direction = startRowIndex < endRowIndex ? 1 : -1;
         let allRows = ChapterUrlsUI.getTableRowsWithChapters();
         
         // Set flag to prevent individual checkbox updates during bulk update
         ChapterUrlsUI._updatingSelectAll = true;
         
+        // Collect library chapters that need caching
+        let libraryChaptersToCache = [];
+        
         for (let rowIndex = startRowIndex; rowIndex !== endRowIndex; rowIndex += direction) {
             if (rowIndex >= 0 && rowIndex < allRows.length) {
                 let row = allRows[rowIndex];
                 ChapterUrlsUI.setRowCheckboxState(row, state);
+                
+                // If selecting library chapters, collect them for bulk caching
+                if (state && window.parser && window.parser.state && window.parser.state.webPages) {
+                    let chapter = [...window.parser.state.webPages.values()][rowIndex];
+                    if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                        libraryChaptersToCache.push({chapter, row});
+                    }
+                }
+            }
+        }
+        
+        // Bulk cache library chapters
+        if (libraryChaptersToCache.length > 0) {
+            try {
+                await Promise.all(libraryChaptersToCache.map(async ({chapter, row}) => {
+                    try {
+                        // Check if already cached
+                        let cachedContent = await ChapterCache.get(chapter.sourceUrl);
+                        if (!cachedContent) {
+                            // Get library chapter content and cache it
+                            let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+                            if (content) {
+                                await ChapterCache.set(chapter.sourceUrl, content);
+                                // Update visual status
+                                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Failed to cache library chapter in bulk:", error);
+                    }
+                }));
+            } catch (error) {
+                console.error("Error in bulk caching:", error);
             }
         }
         

@@ -244,8 +244,8 @@
 		"description": "The 'URL to get chapter frorm' column in the table of chapters."
 	},
 	"__MSG_label_Add_Information_Page_To_Epub__": {
-		"message": "Add Information page to Epub",
-		"description": "Label for checkbox to add 'Information' page at beginning of Epub"
+		"message": "Add Information page to EPUB",
+		"description": "Label for checkbox to add 'Information' page at beginning of EPUB"
 	},
 	"__MSG_label_Advanced_Options_Visible_By_Default__": {
 		"message": "Advanced Options Visible by Default",
@@ -380,7 +380,7 @@
 		"description": "Label for drop down for maximum number of web pages to request at same time"
 	},
 	"__MSG_label_Metadata_description__": {
-		"message": "Epub description",
+		"message": "EPUB Description",
 		"description": "Preview description from the epub in Calibre"
 	},
 	"__MSG_label_Custom_Filename__": {

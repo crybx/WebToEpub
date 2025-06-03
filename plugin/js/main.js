@@ -154,6 +154,23 @@ const main = (function() {
         document.getElementById("LibAddToLibrary").disabled = disabled;
     }
 
+    function syncCheckboxStatesToParser() {
+        if (!parser || !parser.state || !parser.state.webPages) {
+            return;
+        }
+
+        // Get all checkbox elements from the UI
+        let checkboxes = document.querySelectorAll(".chapterSelectCheckbox");
+        let chapters = [...parser.state.webPages.values()];
+        
+        // Sync checkbox states to corresponding chapters in parser state
+        checkboxes.forEach((checkbox, index) => {
+            if (index < chapters.length) {
+                chapters[index].isIncludeable = checkbox.checked;
+            }
+        });
+    }
+
     async function fetchContentAndPackEpub() {
         let libclick = this;
         if (document.getElementById("noAdditionalMetadataCheckbox")?.checked) {
@@ -174,6 +191,10 @@ const main = (function() {
         ErrorLog.clearHistory();
         setProcessingButtonsState(true);
         parser.onStartCollecting();
+        
+        // Sync current checkbox states from UI back to parser state before EPUB generation
+        syncCheckboxStatesToParser();
+        
         await parser.fetchContent().then(async function() {
             return await packEpub(metaInfo);
         }).then(function(content) {
@@ -220,6 +241,9 @@ const main = (function() {
         ErrorLog.clearHistory();
         setProcessingButtonsState(true);
         parser.onStartCollecting();
+
+        // Sync current checkbox states from UI back to parser state before download
+        syncCheckboxStatesToParser();
 
         await ChapterCache.downloadChaptersToCache().then(function() {
             setProcessingButtonsState(false);
