@@ -816,7 +816,7 @@ class LibraryUI {
                         LibraryUI.LibDownload({dataset: {libepubid}});
                         break;
                     case "open-url":
-                        LibraryUI.LibOpenStoryUrl({dataset: {libepubid}});
+                        LibraryUI.LibOpenStoryUrl(libepubid);
                         break;
                     case "delete":
                         LibraryUI.LibDeleteEpub({dataset: {libepubid}});
