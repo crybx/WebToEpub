@@ -204,9 +204,9 @@
           </div>
         </section>
         <section class="HiddenButtonSection">
-            <button id="libraryButton">__MSG_button_Lib_Library__</button>
             <button id="advancedOptionsButton">__MSG_button_Advanced_Options__</button>
             <button id="cacheOptionsButton">__MSG_button_Cache_Options__</button>
+            <button id="libraryButton">__MSG_button_Lib_Library__</button>
         </section>
 
         <!-- Hidden Section - Library -->
@@ -509,9 +509,9 @@
                     <td><button id="viewReadingListButton">__MSG_button_View_Reading_List__</button></td>
                 </tr>
                 <tr id="developerStuffRow">
-                    <td>__MSG_label_Developer_Stuff__</td>
+                    <td><input id="diagnosticsCheckBoxInput" type="checkbox" name="diagnosticsCheckBoxInput" value="false"></td>
                     <td>
-                        <input id="diagnosticsCheckBoxInput" type="checkbox" name="diagnosticsCheckBoxInput" value="false">
+                        <span class="i18n">__MSG_label_Developer_Stuff__</span>
                         <button id="reloadButton" hidden="true">__MSG_button_Reload__</button>
                     </td>
                 </tr>
@@ -554,19 +554,19 @@
               <div id="rangeStartChapterRow" class="range-select-row">
                 <div class="range-label i18n">__MSG_label_Range_Start_Chapter__</div>
                 <div class="range-control"><select id="selectRangeStartChapter"></select></div>
-                <div class="range-checkbox-group">
-                  <input id="showChapterUrlsCheckbox" type="checkbox" name="showChapterUrlsCheckbox" value="false">
-                  <span class="range-checkbox-label i18n">__MSG_label_Show_Chapter_Urls__</span>
-                </div>
               </div>
               <div id="rangeEndChapterRow" class="range-select-row">
                 <div class="range-label i18n">__MSG_label_Range_End_Chapter__</div>
                 <div class="range-control"><select id="selectRangeEndChapter"></select></div>
-                <div class="range-filters">
-                  <div class="tooltip-wrapper clickable-icon" id="viewFiltersButton">
-                    <span id="viewFiltersIcon"></span>
-                    <span class="tooltipText i18n">__MSG_button_View_Filters__</span>
-                  </div>
+              </div>
+              <div class="range-filters">
+                <button id="viewFiltersButton">
+                  <span id="viewFiltersIcon"></span>
+                  <span class="i18n">__MSG_button_View_Filters__</span>
+                </button>
+                <div class="range-checkbox-group">
+                  <input id="showChapterUrlsCheckbox" type="checkbox" name="showChapterUrlsCheckbox" value="false">
+                  <label for="showChapterUrlsCheckbox" class="range-checkbox-label i18n">__MSG_label_Show_Chapter_Urls__</label>
                 </div>
               </div>
               <div id="rangeChapterCountRow" class="range-select-row">

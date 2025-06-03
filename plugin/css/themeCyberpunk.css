@@ -1,8 +1,65 @@
 /* Cyberpunk Theme for WebToEpub */
 
+/* Cyberpunk theme - overrides base colors for neon aesthetic */
+:root {
+    /* Cyberpunk base color palette */
+
+    /* Primary colors - purple/magenta */
+    --color-primary: #8b00ff;
+    --color-primary-hover: #a000ff;
+    --color-primary-light: #b565ff;
+    --color-primary-dark: #6a00cc;
+
+    /* Secondary colors - cyan */
+    --color-secondary: #00ffff;
+    --color-secondary-hover: #20ffff;
+    --color-secondary-light: #33baff;
+
+    /* Neutral colors - dark blues and grays */
+    --color-neutral-50: #1a1a2e;
+    --color-neutral-100: #16213e;
+    --color-neutral-200: #6a00cc;
+    --color-neutral-300: #8b00ff;
+    --color-neutral-400: #b565ff;
+    --color-neutral-500: #777;
+    --color-neutral-600: #00ffff;
+    --color-neutral-700: #bbb;
+    --color-neutral-800: #00ffff;
+    --color-neutral-900: #fff;
+
+    /* Surface colors - dark with transparency */
+    --color-surface-primary: transparent;
+    --color-surface-secondary: #1a1a2e;
+    --color-surface-tertiary: rgba(26, 26, 46, 0.8);
+
+    /* Status colors - neon variants */
+    --color-success: #00ff41;
+    --color-success-light: #61f161;
+    --color-warning: #ff0040;
+    --color-warning-light: #ff0040;
+    --color-error: #ff0040;
+    --color-error-light: #be1922;
+    --color-info: #00ffff;
+    --color-info-light: #00ffff;
+
+    /* Override some semantic variables that need special cyberpunk treatment */
+    --button-hover-text: var(--color-secondary);
+    --button-hover-bg: linear-gradient(45deg, #8b00ffaa, #00ffff77);
+    --menu-bg: #1a1a2e;
+    --sidebar-bg: rgba(26, 26, 46, 0.95);
+
+    /* Cyberpunk Library Banner */
+    --library-banner-bg: linear-gradient(135deg, rgba(139, 0, 255, 0.2), rgba(0, 255, 255, 0.1));
+    --library-banner-border: #8b00ff;
+    --library-banner-text: #00ffff;
+    --library-banner-button-bg: linear-gradient(45deg, #8b00ffaa, #00ffff77);
+    --library-banner-button-text: white;
+    --library-banner-button-hover: linear-gradient(45deg, #8b00ffcc, #00ffff88);
+    --library-banner-button-hover-text: var(--color-secondary);
+}
+
 body {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a2a 100%);
-    background-attachment: fixed;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a2a 100%) fixed;
     background-size: 100% 100vh;
     min-height: 100vh;
     color: #00ffff;
@@ -32,8 +89,8 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%) !important;
-    color: #8b00ff !important;
+    background: var(--button-hover-bg) !important;
+    color: var(--button-hover-text) !important;
     border-color: #00ffff !important;
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     text-shadow: 0 0 5px rgba(139, 0, 255, 0.8);
@@ -64,52 +121,7 @@ progress::-moz-progress-bar {
     background: linear-gradient(90deg, #8b00ff 0%, #00ffff 100%);
 }
 
-/* Cyberpunk theme - overrides base colors for neon aesthetic */
-:root {
-    /* Cyberpunk base color palette */
-    
-    /* Primary colors - purple/magenta */
-    --color-primary: #8b00ff;
-    --color-primary-hover: #a000ff;
-    --color-primary-light: #b565ff;
-    --color-primary-dark: #6a00cc;
-    
-    /* Secondary colors - cyan */
-    --color-secondary: #00ffff;
-    --color-secondary-hover: #20ffff;
-    --color-secondary-light: #33baff;
-    
-    /* Neutral colors - dark blues and grays */
-    --color-neutral-50: #1a1a2e;
-    --color-neutral-100: #16213e;
-    --color-neutral-200: #6a00cc;
-    --color-neutral-300: #8b00ff;
-    --color-neutral-400: #b565ff;
-    --color-neutral-500: #777;
-    --color-neutral-600: #00ffff;
-    --color-neutral-700: #bbb;
-    --color-neutral-800: #00ffff;
-    --color-neutral-900: #fff;
-    
-    /* Surface colors - dark with transparency */
-    --color-surface-primary: transparent;
-    --color-surface-secondary: #1a1a2e;
-    --color-surface-tertiary: rgba(26, 26, 46, 0.8);
-    
-    /* Status colors - neon variants */
-    --color-success: #00ff41;
-    --color-success-light: #61f161;
-    --color-warning: #ff0040;
-    --color-warning-light: #ff0040;
-    --color-error: #ff0040;
-    --color-error-light: #be1922;
-    --color-info: #00ffff;
-    --color-info-light: #00ffff;
-    
-    /* Override some semantic variables that need special cyberpunk treatment */
-    --sidebar-bg: rgba(26, 26, 46, 0.95);
-    --menu-bg: #1a1a2e;
-}
+
 
 /* Chapter list styling */
 .chapter-list {
@@ -372,16 +384,6 @@ input[type=checkbox].greenBox {
     background: rgba(26, 26, 46, 0.3);
 }
 
-/* Library Banner Cyberpunk Mode */
-:root {
-    --library-banner-bg: linear-gradient(135deg, rgba(139, 0, 255, 0.2), rgba(0, 255, 255, 0.1));
-    --library-banner-border: #8b00ff;
-    --library-banner-text: #00ffff;
-    --library-banner-button-bg: linear-gradient(45deg, #8b00ff, #00ffff);
-    --library-banner-button-text: #000000;
-    --library-banner-button-hover: linear-gradient(45deg, #a000ff, #20ffff);
-}
-
 .library-book-banner {
     box-shadow: 0 0 10px rgba(139, 0, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
     border-image: linear-gradient(45deg, #8b00ff, #00ffff) 1;
@@ -394,4 +396,5 @@ input[type=checkbox].greenBox {
 
 .library-banner-button:hover {
     box-shadow: 0 0 8px rgba(139, 0, 255, 0.8), 0 0 15px rgba(0, 255, 255, 0.4);
+    color: var(--library-banner-button-hover-text) !important;
 }

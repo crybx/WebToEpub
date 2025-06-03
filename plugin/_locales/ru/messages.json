@@ -176,7 +176,7 @@
 		"description": "Label in front input for file to save EPUB as"
 	},
 	"__MSG_label_Developer_Stuff__": {
-		"message": "Инструменты разработчика:",
+		"message": "Инструменты разработчика",
 		"description": "Label for checkbox to show/hide buttons for developer testing (in Advanced settings)."
 	},
 	"__MSG_label_Fetch_Highest_Resolution_Images__": {

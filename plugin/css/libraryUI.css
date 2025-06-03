@@ -184,6 +184,10 @@
     flex-wrap: wrap;
 }
 
+.lib-list-controls button {
+    margin-bottom: 2px;
+}
+
 /* Title row */
 .lib-title-row {
     display: flex;

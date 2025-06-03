@@ -64,6 +64,7 @@
     --button-border: var(--color-neutral-300);
     --button-hover-bg: var(--color-neutral-100);
     --button-hover-gradient: linear-gradient(to bottom, var(--color-neutral-100) 5%, var(--color-surface-primary) 100%);
+    --button-hover-text: var(--color-neutral-600);
     
     /* Sidebar */
     --sidebar-bg: var(--color-neutral-50);
@@ -118,6 +119,7 @@
     --library-banner-button-text: white;
     --library-banner-button-border: var(--color-primary);
     --library-banner-button-hover: var(--color-primary-hover);
+    --library-banner-button-hover-text: var(--color-primary-dark);
     
     /* Common UI variables */
     --header-bg: var(--color-neutral-50);

@@ -345,12 +345,19 @@ class ChapterViewer {
             return;
         }
 
-        // Function to update scroll percentage
+        // Function to update scroll percentage and visibility
         function updateScrollPercentage() {
             let scrollTop = contentDiv.scrollTop;
             let scrollHeight = contentDiv.scrollHeight - contentDiv.clientHeight;
             
-            let percentage = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
+            // Only show percentage if content is actually scrollable
+            if (scrollHeight <= 0) {
+                scrollPercentageElement.style.display = "none";
+                return;
+            }
+            
+            scrollPercentageElement.style.display = "block";
+            let percentage = Math.round((scrollTop / scrollHeight) * 100);
             percentage = Math.max(0, Math.min(100, percentage)); // Clamp between 0-100
             
             scrollPercentageElement.textContent = percentage + "%";
@@ -361,6 +368,9 @@ class ChapterViewer {
 
         // Add scroll event listener
         contentDiv.addEventListener("scroll", updateScrollPercentage);
+        
+        // Also listen for resize events in case content size changes
+        window.addEventListener("resize", updateScrollPercentage);
     }
 
     /**

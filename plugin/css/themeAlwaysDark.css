@@ -42,4 +42,7 @@
     --color-error-light: #f27070;
     --color-info: #87ceeb;
     --color-info-light: #d4a574;
+
+    /* Other overrides */
+    --library-banner-text: --color-primary-light;
 }

@@ -29,10 +29,6 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     box-sizing: border-box;
 }
 
-.expandedButton {
-    padding: 5px 10px;
-}
-
 .warning {
     color: var(--color-error);
     font-size: 2em;
@@ -194,7 +190,7 @@ textarea.allSpace {
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: 4px;
+    gap: 4.5px;
     order: 1;
 }
 
@@ -242,7 +238,7 @@ textarea.allSpace {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: flex-start;
+    align-items: center;
     gap: 4px;
     max-height: 170px;
     min-width: 100px;
@@ -294,19 +290,28 @@ button {
     color: var(--button-text);
     font-family: Arial, sans-serif;
     font-size: 12px;
-    padding: 5px 10px;
+    padding: 6px 10px;
     margin-right: 2px;
     text-decoration: none;
-    max-height: 30px;
+    /* Flexible height and word wrap for buttons to make sure various translations can fit longer text */
+    height: auto;
+    max-height: none;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 button:hover {
     background: var(--button-hover-bg) var(--button-hover-gradient);
+    color: var(--button-hover-text);
 }
 
 button:active {
     position: relative;
     top: 1px;
+}
+
+.progressSection {
+    min-width: 300px;
 }
 
 .progress-section-wrap {
@@ -365,6 +370,10 @@ button:active {
     border-radius: 4px;
     padding-top: 2px;
     gap: 3px;
+}
+
+.HiddenButtonSection button {
+    min-width: 120px;
 }
 
 .sidebar {
@@ -491,13 +500,14 @@ button:active {
         flex-direction: column;
     }
     
-    #inputSection .cover-image-container {
-        order: 2;
-        max-height: 120px;
-        align-self: center;
-        margin-bottom: 10px;
+    #inputSection .form-container {
+        margin-bottom: 6px;
     }
     
+    #inputSection .cover-image-container {
+        align-self: center;
+    }
+
     #inputSection .form-field {
         flex-direction: column;
         align-items: stretch;
@@ -545,6 +555,7 @@ button:active {
     .HiddenButtonSection {
         flex-direction: column;
         gap: 8px;
+        min-width: 200px;
     }
     
     .HiddenButtonSection button {
