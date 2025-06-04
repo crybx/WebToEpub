@@ -7,15 +7,15 @@
     /* Define each color once - themes override these */
     
     /* Primary colors (main brand/action colors) */
-    --color-primary: #4caf50;
-    --color-primary-hover: #45a049;
-    --color-primary-light: #66bb6a;
-    --color-primary-dark: #2e7d32;
+    --color-primary: #285959;
+    --color-primary-hover: #269898;
+    --color-primary-light: #28fefe;
+    --color-primary-dark: #285959;
     
     /* Secondary colors (complementary actions) */
-    --color-secondary: #007bff;
-    --color-secondary-hover: #0056b3;
-    --color-secondary-light: #1E90FF;
+    --color-secondary: #28fefe;
+    --color-secondary-hover: #62fefe80;
+    --color-secondary-light: #28fefe;
     
     /* Neutral colors (backgrounds, borders, text) */
     --color-neutral-50: #f8f9fa;
@@ -32,7 +32,7 @@
     /* Surface colors (cards, modals, containers) */
     --color-surface-primary: white;
     --color-surface-secondary: #f9f9f9;
-    --color-surface-tertiary: #e8f5e8;
+    --color-surface-tertiary: #eeffff;
     
     /* Status colors */
     --color-success: #228B22;
@@ -40,6 +40,7 @@
     --color-warning: #B8860B;
     --color-warning-light: #ffff99;
     --color-error: #dc3545;
+    --color-error-bg: rgba(220, 53, 69, 0.1);
     --color-error-light: #f27070;
     --color-info: #17a2b8;
     --color-info-light: #d4a574;
@@ -56,6 +57,9 @@
     --input-bg: var(--color-surface-primary);
     --input-text: var(--color-neutral-800);
     --input-border: var(--color-neutral-300);
+    --input-disabled-bg: var(--color-neutral-100);
+    --input-disabled-text: var(--color-neutral-600);
+    --input-disabled-border: var(--color-neutral-300);
     
     /* Buttons */
     --button-bg: var(--color-surface-primary);
@@ -73,35 +77,39 @@
     --sidebar-hover-bg: rgba(0, 123, 255, 0.1);
     
     /* Icons */
-    --icon-primary: var(--color-secondary-light);
-    --icon-secondary: var(--color-info-light);
+    --icon-primary: var(--color-primary);
+    --icon-secondary: var(--color-primary-hover);
     --icon-accent: var(--color-success);
-    --icon-hover: var(--color-secondary-light);
+    --icon-hover: var(--color-secondary-hover);
     
     /* Clickable elements */
-    --clickable-hover-bg: rgba(0, 123, 255, 0.1);
-    --clickable-hover-icon: var(--color-secondary-light);
+    --clickable-hover-bg: var(--color-primary-hover);
+    --clickable-hover-icon: var(--color-neutral-50);
+
+    /* Tooltips */
+    --tooltip-text: var(--color-neutral-50);
+    --tooltip-bg: var(--color-neutral-700);
     
     /* Checkboxes */
-    --checkbox-accent: auto;
+    --checkbox-accent: var(--color-primary);
     --checkbox-error: var(--color-error);
-    --checkbox-success: var(--color-success);
+    --checkbox-success: var(--color-primary);
     --checkbox-exclude: var(--color-error);
     
-    /* More actions menus */
+    /* Menu colors */
     --menu-bg: var(--color-surface-primary);
     --menu-border: var(--color-neutral-400);
     --menu-item-border: var(--color-neutral-200);
     --menu-item-text: var(--color-neutral-800);
-    --menu-item-hover-bg: rgba(0, 123, 255, 0.1);
-    --menu-item-hover-text: var(--color-secondary-light);
-    --menu-item-hover-icon: var(--color-secondary-light);
+    --menu-item-hover-bg: var(--color-primary-hover);
+    --menu-item-hover-text: var( --color-neutral-50);
+    --menu-item-hover-icon: var( --color-neutral-50);
     
     /* Library cards */
     --lib-card-bg: var(--color-surface-secondary);
     --lib-card-border: var(--color-neutral-300);
     --lib-card-title: var(--color-neutral-800);
-    --lib-new-chapter-badge: var(--color-success);
+    --lib-new-chapter-badge: var(--color-primary);
     --lib-warning-text: var(--color-warning);
     
     /* Modal colors */

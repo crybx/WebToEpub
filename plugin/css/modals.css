@@ -345,7 +345,7 @@ body.modal-open {
     color: var(--color-error);
     border: 2px solid var(--color-error);
     border-radius: 8px;
-    background-color: var(--color-error-light);
+    background-color: var(--color-error-bg);
     margin: 20px;
 }
 

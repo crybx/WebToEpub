@@ -156,7 +156,7 @@ input[type=checkbox] {
     accent-color: var(--color-primary) !important;
 }
 
-input[type=checkbox].greenBox {
+input[type=checkbox].successBox {
     accent-color: var(--color-success) !important;
 }
 

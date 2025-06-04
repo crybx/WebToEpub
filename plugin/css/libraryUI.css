@@ -416,32 +416,6 @@
     padding: 0;
 }
 
-/* Library Chapter Status Indicators */
-.chapter-in-library {
-    background-color: rgba(76, 175, 80, 0.1);
-    border-left: 1px solid var(--color-success);
-}
-
-.chapter-in-library .chapter-title {
-    font-weight: 500;
-}
-
-.chapter-new-on-website {
-    background-color: rgba(255, 152, 0, 0.1);
-    border-left: 1px solid var(--color-warning);
-}
-
-.library-chapter-view-icon {
-    color: var(--lib-new-chapter-badge);
-    cursor: pointer;
-    margin-right: 4px;
-    font-size: 14px;
-}
-
-.library-chapter-view-icon:hover {
-    color: var(--color-primary-dark);
-}
-
 .lib-compact-table {
     /* Same as .no-border-spacing */
     border-spacing: 0;

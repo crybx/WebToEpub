@@ -46,5 +46,7 @@
 
         /* Other overrides */
         --library-banner-text: --color-primary-light;
+        --tooltip-text: var(--color-neutral-800);
+        --tooltip-bg: var(--color-neutral-200);
     }
 }

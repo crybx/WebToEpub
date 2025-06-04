@@ -343,6 +343,14 @@ input#selectAllUrlsCheckbox {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
+/* Disabled input styling */
+.chapter-list input[type=text]:disabled,
+.chapter-list input[type=url]:disabled {
+    background-color: var(--input-disabled-bg, #f5f5f5);
+    color: var(--input-disabled-text, #666);
+    border-color: var(--input-disabled-border, #ddd);
+}
+
 .chapter-list input[type=checkbox] {
     margin: 0;
     cursor: pointer;
@@ -353,7 +361,7 @@ input#selectAllUrlsCheckbox {
     accent-color: var(--color-error);
 }
 
-.greenBox {
+.successBox {
     accent-color: green;
 }
 
@@ -385,7 +393,7 @@ svg {
 }
 
 #chapterSelectInfo svg {
-    color: var(--icon-color, #808080);
+    color: var(--icon-primary, #808080);
 }
 
 /* Clickable Icons */
@@ -397,23 +405,7 @@ svg {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-}
 
-.clickable-icon:hover {
-    background-color: rgba(0, 123, 255, 0.1);
-}
-
-/* Only highlight SVG when directly hovering the clickable icon itself, not child elements */
-.clickable-icon:hover > svg,
-.clickable-icon:hover > span > svg {
-    fill: dodgerblue;
-    filter: brightness(1.2);
-}
-
-.clickable-icon:active > svg,
-.clickable-icon:active > span > svg {
-    fill: dodgerblue;
-    filter: brightness(0.8);
 }
 
 /* Error state styling */
@@ -430,7 +422,7 @@ svg {
 .error-state .more-actions-menu .menu-item:hover,
 .error-state .header-more-actions-menu .menu-item:hover,
 .error-state .lib-more-actions-menu .menu-item:hover {
-    background-color: rgba(220, 53, 69, 0.1);
+    background-color: var(--color-error-bg);
 }
 
 .error-state .more-actions-menu .menu-item:hover span,
@@ -439,23 +431,31 @@ svg {
     color: var(--color-error);
 }
 
-/* Library Chapter Highlighting */
+/* Chapter Highlighting */
 .chapter-in-library {
-    background-color: rgba(40, 167, 69, 0.15);
+    background-color: var(--color-surface-tertiary);
+    border-left: 2px solid var(--color-primary);
 }
 
 .chapter-in-library:hover {
-    background-color: rgba(40, 167, 69, 0.25);
+    background-color: var(--color-surface-tertiary);
 }
 
-.chapter-new-on-website {
-    background-color: rgba(255, 193, 7, 0.15);
+.chapter-row.error-state {
+    background-color: var(--color-error-bg);
+    border-left: 2px solid var(--color-error);
 }
 
-.chapter-new-on-website:hover {
-    background-color: rgba(255, 193, 7, 0.25);
+.chapter-row.error-state:hover {
+    background-color: var(--color-error-bg);
 }
 
+.library-chapter-view-icon {
+    color: var(--icon-primary);
+    cursor: pointer;
+    margin-right: 4px;
+    font-size: 14px;
+}
 
 /* Tooltip Styles */
 .tooltip-wrapper {
@@ -467,8 +467,8 @@ svg {
 
 .tooltip-wrapper .tooltipText {
     visibility: hidden;
-    background-color: var(--color-neutral-700);
-    color: white;
+    background-color: var(--tooltip-bg);
+    color: var(--tooltip-text);
     text-align: center;
     padding: 5px;
     border-radius: 4px;

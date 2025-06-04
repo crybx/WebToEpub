@@ -55,6 +55,7 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     margin-bottom: 20px;
     border-bottom: 1px var(--border-color, #CCC) solid;
     padding: 0;
+    width: 100%;
 }
 
 /* Advanced Options Header */
@@ -120,12 +121,14 @@ progress::-webkit-progress-bar {
 }
 
 progress::-webkit-progress-value {
+    background-color: var(--color-primary-hover);
     border: 0;
     height: 31px;
     border-radius: 4px;
 }
 
 progress::-moz-progress-bar {
+    background-color: var(--color-primary-hover);
     border: 0;
     height: 31px;
     border-radius: 4px;
@@ -605,28 +608,31 @@ input, select, progress, textarea {
 }
 
 /* Default icon colors */
-.bi-eye-fill,
-.downloading-icon {
-    color: var(--icon-primary);
-}
-
 .sleeping-icon {
     color: var(--icon-secondary);
 }
 
 /* Clickable icon styles */
+.clickable-icon > svg,
+.clickable-icon > span > svg {
+    fill: var(--icon-primary);
+    color: var(--icon-primary);
+}
+
 .clickable-icon:hover {
     background-color: var(--clickable-hover-bg);
 }
 
 .clickable-icon:hover > svg,
-.clickable-icon:hover > span > svg {
+.clickable-icon:hover > span > svg  {
     fill: var(--clickable-hover-icon);
+    color: var(--clickable-hover-icon);
 }
 
 .clickable-icon:active > svg,
 .clickable-icon:active > span > svg {
     fill: var(--clickable-hover-icon);
+    color: var(--clickable-hover-icon);
 }
 
 /* Checkbox styles */
@@ -638,7 +644,7 @@ input[type=checkbox] {
     accent-color: var(--checkbox-error);
 }
 
-input[type=checkbox].greenBox {
+input[type=checkbox].successBox {
     accent-color: var(--checkbox-success);
 }
 
@@ -655,10 +661,6 @@ input[type=checkbox].greenBox {
     color: var(--lib-warning-text);
 }
 
-/* Library chapter icons */
-.library-chapter-view-icon {
-    fill: var(--library-chapter-icon) !important;
-}
 
 /* Shared more actions dropdown menu styles */
 .more-actions-menu,
@@ -688,6 +690,7 @@ input[type=checkbox].greenBox {
     width: 14px;
     height: 14px;
     margin-right: 8px;
+    fill: var(--menu-item-text);
 }
 
 .more-actions-menu .menu-item span,

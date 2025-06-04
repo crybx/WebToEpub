@@ -188,10 +188,23 @@ class ChapterUrlsUI {
             titleInput.value = chapter.title;
         }
         
-        // Update source URL display
+        // Update source URL display - use input field like normal mode but disabled
         let urlColumn = row.querySelector('.chapter-url-column');
         if (urlColumn) {
-            urlColumn.textContent = chapter.sourceUrl || '';
+            let urlInput = urlColumn.querySelector('input[type="url"]');
+            if (urlInput) {
+                // Update existing input
+                urlInput.value = chapter.sourceUrl || '';
+                urlInput.disabled = true; // Disable editing in library mode
+            } else {
+                // Create input if it doesn't exist (should match normal mode structure)
+                urlColumn.textContent = ''; // Clear any existing text content
+                let input = document.createElement("input");
+                input.type = "url";
+                input.value = chapter.sourceUrl || '';
+                input.disabled = true; // Disable editing in library mode
+                urlColumn.appendChild(input);
+            }
         }
         
         // Update status column with library indicators
@@ -635,7 +648,9 @@ class ChapterUrlsUI {
         if (!titleInput || !urlCell) return;
         
         let title = titleInput.value;
-        let sourceUrl = urlCell.textContent.trim();
+        // Handle both input field (normal/library mode) and text content (legacy)
+        let urlInput = urlCell.querySelector('input[type="url"]');
+        let sourceUrl = urlInput ? urlInput.value.trim() : urlCell.textContent.trim();
         
         // Check if chapter is cached
         try {
@@ -914,13 +929,13 @@ class ChapterUrlsUI {
         wrapper.appendChild(tooltip);
         column.appendChild(wrapper);
         
-        // Handle greenBox class for checkbox in row
+        // Handle successBox class for checkbox in row
         let checkbox = row.querySelector(".chapterSelectCheckbox");
         if (checkbox) {
             if (state === ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED) {
-                checkbox.classList.add("greenBox");
+                checkbox.classList.add("successBox");
             } else {
-                checkbox.classList.remove("greenBox");
+                checkbox.classList.remove("successBox");
             }
         }
         
