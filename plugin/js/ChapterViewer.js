@@ -12,43 +12,33 @@ class ChapterViewer {
             let chapterContent = null;
             let contentSource = "unknown";
             
-            console.log(`📖 ChapterViewer: Opening chapter "${title}" from URL: ${sourceUrl}`);
             
             // Check if this is a library chapter or a chapter from a library book
             if (sourceUrl.startsWith("library://")) {
-                console.log("🏛️ Loading chapter content from EPUB library (library:// URL)");
                 chapterContent = await ChapterViewer.getLibraryChapterContent(sourceUrl);
                 contentSource = "EPUB Library";
             } else {
                 // Try to get from cache for regular web chapters
-                console.log("🔍 Checking cache for chapter content...");
                 chapterContent = await ChapterCache.get(sourceUrl);
                 
                 if (chapterContent) {
-                    console.log("💾 ✅ Chapter content found in CACHE");
                     contentSource = "Cache";
                 } else {
-                    console.log("💾 ❌ Chapter not found in cache");
                     
                     // If not in cache, check if this might be a library chapter with original URL
                     if (window.parser && window.parser.constructor.name === "LibraryParser") {
-                        console.log("🏛️ Parser is LibraryParser, attempting to load from EPUB library...");
                         chapterContent = await ChapterViewer.getLibraryChapterByOriginalUrl(sourceUrl);
                         if (chapterContent) {
-                            console.log("🏛️ ✅ Chapter content found in EPUB library");
                             contentSource = "EPUB Library";
                         } else {
-                            console.log("🏛️ ❌ Chapter not found in EPUB library");
                         }
                     }
                 }
                 
                 // If still no content, check if there's an error message
                 if (!chapterContent) {
-                    console.log("❗ No content found, checking for error messages...");
                     let errorMessage = await ChapterCache.getChapterError(sourceUrl);
                     if (errorMessage) {
-                        console.log("❌ Chapter has error message:", errorMessage);
                         // Create error content for display
                         let errorElement = document.createElement("div");
                         errorElement.className = "chapter-error";
@@ -60,8 +50,6 @@ class ChapterViewer {
             }
             
             if (chapterContent) {
-                console.log(`✅ CHAPTER LOADED SUCCESSFULLY from: ${contentSource}`);
-                console.log(`📊 Content source summary: "${title}" loaded from ${contentSource}`);
                 
                 // Show the viewer
                 let viewer = document.getElementById("chapterViewer");
@@ -289,12 +277,10 @@ class ChapterViewer {
             let bookId = urlParts[0];
             let chapterIndex = parseInt(urlParts[1]);
             
-            console.log(`🏛️ Extracting chapter ${chapterIndex} from EPUB library book ${bookId}`);
             
             // Get chapter content from Library
             let content = await LibraryBookData.getChapterContent(bookId, chapterIndex);
             
-            console.log(`🏛️ Successfully extracted chapter from EPUB library`);
             return content;
         } catch (error) {
             console.error("❌ Error getting library chapter content:", error);
@@ -309,7 +295,6 @@ class ChapterViewer {
      */
     static async getLibraryChapterByOriginalUrl(originalUrl) {
         try {
-            console.log(`🔍 Searching for chapter with original URL: ${originalUrl}`);
             
             // Get the current parser's chapter list
             let chapters = Array.from(window.parser.getPagesToFetch().values());
@@ -317,16 +302,13 @@ class ChapterViewer {
             // Find the chapter with matching sourceUrl
             let chapter = chapters.find(ch => ch.sourceUrl === originalUrl);
             if (!chapter) {
-                console.log(`❌ Chapter with URL ${originalUrl} not found in library book`);
                 throw new Error("Chapter not found in library book");
             }
             
-            console.log(`🏛️ Found chapter in library: bookId=${chapter.libraryBookId}, chapterIndex=${chapter.libraryChapterIndex}`);
             
             // Get the content using the library chapter index
             let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
             
-            console.log(`🏛️ Successfully loaded chapter from EPUB library using original URL`);
             return content;
         } catch (error) {
             console.error("❌ Error getting library chapter by original URL:", error);
@@ -380,12 +362,10 @@ class ChapterViewer {
      */
     static async openLibraryChapter(bookId, chapterIndex) {
         try {
-            console.log(`👁️ EYE ICON CLICKED: Opening library chapter ${chapterIndex} from book ${bookId}`);
             
             // Create library URL format
             let libraryUrl = `library://${bookId}/${chapterIndex}`;
             
-            console.log(`🏛️ Generated library URL: ${libraryUrl}`);
             
             // Get the chapter title from library data if possible
             let title = `Chapter ${chapterIndex + 1}`;
@@ -394,13 +374,10 @@ class ChapterViewer {
                 if (bookData.chapters[chapterIndex]) {
                     title = bookData.chapters[chapterIndex].title || title;
                 }
-                console.log(`📖 Chapter title: "${title}"`);
             } catch (error) {
-                console.log("Could not get chapter title, using default:", error);
             }
             
             // Use the existing viewChapter method
-            console.log(`📋 Calling viewChapter() to display the chapter content`);
             await ChapterViewer.viewChapter(libraryUrl, title);
         } catch (error) {
             console.error("❌ Error opening library chapter:", error);

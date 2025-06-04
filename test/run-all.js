@@ -51,7 +51,7 @@ async function runTest(testFile) {
 }
 
 async function main() {
-    console.log('WebToEpub Comprehensive Test Suite');
+    console.log('WebToEpub CI Test Suite');
     console.log('='.repeat(80));
     console.log('This test suite validates:');
     console.log('• Core utility functions');

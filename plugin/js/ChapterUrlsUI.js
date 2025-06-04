@@ -763,6 +763,11 @@ class ChapterUrlsUI {
     * Add more actions menu (three dots) next to chapter status icon
     */
     static addMoreActionsMenu(row, sourceUrl, title) {
+        // Try to find the full chapter data to determine if this is a library chapter
+        let chapter = null;
+        if (window.parser && window.parser.state && window.parser.state.webPages) {
+            chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
+        }
         let col = row.querySelector(".chapter-status-column");
         if (!col) return;
         // Create more actions wrapper
@@ -787,7 +792,12 @@ class ChapterUrlsUI {
         refreshItem.appendChild(refreshText);
         refreshItem.onclick = async (e) => {
             e.stopPropagation();
-            await ChapterCache.refreshChapter(sourceUrl, title, row);
+            // Check if this is a library chapter and handle accordingly
+            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                await ChapterUrlsUI.refreshLibraryChapter(chapter, row);
+            } else {
+                await ChapterCache.refreshChapter(sourceUrl, title, row);
+            }
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
@@ -815,7 +825,12 @@ class ChapterUrlsUI {
         deleteItem.appendChild(deleteText);
         deleteItem.onclick = async (e) => {
             e.stopPropagation();
-            await ChapterCache.deleteSingleChapter(sourceUrl, title, row);
+            // Check if this is a library chapter and handle accordingly
+            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                await ChapterUrlsUI.deleteLibraryChapter(chapter, row);
+            } else {
+                await ChapterCache.deleteSingleChapter(sourceUrl, title, row);
+            }
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
@@ -1626,6 +1641,80 @@ class ChapterUrlsUI {
         } catch (error) {
             console.error("Error deleting selected cached chapters:", error);
             alert("Failed to delete selected cached chapters: " + error.message);
+        }
+    }
+
+    /**
+     * Refresh a library chapter by updating its content in the actual library book
+     * @param {Object} chapter - Chapter object with libraryBookId and libraryChapterIndex
+     * @param {HTMLElement} row - The table row element
+     */
+    static async refreshLibraryChapter(chapter, row) {
+        try {
+            if (!chapter.sourceUrl || chapter.sourceUrl.startsWith('library://')) {
+                alert("Cannot refresh library-only chapters (no source URL)");
+                return;
+            }
+
+            if (!confirm(`Refresh "${chapter.title}" in the library book with new content from the website?\n\nThis will permanently update the chapter in your library.`)) {
+                return;
+            }
+
+            console.log(`Refreshing library chapter: ${chapter.title}`);
+            
+            // Update UI to show refreshing state
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, chapter.sourceUrl, chapter.title);
+
+            // Use the LibraryBookData method to refresh the chapter
+            await LibraryBookData.refreshChapterInBook(
+                chapter.libraryBookId,
+                chapter.libraryChapterIndex,
+                chapter.sourceUrl
+            );
+
+            // Update UI to show success - keep the eye icon since it's still in the library
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+            
+            alert(`Successfully refreshed "${chapter.title}" in the library book.`);
+
+        } catch (error) {
+            console.error("Failed to refresh library chapter:", error);
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, chapter.sourceUrl, chapter.title);
+            alert("Failed to refresh library chapter: " + error.message);
+        }
+    }
+
+    /**
+     * Delete a library chapter from the actual library book
+     * @param {Object} chapter - Chapter object with libraryBookId and libraryChapterIndex  
+     * @param {HTMLElement} row - The table row element
+     */
+    static async deleteLibraryChapter(chapter, row) {
+        try {
+            if (!confirm(`Delete "${chapter.title}" from the library book?\n\nThis will permanently remove the chapter from your library and cannot be undone.`)) {
+                return;
+            }
+
+            console.log(`Deleting library chapter: ${chapter.title}`);
+            
+            // Update UI to show deleting state
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, chapter.sourceUrl, chapter.title);
+
+            // Use the LibraryBookData method to delete the chapter
+            await LibraryBookData.deleteChapterFromBook(
+                chapter.libraryBookId,
+                chapter.libraryChapterIndex
+            );
+
+            // Update the chapter list by reloading the library book
+            await LibraryBookData.loadLibraryBookInMainUI(chapter.libraryBookId);
+            
+            alert(`Successfully deleted "${chapter.title}" from the library book.`);
+
+        } catch (error) {
+            console.error("Failed to delete library chapter:", error);
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, chapter.sourceUrl, chapter.title);
+            alert("Failed to delete library chapter: " + error.message);
         }
     }
 }

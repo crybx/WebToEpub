@@ -674,4 +674,24 @@ class LibraryStorage {
             });
         });
     }
+
+    /**
+     * Save data to chrome.storage.local
+     * @param {string} key - Storage key
+     * @param {any} value - Value to store
+     * @returns {Promise} Promise that resolves when save is complete
+     */
+    static async LibSaveToStorage(key, value) {
+        return new Promise((resolve, reject) => {
+            let storageItem = {};
+            storageItem[key] = value;
+            chrome.storage.local.set(storageItem, function() {
+                if (chrome.runtime.lastError) {
+                    reject(new Error(chrome.runtime.lastError.message));
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
 }
