@@ -221,6 +221,18 @@ body.modal-open {
     gap: 8px;
 }
 
+/* Special styling for Add novels to Library textarea row */
+.textarea-full-width-row .options-modal-value {
+    flex: 1;
+    width: 100%;
+}
+
+#LibAddListToLibraryInput {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+}
+
 
 /* Style the enable caching checkbox as a toggle switch */
 #enableChapterCachingCheckbox {
