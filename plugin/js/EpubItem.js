@@ -32,6 +32,11 @@ class EpubItem {
         return "xhtml" + util.zeroPad(this.index);
     }
 
+    // Returns sourceUrl suitable for metadata (filters out data: URIs)
+    getSourceUrlForMetadata() {
+        return this.sourceUrl && this.sourceUrl.startsWith("data:") ? "" : this.sourceUrl;
+    }
+
     getMediaType() {
         return "application/xhtml+xml";
     }

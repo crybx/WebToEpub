@@ -88,7 +88,9 @@ const util = (function() {
         if (includeImageSourceUrl) {
             let desc = doc.createElementNS(svg_ns, "desc");
             svg.appendChild(desc);
-            desc.appendChild(document.createTextNode(origin));
+            // Filter out data: URIs to prevent massive base64 content in SVG desc
+            let descContent = (origin && origin.startsWith("data:")) ? "" : origin;
+            desc.appendChild(document.createTextNode(descContent));
         } else {
             svg.appendChild(createComment(doc, origin));
         }
@@ -658,6 +660,10 @@ const util = (function() {
     }
 
     function createComment(doc, content) {
+        // Filter out data: URIs to prevent massive base64 content in comments
+        if (content && content.startsWith("data:")) {
+            content = "";
+        }
         // comments are not allowed to contain a double hyphen
         let escaped = content.replace(/--/g, "%2D%2D");
         return doc.createComment("  " + escaped + "  ");
