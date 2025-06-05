@@ -19,6 +19,18 @@
 		"message": "Automatically Download EPUBs After Adding New Chapters",
 		"description": "Label for checkbox to Download EPUBs after update"
 	},
+	"__MSG_button_View_Library_List__": {
+		"message": "View Library List",
+		"description": "Label on button to switch to library list view"
+	},
+	"__MSG_button_View_Compact_Library__": {
+		"message": "View Compact Library",
+		"description": "Label on button to switch to compact library view"
+	},
+	"__MSG_menu_Clear_New_Chapters_Alert__": {
+		"message": "Clear New Chapters Alert",
+		"description": "Menu option to clear new chapters notification for a book"
+	},
 	"__MSG_label_Lib_Warning_In_Progress___": {
 		"message": "In Progress....",
 		"description": "Label for Library loading in local storage in progress"
@@ -52,8 +64,8 @@
 		"description": "Label on button to Update all Epubs"
 	},
 	"__MSG_button_Lib_Template_Delete_EPUB__": {
-		"message": "Delete EPUB",
-		"description": "Label on button to Delete EPUB"
+		"message": "Delete Book",
+		"description": "Label on button to Delete Book"
 	},
 	"__MSG_button_Lib_Template_Search_new_Chapters__": {
 		"message": "Search new Chapters",

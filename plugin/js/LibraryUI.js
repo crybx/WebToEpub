@@ -44,7 +44,7 @@ class LibraryUI {
         LibRenderString += "<div class='library-title-column'>Library</div>";
         LibRenderString += "<div class='library-controls-column'>";
         LibRenderString += "<button id='libupdateall'>"+document.getElementById("LibTemplateUpdateAll").innerHTML+"</button>";
-        let viewToggleText = ShowCompactView ? "View Library List" : "View Compact Library";
+        let viewToggleText = ShowCompactView ? chrome.i18n.getMessage("__MSG_button_View_Library_List__") : chrome.i18n.getMessage("__MSG_button_View_Compact_Library__");
         LibRenderString += "<button id='libViewToggle'>" + viewToggleText + "</button>";
         LibRenderString += "<button id='libraryOptionsButton'>Library Options</button>";
         LibRenderString += "</div>";
@@ -135,7 +135,7 @@ class LibraryUI {
                 // Hidden Clear New Chapters option (shown conditionally)
                 LibRenderString += "<div class='menu-item' id='LibClearNewChaptersMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"' style='display: none;'>";
                 LibRenderString += "<span id='LibClearNewChaptersIcon"+CurrentLibKeys[i]+"'></span>";
-                LibRenderString += "<span>Clear New Chapters Alert</span>";
+                LibRenderString += "<span>"+chrome.i18n.getMessage("__MSG_menu_Clear_New_Chapters_Alert__")+"</span>";
                 LibRenderString += "</div>";
                 if (ShowAdvancedOptions) {
                     // 4. Add Chapter from different EPUB
@@ -158,7 +158,7 @@ class LibraryUI {
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderUp"+CurrentLibKeys[i]+"'>↑</button>";
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderDown"+CurrentLibKeys[i]+"'>↓</button>";
                 }
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>Select Book</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>"+LibTemplateSelectBook+"</button>";
                 LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
                 
                 LibRenderString += "<span class='new-chapter-badge new-chapter-normal' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
@@ -721,10 +721,10 @@ class LibraryUI {
             menu.remove();
         });
 
-        // Get template strings
-        let LibTemplateDownload = document.getElementById("LibTemplateDownload").innerHTML;
-        let LibTemplateUpdateNewChapter = document.getElementById("LibTemplateUpdateNewChapter").innerHTML;
-        let LibTemplateSelectBook = "Select Book";
+        // Get template strings using localization
+        let LibTemplateDownload = chrome.i18n.getMessage("__MSG_button_Lib_Template_Download_EPUB__");
+        let LibTemplateUpdateNewChapter = chrome.i18n.getMessage("__MSG_button_Lib_Template_Update_new_Chapters__");
+        let LibTemplateSelectBook = chrome.i18n.getMessage("__MSG_button_Lib_Template_Select_Book__");
 
         // Create the menu
         let menu = document.createElement("div");
@@ -744,11 +744,11 @@ class LibraryUI {
             </div>
             <div class="menu-item" data-action="open-url" data-libepubid="${bookId}">
                 <span class="compact-menu-icon" data-icon="open-url"></span>
-                <span>Open Story URL</span>
+                <span>${chrome.i18n.getMessage("__MSG_menu_Open_Story_URL__")}</span>
             </div>
             <div class="menu-item" data-action="delete" data-libepubid="${bookId}">
                 <span class="compact-menu-icon" data-icon="delete"></span>
-                <span>Delete EPUB</span>
+                <span>${chrome.i18n.getMessage("__MSG_button_Lib_Template_Delete_EPUB__")}</span>
             </div>
         `;
 

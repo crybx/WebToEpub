@@ -517,8 +517,8 @@
 		"description": "Label on button to Update all Epubs"
 	},
 	"__MSG_button_Lib_Template_Delete_EPUB__": {
-		"message": "Удалить EPUB",
-		"description": "Label on button to Delete EPUB from Library"
+		"message": "Удалить книгу",
+		"description": "Label on button to Delete Book from Library"
 	},
 	"__MSG_button_Lib_Template_Search_new_Chapters__": {
 		"message": "Поиск новых глав",

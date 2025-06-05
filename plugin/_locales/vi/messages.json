@@ -453,8 +453,8 @@
         "description": "Label on button to Update all Epubs"
     },
     "__MSG_button_Lib_Template_Delete_EPUB__": {
-        "message": "Xóa EPUB",
-        "description": "Label on button to Delete EPUB from Library"
+        "message": "Xóa sách",
+        "description": "Label on button to Delete Book from Library"
     },
     "__MSG_button_Lib_Template_Search_new_Chapters__": {
         "message": "Tìm chương mới",
