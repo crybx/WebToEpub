@@ -569,10 +569,24 @@ class ChapterCache {
     }
 
     /**
-    * Download a chapter and cache it
+    * Download a chapter and add it to cache or library based on current mode
     */
     static async downloadChapter(sourceUrl, title, row) {
         try {
+            // Check if we're in library mode
+            let isLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
+            let chapter = null;
+            
+            // Find chapter data to check if it should go to library
+            if (window.parser && window.parser.state && window.parser.state.webPages) {
+                chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
+            }
+            
+            // If we're in library mode but chapter doesn't have libraryBookId, set it
+            if (isLibraryMode && chapter && !chapter.libraryBookId) {
+                chapter.libraryBookId = window.currentLibraryBook.id;
+            }
+            
             // Find the parser and webPage for this URL
             let parser = ChapterCache.getCurrentParser();
             if (!parser) {
@@ -600,13 +614,33 @@ class ChapterCache {
             // Trigger the download using the existing download system
             await parser.fetchWebPageContent(webPage);
             
-            // Process and cache the downloaded content (this step is normally done during EPUB creation)
+            // Process the downloaded content
             if (webPage.rawDom && !webPage.error) {
                 let content = parser.convertRawDomToContent(webPage);
-                if (content && row) {
-                    ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
-                } else {
+                if (!content) {
                     throw new Error("Could not find content element for web page '" + sourceUrl + "'.");
+                }
+
+                if (isLibraryMode && chapter && chapter.libraryBookId !== undefined) {
+                    // In library mode - add chapter directly to library book (whether it's new or existing)
+                    // For new chapters, we need to determine the next available chapter index
+                    if (chapter.libraryChapterIndex === undefined) {
+                        // This is a new chapter - find the next available index
+                        try {
+                            let bookData = await LibraryBookData.extractBookData(chapter.libraryBookId);
+                            chapter.libraryChapterIndex = bookData.chapters.length; // Append at end
+                        } catch (error) {
+                            console.error("Error getting book data for new chapter:", error);
+                            chapter.libraryChapterIndex = 0; // Fallback
+                        }
+                    }
+                    await ChapterCache.addChapterToLibraryBook(chapter, content, sourceUrl, title, row);
+                } else {
+                    // Normal mode - add to cache
+                    await ChapterCache.set(sourceUrl, content);
+                    if (row) {
+                        ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
+                    }
                 }
             } else {
                 throw new Error(webPage.error || "Failed to fetch web page content");
@@ -963,5 +997,137 @@ class ChapterCache {
         let div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Remove cached chapters when they are moved to library storage
+     * @param {Array<string>} chapterUrls - Array of chapter URLs to remove from cache
+     */
+    static async removeChaptersMovedToLibrary(chapterUrls) {
+        if (!chapterUrls || chapterUrls.length === 0) {
+            return;
+        }
+
+        try {
+            console.log(`📚 Removing ${chapterUrls.length} chapters from cache (moved to library)`);
+            
+            // Get cache keys for all chapters
+            let keysToRemove = chapterUrls.map(url => this.getCacheKey(url));
+            
+            // Remove from active storage (either session or persistent based on settings)
+            await this.getActiveStorage().remove(keysToRemove);
+            
+            console.log(`✅ Successfully removed ${keysToRemove.length} chapters from cache storage`);
+            
+            // Update UI to reflect the change
+            await this.updateCacheToLibraryIcons(chapterUrls);
+            
+        } catch (error) {
+            console.error("Error removing cached chapters moved to library:", error);
+        }
+    }
+
+    /**
+     * Add a single chapter directly to library book
+     * @param {Object} chapter - Chapter object with library information
+     * @param {Element} content - Chapter content DOM element
+     * @param {string} sourceUrl - Chapter source URL
+     * @param {string} title - Chapter title
+     * @param {HTMLElement} row - Chapter table row
+     */
+    static async addChapterToLibraryBook(chapter, content, sourceUrl, title, row) {
+        try {
+            console.log(`📚 Adding chapter "${title}" directly to library book ${chapter.libraryBookId}`);
+            
+            // Generate XHTML using existing EPUB infrastructure
+            let epubItem = new ChapterEpubItem({sourceUrl, title}, content, chapter.libraryChapterIndex);
+            let parser = ChapterCache.getCurrentParser();
+            let emptyDocFactory = parser.emptyDocFactory || util.createEmptyXhtmlDoc;
+            let contentValidator = parser.contentValidator || (xml => util.isXhtmlInvalid(xml, EpubPacker.XHTML_MIME_TYPE));
+            
+            let newChapterXhtml = epubItem.fileContentForEpub(emptyDocFactory, contentValidator);
+            
+            // Add timestamp for verification
+            let timestamp = new Date().toISOString();
+            let timestampElement = `<p style="font-size: 0.8em; color: #666; text-align: right; margin-top: 2em; border-top: 1px solid #eee; padding-top: 0.5em;"><em>Added: ${timestamp}</em></p>`;
+            
+            // Inject timestamp before </body>
+            if (newChapterXhtml.includes('</body>')) {
+                newChapterXhtml = newChapterXhtml.replace('</body>', `${timestampElement}</body>`);
+            } else if (newChapterXhtml.includes('</html>')) {
+                newChapterXhtml = newChapterXhtml.replace('</html>', `${timestampElement}</html>`);
+            } else {
+                newChapterXhtml = newChapterXhtml + timestampElement;
+            }
+            
+            // Get the stored EPUB data
+            let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + chapter.libraryBookId);
+            if (!epubBase64) {
+                throw new Error("Book not found in library");
+            }
+            
+            // Add the new chapter using EpubUpdater
+            let updatedEpubBlob = await EpubUpdater.addChapter(
+                epubBase64, 
+                chapter.libraryChapterIndex, 
+                newChapterXhtml, 
+                title, 
+                sourceUrl
+            );
+            
+            // Convert blob to base64 and save back to storage
+            let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
+            await LibraryStorage.LibSaveToStorage("LibEpub" + chapter.libraryBookId, newEpubBase64);
+            
+            // Remove from cache if it was there
+            await ChapterCache.deleteChapter(sourceUrl);
+            
+            // Update UI to show library status
+            if (row) {
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, sourceUrl, title);
+            }
+            
+            console.log(`✅ Chapter "${title}" successfully added to library book`);
+            
+        } catch (error) {
+            console.error("Error adding chapter to library book:", error);
+            // Fall back to cache if library addition fails
+            if (row) {
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
+            }
+            throw error;
+        }
+    }
+
+    /**
+     * Update UI icons from eye (cache) to book (library) when chapters are moved
+     * Uses setChapterStatusVisuals for consistent behavior
+     * @param {Array<string>} chapterUrls - Array of chapter URLs that moved to library
+     */
+    static async updateCacheToLibraryIcons(chapterUrls) {
+        try {
+            // Update each chapter row to use library status
+            chapterUrls.forEach(sourceUrl => {
+                let row = ChapterUrlsUI.findRowBySourceUrl(sourceUrl);
+                if (row) {
+                    // Find the chapter data to get title
+                    let chapter = null;
+                    if (window.parser && window.parser.state && window.parser.state.webPages) {
+                        chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
+                    }
+                    
+                    let title = chapter ? chapter.title : "Chapter";
+                    
+                    // Use setChapterStatusVisuals to handle the icon transition properly
+                    ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, sourceUrl, title);
+                }
+            });
+            
+            // Update cache button visibility using existing method
+            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            
+        } catch (error) {
+            console.error("Error updating cache to library icons:", error);
+        }
     }
 }

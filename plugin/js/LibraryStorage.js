@@ -197,6 +197,10 @@ class LibraryStorage {
         }
         let content = await MergedEpubZip.close();
         LibraryStorage.LibHandelUpdate(-1, content, await LibraryStorage.LibGetFromStorage("LibStoryURL" + LibidURL), await LibraryStorage.LibGetFromStorage("LibFilename" + LibidURL), LibidURL, NewChapter);
+        
+        // Remove cached chapters that are now in library storage after merge
+        await LibraryStorage.LibRemoveCachedChaptersMovedToLibrary(LibidURL.toString());
+        
         return content;
     }
 
@@ -444,6 +448,9 @@ class LibraryStorage {
             await LibraryStorage.LibSaveCoverImgInStorage(LibFileReader.LibStorageValueId);
             await LibraryStorage.LibCreateStorageIDs(parseInt(LibFileReader.LibStorageValueId));
             LibraryUI.LibRenderSavedEpubs();
+            
+            // Remove cached chapters that are now in library storage
+            await LibraryStorage.LibRemoveCachedChaptersMovedToLibrary(LibFileReader.LibStorageValueId.toString());
             
             // If this was a new book added to library, automatically switch to Library Mode
             if (isNewBook) {
@@ -693,5 +700,24 @@ class LibraryStorage {
                 }
             });
         });
+    }
+
+    /**
+     * Remove cached chapters that have been moved to library storage
+     * @param {string} bookId - The Library book ID
+     */
+    static async LibRemoveCachedChaptersMovedToLibrary(bookId) {
+        try {
+            // Get all chapter URLs from the library book
+            let chapterUrls = await LibraryBookData.getChapterUrlsInBook(bookId);
+            
+            if (chapterUrls && chapterUrls.length > 0) {
+                // Use ChapterCache to remove these chapters from cache storage
+                await ChapterCache.removeChaptersMovedToLibrary(chapterUrls);
+            }
+            
+        } catch (error) {
+            console.error("Error removing cached chapters moved to library:", error);
+        }
     }
 }

@@ -243,40 +243,8 @@ class ChapterUrlsUI {
                 let row = Array.from(rows).find(r => r.rowIndex === index);
 
                 if (row && chapter.isInBook) {
-                    // Replace cache eye icon with library book icon for chapters that exist in book
-                    let statusColumn = row.querySelector(".chapter-status-column");
-                    if (statusColumn) {
-                        // Remove existing cache icon and its tooltip wrapper if present
-                        let existingWrapper = statusColumn.querySelector(".tooltip-wrapper");
-                        if (existingWrapper) {
-                            existingWrapper.remove();
-                        }
-                        
-                        // Add library book icon with tooltip wrapper (same structure as cache icon)
-                        if (!statusColumn.querySelector(".library-chapter-view-icon")) {
-                            let tooltipWrapper = document.createElement("div");
-                            tooltipWrapper.classList.add("tooltip-wrapper", "clickable-icon");
-                            
-                            let bookIcon = SvgIcons.createSvgElement(SvgIcons.BOOK);
-                            bookIcon.classList.add("library-chapter-view-icon", "chapter-status-icon");
-                            
-                            let tooltip = document.createElement("span");
-                            tooltip.classList.add("tooltipText");
-                            tooltip.textContent = "View chapter from library book";
-                            
-                            tooltipWrapper.onclick = (e) => {
-                                e.stopPropagation();
-                                ChapterViewer.openLibraryChapter(bookId, chapter.libraryChapterIndex);
-                            };
-                            
-                            tooltipWrapper.appendChild(bookIcon);
-                            tooltipWrapper.appendChild(tooltip);
-                            statusColumn.insertBefore(tooltipWrapper, statusColumn.firstChild);
-                        }
-                    }
-                    
-                    // Mark row as "in library" for CSS styling
-                    row.classList.add("chapter-in-library");
+                    // Use setChapterStatusVisuals to handle library chapters properly
+                    ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, chapter.sourceUrl, chapter.title);
                 } else if (row && !chapter.isInBook) {
                     // Mark new chapters for visual distinction
                     row.classList.add("chapter-new-on-website");
@@ -901,11 +869,15 @@ class ChapterUrlsUI {
             [ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING]: SvgIcons.CHAPTER_STATE_DOWNLOADING,
             [ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED]: SvgIcons.EYE_FILL,
             [ChapterUrlsUI.CHAPTER_STATUS_SLEEPING]: SvgIcons.CHAPTER_STATE_SLEEPING,
-            [ChapterUrlsUI.CHAPTER_STATUS_ERROR]: SvgIcons.EYE_FILL
+            [ChapterUrlsUI.CHAPTER_STATUS_ERROR]: SvgIcons.EYE_FILL,
+            [ChapterUrlsUI.CHAPTER_STATUS_LIBRARY]: SvgIcons.BOOK
         };
         
         let iconElement = SvgIcons.createSvgElement(svgConstants[state]);
         iconElement.classList.add("chapter-status-icon");
+        if (state === ChapterUrlsUI.CHAPTER_STATUS_LIBRARY) {
+            iconElement.classList.add("library-chapter-view-icon");
+        }
         return iconElement;
     }
 
@@ -975,6 +947,24 @@ class ChapterUrlsUI {
                 wrapper.className += " clickable-icon error-state";
                 wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
                 row.classList.add("error-state");
+                ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
+                break;
+
+            case ChapterUrlsUI.CHAPTER_STATUS_LIBRARY: // Chapter is in library - show book icon
+                wrapper.className += " clickable-icon";
+                wrapper.onclick = (e) => {
+                    e.stopPropagation();
+                    // Find the chapter data to get library information
+                    let chapter = null;
+                    if (window.parser && window.parser.state && window.parser.state.webPages) {
+                        chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
+                    }
+                    if (chapter && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                        ChapterViewer.openLibraryChapter(chapter.libraryBookId, chapter.libraryChapterIndex);
+                    }
+                };
+                row.classList.remove("error-state");
+                row.classList.add("chapter-in-library");
                 ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
                 break;
         }
@@ -1736,12 +1726,14 @@ ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING = 1;
 ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED = 2;
 ChapterUrlsUI.CHAPTER_STATUS_SLEEPING = 3;
 ChapterUrlsUI.CHAPTER_STATUS_ERROR = 4;
+ChapterUrlsUI.CHAPTER_STATUS_LIBRARY = 5;
 ChapterUrlsUI.TooltipForState = [
     ChapterUrlsUI.UIText.tooltipDownloadChapter,
     ChapterUrlsUI.UIText.tooltipChapterDownloading,
     ChapterUrlsUI.UIText.tooltipViewChapter,
     ChapterUrlsUI.UIText.tooltipChapterSleeping,
-    "Download failed - click to view error"
+    "Download failed - click to view error",
+    "View chapter from library book"
 ];
 
 ChapterUrlsUI.lastSelectedRow = null;
