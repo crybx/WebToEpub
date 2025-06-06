@@ -44,19 +44,25 @@
     --color-info-light: #d4a574;
 
     /* Other overrides */
-    --library-banner-text: --color-primary-light;
-    --lib-new-chapter-badge: var(--color-secondary-light);
+    --checkbox-accent: var(--color-secondary);
+    --checkbox-success: var(--color-primary-hover);
 
-    --tooltip-text: var(--color-neutral-800);
-    --tooltip-bg: var(--color-neutral-200);
+    --clickable-hover-bg: var(--color-primary-light);
+    --clickable-hover-icon: var(--color-primary-dark);
 
-    /* Icons */
-    --icon-primary: var(--color-secondary);
-    --icon-secondary: var(--color-primary-hover);
+    --icon-primary: var(--color-neutral-600);
+    --icon-secondary: var(--color-neutral-400);
     --icon-accent: var(--color-success);
     --icon-hover: var(--color-secondary-hover);
 
-    /* Clickable elements */
-    --clickable-hover-bg: var(--color-secondary);
-    --clickable-hover-icon: var(--color-primary);
+    --library-banner-text: --color-primary-light;
+    --library-banner-border: var(--color-primary-hover);
+    --lib-new-chapter-badge: var(--color-secondary-light);
+
+    --menu-item-hover-bg: var(--color-primary-light);
+    --menu-item-hover-text: var(--color-primary-dark);
+    --menu-item-hover-icon: var(--color-primary-dark);
+
+    --tooltip-text: var(--color-neutral-800);
+    --tooltip-bg: var(--color-neutral-200);
 }
