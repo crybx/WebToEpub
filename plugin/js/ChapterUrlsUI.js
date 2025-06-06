@@ -921,12 +921,14 @@ class ChapterUrlsUI {
             }
         }
         
+        // Remove all state-specific classes before applying new state
+        row.classList.remove("error-state", "chapter-in-library");
+        
         // Apply state-specific behavior and styling
         switch (state) {
             case ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
                 wrapper.className += " clickable-icon";
                 wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-                row.classList.remove("error-state");
                 ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
                 break;
 
@@ -935,7 +937,6 @@ class ChapterUrlsUI {
                 wrapper.onclick = async () => {
                     await ChapterCache.downloadChapter(sourceUrl, title, row);
                 };
-                row.classList.remove("error-state");
                 break;
 
             case ChapterUrlsUI.CHAPTER_STATUS_ERROR: // Chapter failed to download - show error icon
@@ -958,7 +959,6 @@ class ChapterUrlsUI {
                         ChapterViewer.openLibraryChapter(chapter.libraryBookId, chapter.libraryChapterIndex);
                     }
                 };
-                row.classList.remove("error-state");
                 row.classList.add("chapter-in-library");
                 ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
                 break;
