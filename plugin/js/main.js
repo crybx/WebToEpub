@@ -204,7 +204,7 @@ const main = (function() {
             let overwriteExisting = userPreferences.overwriteExistingEpub.value;
             let backgroundDownload = userPreferences.noDownloadPopup.value;
             let fileName = Download.CustomFilename();
-            if (libclick.dataset.libclick === "yes" || util.sleepController.signal.aborted) {
+            if (libclick.dataset.libclick === "yes") {
                 return LibraryStorage.LibAddToLibrary(content, fileName, document.getElementById("startingUrlInput").value, overwriteExisting, backgroundDownload, userPreferences);
             }
             return Download.save(content, fileName, overwriteExisting, backgroundDownload);
