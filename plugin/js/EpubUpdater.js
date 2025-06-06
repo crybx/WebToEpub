@@ -43,10 +43,9 @@ class EpubUpdater {
      * @param {string} tocNcx - Original toc.ncx content
      * @param {number} chapterNumber - Chapter number (1-based)
      * @param {string} chapterNumberStr - Chapter number as 4-digit string
-     * @param {Object} epubPaths - EPUB structure paths
      * @returns {string} Updated toc.ncx
      */
-    static removeChapterFromTocNcx(tocNcx, chapterNumber, chapterNumberStr, epubPaths) {
+    static removeChapterFromTocNcx(tocNcx, chapterNumber, chapterNumberStr) {
         let updated = tocNcx;
 
         // Remove the navPoint for the deleted chapter
@@ -117,10 +116,9 @@ class EpubUpdater {
      * Remove chapter references from toc.ncx file by actual filename
      * @param {string} tocNcx - Original toc.ncx content
      * @param {string} chapterRelativePath - Relative path to chapter file
-     * @param {string} chapterBasename - Chapter filename without extension
      * @returns {string} Updated toc.ncx
      */
-    static removeChapterFromTocNcxByFilename(tocNcx, chapterRelativePath, chapterBasename) {
+    static removeChapterFromTocNcxByFilename(tocNcx, chapterRelativePath) {
         let updated = tocNcx;
 
         // Remove the navPoint for the deleted chapter by content src
@@ -134,10 +132,9 @@ class EpubUpdater {
      * Remove chapter references from nav.xhtml file by actual filename
      * @param {string} navXhtml - Original nav.xhtml content
      * @param {string} chapterRelativePath - Relative path to chapter file
-     * @param {string} chapterBasename - Chapter filename without extension
      * @returns {string} Updated nav.xhtml
      */
-    static removeChapterFromNavXhtmlByFilename(navXhtml, chapterRelativePath, chapterBasename) {
+    static removeChapterFromNavXhtmlByFilename(navXhtml, chapterRelativePath) {
         let updated = navXhtml;
 
         // Remove the list item for the deleted chapter by href
@@ -145,6 +142,135 @@ class EpubUpdater {
         updated = updated.replace(listItemRegex, '');
 
         return updated;
+    }
+
+    // ==================== HELPER METHODS ====================
+
+    /**
+     * Load EPUB and return entries and zip reader
+     * @param {string} epubBase64 - Base64 encoded EPUB data
+     * @returns {Promise<{entries: Array, epubZip: ZipReader}>} EPUB entries and zip reader
+     */
+    static async loadEpub(epubBase64) {
+        let epubReader = new zip.Data64URIReader(epubBase64);
+        let epubZip = new zip.ZipReader(epubReader, {useWebWorkers: false});
+        let entries = await epubZip.getEntries();
+        entries = entries.filter(a => !a.directory);
+        return {entries, epubZip};
+    }
+
+    /**
+     * Find all chapter files in the EPUB text directory
+     * @param {Array} entries - EPUB entries
+     * @param {Object} epubPaths - EPUB structure paths
+     * @returns {Array} Sorted chapter files
+     */
+    static findChapterFiles(entries, epubPaths) {
+        return entries.filter(e => 
+            e.filename.startsWith(epubPaths.textDir) && 
+            e.filename.endsWith('.xhtml') &&
+            !e.filename.includes('Cover')
+        ).sort((a, b) => a.filename.localeCompare(b.filename));
+    }
+
+    /**
+     * Validate chapter index against available chapters
+     * @param {number} chapterIndex - Index to validate
+     * @param {Array} chapterFiles - Available chapter files
+     * @param {boolean} allowAppend - Whether to allow index at end for appending
+     * @returns {Object} Validated chapter file or null
+     */
+    static validateChapterIndex(chapterIndex, chapterFiles, allowAppend = false) {
+        let maxIndex = allowAppend ? chapterFiles.length : chapterFiles.length - 1;
+        if (chapterIndex < 0 || chapterIndex > maxIndex) {
+            throw new Error(`Chapter index ${chapterIndex} out of range (0-${maxIndex})`);
+        }
+        return chapterIndex < chapterFiles.length ? chapterFiles[chapterIndex] : null;
+    }
+
+    /**
+     * Create new EPUB writer
+     * @returns {{newEpubWriter: BlobWriter, newEpubZip: ZipWriter}} New EPUB writer and zip
+     */
+    static createEpubWriter() {
+        let newEpubWriter = new zip.BlobWriter("application/epub+zip");
+        let newEpubZip = new zip.ZipWriter(newEpubWriter, {useWebWorkers: false, compressionMethod: 8, extendedTimestamp: false});
+        return {newEpubWriter, newEpubZip};
+    }
+
+    /**
+     * Copy entry to new EPUB with appropriate compression
+     * @param {ZipWriter} newEpubZip - Destination zip writer
+     * @param {Object} entry - Entry to copy
+     */
+    static async copyEntry(newEpubZip, entry) {
+        if (entry.filename === "mimetype") {
+            await newEpubZip.add(entry.filename, new zip.TextReader(await entry.getData(new zip.TextWriter())), {compressionMethod: 0});
+        } else {
+            await newEpubZip.add(entry.filename, new zip.BlobReader(await entry.getData(new zip.BlobWriter())));
+        }
+    }
+
+    /**
+     * Read metadata files from EPUB entries
+     * @param {Array} entries - EPUB entries
+     * @param {Object} epubPaths - EPUB structure paths
+     * @returns {Promise<Object>} Object containing metadata content and entries
+     */
+    static async readMetadataFiles(entries, epubPaths) {
+        let contentOpfEntry = entries.find(e => e.filename === epubPaths.contentOpf);
+        let tocNcxEntry = entries.find(e => e.filename === epubPaths.tocNcx);
+        let navXhtmlEntry = entries.find(e => e.filename === epubPaths.navXhtml);
+
+        if (!contentOpfEntry || !tocNcxEntry) {
+            throw new Error("Required metadata files not found in EPUB");
+        }
+
+        // Read metadata content
+        let contentOpfText = await contentOpfEntry.getData(new zip.TextWriter());
+        let tocNcxText = await tocNcxEntry.getData(new zip.TextWriter());
+        let navXhtmlText = navXhtmlEntry ? await navXhtmlEntry.getData(new zip.TextWriter()) : null;
+
+        return {
+            navXhtmlEntry,
+            contentOpfText,
+            tocNcxText,
+            navXhtmlText
+        };
+    }
+
+    /**
+     * Add updated metadata files to EPUB and close
+     * @param {ZipWriter} newEpubZip - New EPUB zip writer
+     * @param {ZipReader} epubZip - Original EPUB zip reader
+     * @param {Object} epubPaths - EPUB structure paths
+     * @param {string} updatedContentOpf - Updated content.opf content
+     * @param {string} updatedTocNcx - Updated toc.ncx content
+     * @param {string|null} updatedNavXhtml - Updated nav.xhtml content (optional)
+     * @returns {Promise<Blob>} Final EPUB blob
+     */
+    static async addMetadataFilesAndClose(newEpubZip, epubZip, epubPaths, updatedContentOpf, updatedTocNcx, updatedNavXhtml) {
+        // Add updated metadata files
+        await newEpubZip.add(epubPaths.contentOpf, new zip.TextReader(updatedContentOpf));
+        await newEpubZip.add(epubPaths.tocNcx, new zip.TextReader(updatedTocNcx));
+        if (updatedNavXhtml) {
+            await newEpubZip.add(epubPaths.navXhtml, new zip.TextReader(updatedNavXhtml));
+        }
+
+        // Close and return the new EPUB
+        return await EpubUpdater.closeEpub(newEpubZip, epubZip);
+    }
+
+    /**
+     * Close EPUB readers and writers
+     * @param {ZipWriter} newEpubZip - New EPUB zip writer
+     * @param {ZipReader} epubZip - Original EPUB zip reader
+     * @returns {Promise<Blob>} Final EPUB blob
+     */
+    static async closeEpub(newEpubZip, epubZip) {
+        let newEpubBlob = await newEpubZip.close();
+        await epubZip.close();
+        return newEpubBlob;
     }
 
     // ==================== BROWSER ZIP OPERATIONS ====================
@@ -157,47 +283,20 @@ class EpubUpdater {
      */
     static async deleteChapter(epubBase64, chapterIndex) {
         try {
-            // Load the EPUB
-            let epubReader = new zip.Data64URIReader(epubBase64);
-            let epubZip = new zip.ZipReader(epubReader, {useWebWorkers: false});
-            let entries = await epubZip.getEntries();
-            entries = entries.filter(a => !a.directory);
-
-            // Get EPUB structure paths
+            // Load the EPUB using helper
+            let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
             let epubPaths = util.getEpubStructure();
 
-            // Find all chapter files in the text directory
-            let chapterFiles = entries.filter(e => 
-                e.filename.startsWith(epubPaths.textDir) && 
-                e.filename.endsWith('.xhtml') &&
-                !e.filename.includes('Cover')
-            ).sort((a, b) => a.filename.localeCompare(b.filename));
-            
-            // Get the target chapter file by index
-            if (chapterIndex < 0 || chapterIndex >= chapterFiles.length) {
-                throw new Error(`Chapter index ${chapterIndex} out of range (0-${chapterFiles.length - 1})`);
-            }
-            
-            let targetChapterFile = chapterFiles[chapterIndex];
+            // Find and validate chapter files using helpers
+            let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
+            let targetChapterFile = EpubUpdater.validateChapterIndex(chapterIndex, chapterFiles);
             let chapterFilename = targetChapterFile.filename;
 
-            // Get metadata files for updating
-            let contentOpfEntry = entries.find(e => e.filename === epubPaths.contentOpf);
-            let tocNcxEntry = entries.find(e => e.filename === epubPaths.tocNcx);
-            let navXhtmlEntry = entries.find(e => e.filename === epubPaths.navXhtml);
+            // Read metadata files using helper
+            let {navXhtmlEntry, contentOpfText, tocNcxText, navXhtmlText} = await EpubUpdater.readMetadataFiles(entries, epubPaths);
 
-            if (!contentOpfEntry || !tocNcxEntry) {
-                throw new Error("Required metadata files not found in EPUB");
-            }
-
-            // Read metadata content
-            let contentOpfText = await contentOpfEntry.getData(new zip.TextWriter());
-            let tocNcxText = await tocNcxEntry.getData(new zip.TextWriter());
-            let navXhtmlText = navXhtmlEntry ? await navXhtmlEntry.getData(new zip.TextWriter()) : null;
-
-            // Create new EPUB writer
-            let newEpubWriter = new zip.BlobWriter("application/epub+zip");
-            let newEpubZip = new zip.ZipWriter(newEpubWriter, {useWebWorkers: false, compressionMethod: 8, extendedTimestamp: false});
+            // Create new EPUB writer using helper
+            let {newEpubZip} = EpubUpdater.createEpubWriter();
 
             // Copy all entries except the deleted chapter and metadata files (we'll regenerate those)
             for (let entry of entries) {
@@ -208,11 +307,7 @@ class EpubUpdater {
                     continue; // Skip these files
                 }
 
-                if (entry.filename === "mimetype") {
-                    await newEpubZip.add(entry.filename, new zip.TextReader(await entry.getData(new zip.TextWriter())), {compressionMethod: 0});
-                } else {
-                    await newEpubZip.add(entry.filename, new zip.BlobReader(await entry.getData(new zip.BlobWriter())));
-                }
+                await EpubUpdater.copyEntry(newEpubZip, entry);
             }
 
             // Extract chapter identifier from the actual filename for metadata processing
@@ -220,21 +315,11 @@ class EpubUpdater {
             let chapterBasename = chapterFilename.split('/').pop().replace('.xhtml', '');
             
             let updatedContentOpf = EpubUpdater.removeChapterFromContentOpfByFilename(contentOpfText, chapterRelativePath, chapterBasename);
-            let updatedTocNcx = EpubUpdater.removeChapterFromTocNcxByFilename(tocNcxText, chapterRelativePath, chapterBasename);
-            let updatedNavXhtml = navXhtmlText ? EpubUpdater.removeChapterFromNavXhtmlByFilename(navXhtmlText, chapterRelativePath, chapterBasename) : null;
+            let updatedTocNcx = EpubUpdater.removeChapterFromTocNcxByFilename(tocNcxText, chapterRelativePath);
+            let updatedNavXhtml = navXhtmlText ? EpubUpdater.removeChapterFromNavXhtmlByFilename(navXhtmlText, chapterRelativePath) : null;
 
-            // Add updated metadata files
-            await newEpubZip.add(epubPaths.contentOpf, new zip.TextReader(updatedContentOpf));
-            await newEpubZip.add(epubPaths.tocNcx, new zip.TextReader(updatedTocNcx));
-            if (updatedNavXhtml) {
-                await newEpubZip.add(epubPaths.navXhtml, new zip.TextReader(updatedNavXhtml));
-            }
-
-            // Close and return the new EPUB
-            let newEpubBlob = await newEpubZip.close();
-            await epubZip.close();
-
-            return newEpubBlob;
+            // Add metadata files and close EPUB using helper
+            return await EpubUpdater.addMetadataFilesAndClose(newEpubZip, epubZip, epubPaths, updatedContentOpf, updatedTocNcx, updatedNavXhtml);
 
         } catch (error) {
             console.error("Error deleting chapter from EPUB:", error);
@@ -252,51 +337,30 @@ class EpubUpdater {
      */
     static async refreshChapter(epubBase64, chapterIndex, newChapterXhtml) {
         try {
-            // Load the EPUB
-            let epubReader = new zip.Data64URIReader(epubBase64);
-            let epubZip = new zip.ZipReader(epubReader, {useWebWorkers: false});
-            let entries = await epubZip.getEntries();
-            entries = entries.filter(a => !a.directory);
-
-            // Get EPUB structure paths
+            // Load the EPUB using helper
+            let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
             let epubPaths = util.getEpubStructure();
 
-            // Find all chapter files in the text directory (same logic as delete)
-            let chapterFiles = entries.filter(e => 
-                e.filename.startsWith(epubPaths.textDir) && 
-                e.filename.endsWith('.xhtml') &&
-                !e.filename.includes('Cover')
-            ).sort((a, b) => a.filename.localeCompare(b.filename));
-            
-            // Get the target chapter file by index
-            if (chapterIndex < 0 || chapterIndex >= chapterFiles.length) {
-                throw new Error(`Chapter index ${chapterIndex} out of range (0-${chapterFiles.length - 1})`);
-            }
-            
-            let targetChapterFile = chapterFiles[chapterIndex];
+            // Find and validate chapter files using helpers
+            let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
+            let targetChapterFile = EpubUpdater.validateChapterIndex(chapterIndex, chapterFiles);
             let chapterFilename = targetChapterFile.filename;
 
-            // Create new EPUB writer
-            let newEpubWriter = new zip.BlobWriter("application/epub+zip");
-            let newEpubZip = new zip.ZipWriter(newEpubWriter, {useWebWorkers: false, compressionMethod: 8, extendedTimestamp: false});
+            // Create new EPUB writer using helper
+            let {newEpubZip} = EpubUpdater.createEpubWriter();
 
             // Copy all entries, replacing the target chapter
             for (let entry of entries) {
                 if (entry.filename === chapterFilename) {
                     // Replace with new content
                     await newEpubZip.add(entry.filename, new zip.TextReader(newChapterXhtml));
-                } else if (entry.filename === "mimetype") {
-                    await newEpubZip.add(entry.filename, new zip.TextReader(await entry.getData(new zip.TextWriter())), {compressionMethod: 0});
                 } else {
-                    await newEpubZip.add(entry.filename, new zip.BlobReader(await entry.getData(new zip.BlobWriter())));
+                    await EpubUpdater.copyEntry(newEpubZip, entry);
                 }
             }
 
-            // Close and return the new EPUB
-            let newEpubBlob = await newEpubZip.close();
-            await epubZip.close();
-
-            return newEpubBlob;
+            // Close and return the new EPUB using helper
+            return await EpubUpdater.closeEpub(newEpubZip, epubZip);
 
         } catch (error) {
             console.error("Error refreshing chapter in EPUB:", error);
@@ -315,56 +379,31 @@ class EpubUpdater {
      */
     static async addChapter(epubBase64, chapterIndex, newChapterXhtml, chapterTitle, chapterSourceUrl = "") {
         try {
-            // Load the EPUB
-            let epubReader = new zip.Data64URIReader(epubBase64);
-            let epubZip = new zip.ZipReader(epubReader, {useWebWorkers: false});
-            let entries = await epubZip.getEntries();
-            entries = entries.filter(a => !a.directory);
-
-            // Get EPUB structure paths
+            // Load the EPUB using helper
+            let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
             let epubPaths = util.getEpubStructure();
 
-            // Find all chapter files in the text directory (same logic as refresh)
-            let chapterFiles = entries.filter(e => 
-                e.filename.startsWith(epubPaths.textDir) && 
-                e.filename.endsWith('.xhtml') &&
-                !e.filename.includes('Cover')
-            ).sort((a, b) => a.filename.localeCompare(b.filename));
-            
-            // Validate chapter index (can be at the end for appending)
-            if (chapterIndex < 0 || chapterIndex > chapterFiles.length) {
-                throw new Error(`Chapter index ${chapterIndex} out of range (0-${chapterFiles.length})`);
-            }
+            // Find and validate chapter files using helpers
+            let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
+            EpubUpdater.validateChapterIndex(chapterIndex, chapterFiles, true); // Allow appending
 
             // Generate new chapter filename
             let newChapterNumber = chapterFiles.length + 1; // Next available number
             let newChapterNumberStr = ("0000" + newChapterNumber).slice(-4);
             let newChapterFilename = `${epubPaths.textDir}/${newChapterNumberStr}.xhtml`;
 
-            // Get metadata files for updating
-            let contentOpfEntry = entries.find(e => e.filename === epubPaths.contentOpf);
-            let tocNcxEntry = entries.find(e => e.filename === epubPaths.tocNcx);
-            let navXhtmlEntry = entries.find(e => e.filename === epubPaths.navXhtml);
-
-            if (!contentOpfEntry || !tocNcxEntry) {
-                throw new Error("Required metadata files not found in EPUB");
-            }
-
-            // Read metadata content
-            let contentOpfText = await contentOpfEntry.getData(new zip.TextWriter());
-            let tocNcxText = await tocNcxEntry.getData(new zip.TextWriter());
-            let navXhtmlText = navXhtmlEntry ? await navXhtmlEntry.getData(new zip.TextWriter()) : null;
+            // Read metadata files using helper
+            let {navXhtmlEntry, contentOpfText, tocNcxText, navXhtmlText} = await EpubUpdater.readMetadataFiles(entries, epubPaths);
 
             // Update metadata files with new chapter
             let updatedContentOpf = EpubUpdater.addChapterToContentOpf(contentOpfText, newChapterNumberStr, chapterTitle, chapterSourceUrl, epubPaths);
             let updatedTocNcx = EpubUpdater.addChapterToTocNcx(tocNcxText, newChapterNumber, newChapterNumberStr, chapterTitle, epubPaths);
             let updatedNavXhtml = navXhtmlText ? EpubUpdater.addChapterToNavXhtml(navXhtmlText, newChapterNumberStr, chapterTitle, epubPaths) : null;
 
-            // Create new EPUB writer
-            let newEpubWriter = new zip.BlobWriter("application/epub+zip");
-            let newEpubZip = new zip.ZipWriter(newEpubWriter, {useWebWorkers: false, compressionMethod: 8, extendedTimestamp: false});
+            // Create new EPUB writer using helper
+            let {newEpubZip} = EpubUpdater.createEpubWriter();
 
-            // Copy all existing entries
+            // Copy all existing entries except metadata files
             for (let entry of entries) {
                 if (entry.filename === epubPaths.contentOpf ||
                     entry.filename === epubPaths.tocNcx ||
@@ -372,28 +411,14 @@ class EpubUpdater {
                     continue; // Skip these files - we'll add updated versions
                 }
 
-                if (entry.filename === "mimetype") {
-                    await newEpubZip.add(entry.filename, new zip.TextReader(await entry.getData(new zip.TextWriter())), {compressionMethod: 0});
-                } else {
-                    await newEpubZip.add(entry.filename, new zip.BlobReader(await entry.getData(new zip.BlobWriter())));
-                }
+                await EpubUpdater.copyEntry(newEpubZip, entry);
             }
 
             // Add the new chapter file
             await newEpubZip.add(newChapterFilename, new zip.TextReader(newChapterXhtml));
 
-            // Add updated metadata files
-            await newEpubZip.add(epubPaths.contentOpf, new zip.TextReader(updatedContentOpf));
-            await newEpubZip.add(epubPaths.tocNcx, new zip.TextReader(updatedTocNcx));
-            if (updatedNavXhtml) {
-                await newEpubZip.add(epubPaths.navXhtml, new zip.TextReader(updatedNavXhtml));
-            }
-
-            // Close and return the new EPUB
-            let newEpubBlob = await newEpubZip.close();
-            await epubZip.close();
-
-            return newEpubBlob;
+            // Add metadata files and close EPUB using helper
+            return await EpubUpdater.addMetadataFilesAndClose(newEpubZip, epubZip, epubPaths, updatedContentOpf, updatedTocNcx, updatedNavXhtml);
 
         } catch (error) {
             console.error("Error adding chapter to EPUB:", error);
@@ -443,7 +468,8 @@ class EpubUpdater {
         let updated = tocNcx;
 
         // Add navPoint for the new chapter
-        let navPointElement = `\n        <navPoint id="body${chapterNumberStr}" playOrder="${chapterNumber}">
+        let navPointElement = `\n
+        <navPoint id="body${chapterNumberStr}" playOrder="${chapterNumber}">
             <navLabel>
                 <text>${chapterTitle}</text>
             </navLabel>
@@ -471,18 +497,6 @@ class EpubUpdater {
         updated = updated.replace('</ol></nav>', listItem + '\n        </ol></nav>');
 
         return updated;
-    }
-
-    /**
-     * Merge two EPUBs together - delegates to existing LibraryStorage.LibMergeEpub
-     * @param {string} baseEpubBase64 - Base EPUB in base64 format
-     * @param {Blob} newEpubBlob - New EPUB to merge as blob
-     * @param {string} libraryId - Library ID for the book
-     * @returns {Promise<Blob>} Merged EPUB as blob
-     */
-    static async mergeEpubs(baseEpubBase64, newEpubBlob, libraryId) {
-        // Delegate to existing proven merge logic in LibraryStorage
-        return await LibraryStorage.LibMergeEpub(baseEpubBase64, newEpubBlob, libraryId);
     }
 
     /**
