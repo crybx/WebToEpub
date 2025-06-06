@@ -245,23 +245,45 @@ const main = (function() {
         // Sync current checkbox states from UI back to parser state before download
         syncCheckboxStatesToParser();
 
-        await ChapterCache.downloadChaptersToCache().then(function() {
-            setProcessingButtonsState(false);
-            if (util.sleepController.signal.aborted) {
-                util.sleepController = new AbortController;
-                return;
+        // Check if we're in Library Mode with a library book loaded
+        let isInLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
+        
+        if (isInLibraryMode) {
+            // In Library Mode: use the same logic as "Update Library Book"
+            // This will download chapters and add them to the existing EPUB via merge logic
+            let obj = {};
+            obj.dataset = {};
+            obj.dataset.libclick = "yes";  // Mark as library operation
+            
+            try {
+                await fetchContentAndPackEpub.call(obj);
+            } catch (err) {
+                setProcessingButtonsState(false);
+                if (!util.sleepController.signal.aborted) {
+                    ErrorLog.showErrorMessage(err);
+                }
+                util.sleepController = new AbortController();
             }
-            parser.updateReadingList();
-            ErrorLog.showLogToUser();
-            dumpErrorLogToFile();
-        }).catch(function(err) {
-            setProcessingButtonsState(false);
-            if (util.sleepController.signal.aborted) {
-                util.sleepController = new AbortController;
-                return;
-            }
-            ErrorLog.showErrorMessage(err);
-        });
+        } else {
+            // Normal Mode: download chapters to cache
+            await ChapterCache.downloadChaptersToCache().then(function() {
+                setProcessingButtonsState(false);
+                if (util.sleepController.signal.aborted) {
+                    util.sleepController = new AbortController;
+                    return;
+                }
+                parser.updateReadingList();
+                ErrorLog.showLogToUser();
+                dumpErrorLogToFile();
+            }).catch(function(err) {
+                setProcessingButtonsState(false);
+                if (util.sleepController.signal.aborted) {
+                    util.sleepController = new AbortController;
+                    return;
+                }
+                ErrorLog.showErrorMessage(err);
+            });
+        }
     }
 
     function stopDownload(){
