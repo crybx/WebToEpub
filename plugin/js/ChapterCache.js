@@ -69,8 +69,6 @@ class ChapterCache {
         setInterval(() => {
             this.cleanupSessionStorage();
         }, this.SESSION_CLEANUP_INTERVAL);
-        
-        console.log("Session storage cleanup initialized (4 hour intervals)");
     }
 
     // Clean up session storage when it gets too large
@@ -102,13 +100,12 @@ class ChapterCache {
                 let entriesToRemove = cacheKeys.length - this.SESSION_MAX_ENTRIES;
                 
                 if (entries.length > 0 && entriesToRemove > 0) {
-                    // Remove oldest eligible entries up to the required count
+                    // Remove the oldest eligible entries up to the required count
                     let toRemove = entries.slice(0, Math.min(entriesToRemove, entries.length));
                     let keysToRemove = toRemove.map(entry => entry.key);
                     
                     if (keysToRemove.length > 0) {
                         await this.storage.session.remove(keysToRemove);
-                        console.log(`Cleaned up ${keysToRemove.length} old session cache entries (minimum age: ${this.SESSION_MIN_AGE_HOURS}h)`);
                     }
                 } else if (entriesToRemove > 0) {
                     console.log(`Session storage over limit (${cacheKeys.length}/${this.SESSION_MAX_ENTRIES}) but no entries older than ${this.SESSION_MIN_AGE_HOURS}h to remove`);
@@ -332,12 +329,10 @@ class ChapterCache {
                 // Migrating from session to persistent (cache being enabled)
                 sourceStorage = this.storage.session;
                 targetStorage = this.storage.local;
-                console.log("Migrating chapters from session to persistent storage...");
             } else {
                 // Migrating from persistent to session (cache being disabled)
                 sourceStorage = this.storage.local;
                 targetStorage = this.storage.session || this.storage.local;
-                console.log("Migrating chapters from persistent to session storage...");
             }
 
             if (!sourceStorage || !targetStorage) {
@@ -350,7 +345,7 @@ class ChapterCache {
             let chapterKeys = Object.keys(sourceData).filter(key => key.startsWith(this.CACHE_PREFIX));
             
             if (chapterKeys.length === 0) {
-                console.log("No chapters to migrate");
+                // No chapters to migrate
                 return;
             }
 
@@ -358,9 +353,6 @@ class ChapterCache {
             let keysToRemove = [];
 
             if (!toEnabled && sourceStorage !== targetStorage) {
-                // Migrating from persistent to session - respect session storage limits
-                console.log("Applying session storage limits during migration...");
-                
                 // Sort chapters by timestamp (newest first) and apply limits
                 let chaptersWithTimestamp = chapterKeys.map(key => ({
                     key: key,
@@ -380,8 +372,6 @@ class ChapterCache {
                 // All chapters will be removed from source (kept ones are migrated, excess ones are discarded)
                 keysToRemove = chapterKeys;
                 
-                console.log("Migration summary: keeping " + chaptersToKeep.length + " newest chapters, discarding " + chaptersToDiscard.length + " oldest chapters due to session storage limits");
-                
             } else {
                 // Migrating from session to persistent - no limits, migrate everything
                 for (let key of chapterKeys) {
@@ -400,8 +390,6 @@ class ChapterCache {
                 await sourceStorage.remove(keysToRemove);
             }
 
-            console.log("Successfully migrated " + Object.keys(chaptersToMigrate).length + " chapters to " + (toEnabled ? "persistent" : "session") + " storage");
-            
         } catch (e) {
             console.error("Error migrating chapters:", e);
             // Don't throw - migration failure shouldn't break the setting change
@@ -484,7 +472,7 @@ class ChapterCache {
                     await this.clearAll();
                     await this.refreshCacheStats();
                     // Update the chapter table to remove cache indicators
-                    await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+                    await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
                 } catch (error) {
                     console.error("Failed to clear cache:", error);
                     alert(ChapterCache.CacheText.errorClearCache.replace("$error$", error.message));
@@ -646,7 +634,7 @@ class ChapterCache {
                 throw new Error(webPage.error || "Failed to fetch web page content");
             }
             
-            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
         } catch (error) {
             console.log("Failed to download chapter:", error);
             // Store error message in cache
@@ -655,7 +643,7 @@ class ChapterCache {
             if (row) {
                 ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, sourceUrl, title);
             }
-            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
         }
     }
 
@@ -675,33 +663,6 @@ class ChapterCache {
         } catch (error) {
             console.error("Failed to refresh chapter:", error);
             alert("Failed to refresh chapter: " + error.message);
-        }
-    }
-
-    /**
-    * Delete a single cached chapter and update UI
-    */
-    static async deleteSingleChapter(sourceUrl, title, row) {
-        try {
-            await ChapterCache.deleteChapter(sourceUrl);
-            
-            // Add download icon since chapter is no longer cached
-            if (row) {
-                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, sourceUrl, title);
-            } else {
-                console.log("no row");
-            }
-            
-            // Update UI elements
-            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
-            
-            // Refresh cache stats if ChapterCache has the method
-            if (typeof ChapterCache.refreshCacheStats === "function") {
-                await ChapterCache.refreshCacheStats();
-            }
-        } catch (error) {
-            console.error("Failed to delete chapter:", error);
-            alert("Failed to delete cached chapter: " + error.message);
         }
     }
 
@@ -731,9 +692,7 @@ class ChapterCache {
             });
             
             // Update delete button visibility
-            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
-            
-            console.log(`Deleted ${keysToDelete.length} cached chapters`);
+            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
         } catch (err) {
             console.error("Error deleting cached chapters:", err);
             alert("Error deleting cached chapters");
@@ -779,7 +738,7 @@ class ChapterCache {
         }
         
         // Update UI to show cached icons
-        await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+        await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
     }
 
     /**
@@ -1009,16 +968,12 @@ class ChapterCache {
         }
 
         try {
-            console.log(`📚 Removing ${chapterUrls.length} chapters from cache (moved to library)`);
-            
             // Get cache keys for all chapters
             let keysToRemove = chapterUrls.map(url => this.getCacheKey(url));
             
             // Remove from active storage (either session or persistent based on settings)
             await this.getActiveStorage().remove(keysToRemove);
-            
-            console.log(`✅ Successfully removed ${keysToRemove.length} chapters from cache storage`);
-            
+
             // Update UI to reflect the change
             await this.updateCacheToLibraryIcons(chapterUrls);
             
@@ -1037,8 +992,6 @@ class ChapterCache {
      */
     static async addChapterToLibraryBook(chapter, content, sourceUrl, title, row) {
         try {
-            console.log(`📚 Adding chapter "${title}" directly to library book ${chapter.libraryBookId}`);
-            
             // Generate XHTML using existing EPUB infrastructure
             let epubItem = new ChapterEpubItem({sourceUrl, title}, content, chapter.libraryChapterIndex);
             let parser = ChapterCache.getCurrentParser();
@@ -1086,9 +1039,6 @@ class ChapterCache {
             if (row) {
                 ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, sourceUrl, title);
             }
-            
-            console.log(`✅ Chapter "${title}" successfully added to library book`);
-            
         } catch (error) {
             console.error("Error adding chapter to library book:", error);
             // Fall back to cache if library addition fails
@@ -1124,7 +1074,7 @@ class ChapterCache {
             });
             
             // Update cache button visibility using existing method
-            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
             
         } catch (error) {
             console.error("Error updating cache to library icons:", error);

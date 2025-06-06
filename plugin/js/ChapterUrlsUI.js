@@ -62,7 +62,7 @@ class ChapterUrlsUI {
             chapter.row = row;
             ChapterUrlsUI.appendColumnDataToRow(row, chapter);
             ChapterUrlsUI.appendChapterStatusColumnToRow(row, chapter).then(async () => {
-                await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+                await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
             });
             chapterList.appendChild(row);
             ChapterUrlsUI.appendOptionToSelect(rangeStart, index, chapter, memberForTextOption);
@@ -135,7 +135,7 @@ class ChapterUrlsUI {
                         checkbox.disabled = false; // All chapters are selectable
                     }
 
-                    await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+                    await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
                 });
                 chapterList.appendChild(row);
             }
@@ -223,7 +223,7 @@ class ChapterUrlsUI {
         
         // Re-create the status column using existing method
         ChapterUrlsUI.appendChapterStatusColumnToRow(row, chapter).then(async () => {
-            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
         });
     }
 
@@ -714,9 +714,9 @@ class ChapterUrlsUI {
     }
 
     /**
-    * Update visibility of delete cache button and header more actions based on whether any chapters are cached
+    * Update visibility of header more actions based on whether any chapters are downloaded
     */
-    static async updateDeleteCacheButtonVisibility() {
+    static async updateHeaderMoreActionsVisibility() {
         // Check if there are actually cached chapters for the current page's URLs
         let hasCache = await ChapterCache.hasAnyCachedChaptersOnPage();
         let headerMoreActions = document.getElementById("headerMoreActionsWrapper");
@@ -793,12 +793,7 @@ class ChapterUrlsUI {
         deleteItem.appendChild(deleteText);
         deleteItem.onclick = async (e) => {
             e.stopPropagation();
-            // Check if this is a library chapter and handle accordingly
-            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
-                await ChapterUrlsUI.deleteLibraryChapter(chapter, row);
-            } else {
-                await ChapterCache.deleteSingleChapter(sourceUrl, title, row);
-            }
+            await ChapterUrlsUI.deleteChapter(chapter, row);
             ChapterUrlsUI.hideMoreActionsMenu(menu);
         };
         
@@ -1620,7 +1615,7 @@ class ChapterUrlsUI {
             }
             
             // Update delete button visibility
-            await ChapterUrlsUI.updateDeleteCacheButtonVisibility();
+            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
             
             // Show errors if any occurred
             if (errors.length > 0) {
@@ -1650,8 +1645,6 @@ class ChapterUrlsUI {
                 return;
             }
 
-            console.log(`Refreshing library chapter: ${chapter.title}`);
-            
             // Update UI to show refreshing state
             ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, chapter.sourceUrl, chapter.title);
 
@@ -1664,9 +1657,6 @@ class ChapterUrlsUI {
 
             // Update UI to show success - keep the eye icon since it's still in the library
             ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
-            
-            alert(`Successfully refreshed "${chapter.title}" in the library book.`);
-
         } catch (error) {
             console.error("Failed to refresh library chapter:", error);
             ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, chapter.sourceUrl, chapter.title);
@@ -1675,39 +1665,35 @@ class ChapterUrlsUI {
     }
 
     /**
-     * Delete a library chapter from the actual library book
-     * @param {Object} chapter - Chapter object with libraryBookId and libraryChapterIndex  
-     * @param {HTMLElement} row - The table row element
+     * Delete a single chapter and update UI
      */
-    static async deleteLibraryChapter(chapter, row) {
+    static async deleteChapter(chapter, row) {
         try {
-            if (!confirm(`Delete "${chapter.title}" from the library book?\n\nThis will permanently remove the chapter from your library and cannot be undone.`)) {
-                return;
+            // Check if this is a library chapter or a cached chapter
+            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                // Use the LibraryBookData method to delete
+                await LibraryBookData.deleteChapterFromBook(
+                    chapter.libraryBookId,
+                    chapter.libraryChapterIndex
+                );
+            } else {
+                // Use the ChapterCache method to delete
+                await ChapterCache.deleteChapter(chapter.sourceUrl);
+                await ChapterCache.refreshCacheStats();
             }
 
-            console.log(`Deleting library chapter: ${chapter.title}`);
-            
-            // Update UI to show deleting state
-            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, chapter.sourceUrl, chapter.title);
-
-            // Use the LibraryBookData method to delete the chapter
-            await LibraryBookData.deleteChapterFromBook(
-                chapter.libraryBookId,
-                chapter.libraryChapterIndex
-            );
-
-            // Update the chapter list by reloading the library book
-            await LibraryBookData.loadLibraryBookInMainUI(chapter.libraryBookId);
-            
-            alert(`Successfully deleted "${chapter.title}" from the library book.`);
+            // Update UI to show deleted state
+            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
 
         } catch (error) {
-            console.error("Failed to delete library chapter:", error);
+            console.error("Failed to delete chapter:", error);
             ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, chapter.sourceUrl, chapter.title);
-            alert("Failed to delete library chapter: " + error.message);
+            alert("Failed to delete chapter: " + error.message);
         }
     }
 }
+
 ChapterUrlsUI.RangeCalculator = class {
     constructor()
     {

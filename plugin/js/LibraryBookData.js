@@ -701,10 +701,7 @@ class LibraryBookData {
             if (chapterIndex < 0 || chapterIndex >= bookData.chapters.length) {
                 throw new Error(`Chapter index ${chapterIndex} out of range (0-${bookData.chapters.length - 1})`);
             }
-            
-            let chapterToDelete = bookData.chapters[chapterIndex];
-            console.log(`🗑️ Deleting chapter ${chapterIndex}: "${chapterToDelete.title}"`);
-            
+
             // Get the stored EPUB data
             let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + bookId);
             if (!epubBase64) {
@@ -722,15 +719,14 @@ class LibraryBookData {
             let verificationData = await LibraryBookData.extractBookData(bookId);
             
             if (verificationData.chapters.length === bookData.chapters.length) {
-                console.error(`❌ Delete failed: Chapter count unchanged`);
+                console.error(`Delete failed: Chapter count unchanged`);
                 return false;
             } else {
-                console.log(`✅ Chapter deleted successfully (${bookData.chapters.length} → ${verificationData.chapters.length} chapters)`);
                 return true;
             }
             
         } catch (error) {
-            console.error("❌ Error deleting chapter from book:", error);
+            console.error("Error deleting chapter from book:", error);
             throw error;
         }
     }
@@ -756,7 +752,6 @@ class LibraryBookData {
             }
             
             let chapterToRefresh = bookData.chapters[chapterIndex];
-            console.log(`🔄 Refreshing chapter ${chapterIndex}: ${chapterToRefresh.title}`);
             
             // Create a mock webPage object for the existing parser pipeline
             let webPage = {
@@ -817,8 +812,6 @@ class LibraryBookData {
             // Store refresh timestamp in localStorage for UI indicators
             let refreshKey = `LibRefresh_${bookId}_${chapterIndex}`;
             localStorage.setItem(refreshKey, new Date().toISOString());
-            
-            console.log(`✅ Chapter ${chapterIndex} refreshed successfully`);
             return true;
             
         } catch (error) {

@@ -47,15 +47,11 @@ class EpubUpdater {
      * @returns {string} Updated toc.ncx
      */
     static removeChapterFromTocNcx(tocNcx, chapterNumber, chapterNumberStr, epubPaths) {
-        console.log(`🔧 Removing chapter ${chapterNumberStr} from toc.ncx`);
         let updated = tocNcx;
 
         // Remove the navPoint for the deleted chapter
         let navPointRegex = new RegExp(`\\s*<navPoint id="body${chapterNumberStr}"[^>]*>.*?<\\/navPoint>`, 'gs');
-        let navPointsBefore = (updated.match(navPointRegex) || []).length;
         updated = updated.replace(navPointRegex, '');
-        let navPointsAfter = (updated.match(navPointRegex) || []).length;
-        console.log(`🔧 Removed ${navPointsBefore - navPointsAfter} navPoint entries`);
 
         // Update playOrder for subsequent chapters (decrement by 1)
         // Find all playOrder values greater than the deleted chapter
@@ -68,7 +64,6 @@ class EpubUpdater {
             }
             return match;
         });
-        console.log(`🔧 Updated ${playOrderUpdates} playOrder values`);
 
         return updated;
     }
@@ -81,16 +76,11 @@ class EpubUpdater {
      * @returns {string} Updated nav.xhtml
      */
     static removeChapterFromNavXhtml(navXhtml, chapterNumberStr, epubPaths) {
-        console.log(`🔧 Removing chapter ${chapterNumberStr} from nav.xhtml`);
         let updated = navXhtml;
 
         // Remove the list item for the deleted chapter
         let listItemRegex = new RegExp(`\\s*<li><a href="${epubPaths.textDirRel}\\/${chapterNumberStr}\\.xhtml"[^>]*>[^<]*<\\/a><\\/li>`, 'g');
-        let itemsBefore = (updated.match(listItemRegex) || []).length;
         updated = updated.replace(listItemRegex, '');
-        let itemsAfter = (updated.match(listItemRegex) || []).length;
-        console.log(`🔧 Removed ${itemsBefore - itemsAfter} nav.xhtml list items`);
-
         return updated;
     }
 
