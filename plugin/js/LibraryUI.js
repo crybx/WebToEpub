@@ -1450,7 +1450,7 @@ class LibraryUI {
         
         let uploadFile = document.getElementById("LibEpubNewUploadFileModal");
         if (uploadFile && !uploadFile.dataset.hasListener) {
-            uploadFile.addEventListener("change", function() {LibraryStorage.LibHandelUpdate(this, -1, "", "", -1);});
+            uploadFile.addEventListener("change", function() {LibraryStorage.LibHandleUpdate(this, -1, "", "", -1);});
             uploadFile.dataset.hasListener = "true";
         }
         

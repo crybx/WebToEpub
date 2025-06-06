@@ -22,7 +22,7 @@ class LibraryStorage {
             }
         }
         if (LibidURL == -1) {
-            LibraryStorage.LibHandelUpdate(-1, AddEpub, main.getValueFromUiField("startingUrlInput"), fileName.replace(".epub", ""), LibidURL);
+            LibraryStorage.LibHandleUpdate(-1, AddEpub, main.getValueFromUiField("startingUrlInput"), fileName.replace(".epub", ""), LibidURL);
             if (userPreferences.LibDownloadEpubAfterUpdate.value) {
                 return Download.save(AddEpub, fileName, overwriteExisting, backgroundDownload);
             } else {
@@ -47,7 +47,7 @@ class LibraryStorage {
     }
     
     /**
-     * Get highest file number from EPUB content based on regex pattern
+     * Get the highest file number from EPUB content based on regex pattern
      */
     static LibHighestFileNumber(Content, Regex, String) {
         let array = Content.map(a => a = a.filename).filter(a => a.match(Regex)).map(a => a = parseInt(a.substring(String.length, String.length + 4)));
@@ -196,7 +196,7 @@ class LibraryStorage {
             MergedEpubZip.add(epubPaths.navXhtml, new zip.TextReader(PreviousEpubTocEpub3Text));
         }
         let content = await MergedEpubZip.close();
-        LibraryStorage.LibHandelUpdate(-1, content, await LibraryStorage.LibGetFromStorage("LibStoryURL" + LibidURL), await LibraryStorage.LibGetFromStorage("LibFilename" + LibidURL), LibidURL, NewChapter);
+        LibraryStorage.LibHandleUpdate(-1, content, await LibraryStorage.LibGetFromStorage("LibStoryURL" + LibidURL), await LibraryStorage.LibGetFromStorage("LibFilename" + LibidURL), LibidURL, NewChapter);
         
         // Remove cached chapters that are now in library storage after merge
         await LibraryStorage.LibRemoveCachedChaptersMovedToLibrary(LibidURL.toString());
@@ -339,7 +339,7 @@ class LibraryStorage {
      */
     static async LibSaveMetadataChange(obj) {
         let LibTitleInput = document.getElementById("LibTitleInput"+obj.dataset.libepubid).value;
-        let LibAutorInput = document.getElementById("LibAutorInput"+obj.dataset.libepubid).value;
+        let LibAuthorInput = document.getElementById("LibAuthorInput"+obj.dataset.libepubid).value;
         let LibLanguageInput = document.getElementById("LibLanguageInput"+obj.dataset.libepubid).value;
         let LibSubjectInput = document.getElementById("LibSubjectInput"+obj.dataset.libepubid).value;
         let LibDescriptionInput = document.getElementById("LibDescriptionInput"+obj.dataset.libepubid).value;
@@ -370,7 +370,7 @@ class LibraryStorage {
             LibSaveMetadataString += "<dc:date>"+LibDateCreated+"</dc:date>";
             LibSaveMetadataString += "<dc:subject>"+LibSubjectInput+"</dc:subject>";
             LibSaveMetadataString += "<dc:description>"+LibDescriptionInput+"</dc:description>";
-            LibSaveMetadataString += "<dc:creator opf:file-as=\""+LibAutorInput+"\" opf:role=\"aut\">"+LibAutorInput+"</dc:creator>";
+            LibSaveMetadataString += "<dc:creator opf:file-as=\""+LibAuthorInput+"\" opf:role=\"aut\">"+LibAuthorInput+"</dc:creator>";
 
             opfFile = opfFile.replace(new RegExp("<dc:title>.+?</dc:creator>", "gs"), LibSaveMetadataString);
 
@@ -394,7 +394,7 @@ class LibraryStorage {
     /**
      * Handle EPUB file update/upload
      */
-    static async LibHandelUpdate(objbtn, Blobdata, StoryURL, Filename, Id, NewChapterCount) {
+    static async LibHandleUpdate(objbtn, Blobdata, StoryURL, Filename, Id, NewChapterCount) {
         LibraryUI.LibShowLoadingText();
         LibraryStorage.LibFileReaderAddListeners();
         if (objbtn != -1) {
