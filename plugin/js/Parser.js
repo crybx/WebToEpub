@@ -256,7 +256,7 @@ class Parser {
             : (element) => element;
 
         let chapterLinks = [...element.querySelectorAll("a")]
-            .filter(link => webPage.nextPrevChapters.has(util.normalizeUrlForCompare(link.href)))
+            .filter(link => webPage.nextPrevChapters && webPage.nextPrevChapters.has(util.normalizeUrlForCompare(link.href)))
             .map(link => elementToRemove(link));
         util.removeElements(chapterLinks);
     }

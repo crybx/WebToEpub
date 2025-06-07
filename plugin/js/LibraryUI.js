@@ -247,8 +247,10 @@ class LibraryUI {
                 
                 let storyUrl = await LibraryStorage.LibGetFromStorage("LibStoryURL"+CurrentLibKeys[i]);
                 let filename = await LibraryStorage.LibGetFromStorage("LibFilename"+CurrentLibKeys[i]);
-                if (storyUrl) document.getElementById("LibStoryURL"+CurrentLibKeys[i]).value = storyUrl;
-                if (filename) document.getElementById("LibFilename"+CurrentLibKeys[i]).value = filename;
+                let storyUrlElement = document.getElementById("LibStoryURL"+CurrentLibKeys[i]);
+                let filenameElement = document.getElementById("LibFilename"+CurrentLibKeys[i]);
+                if (storyUrl && storyUrlElement) storyUrlElement.value = storyUrl;
+                if (filename && filenameElement) filenameElement.value = filename;
                 
                 // Set the title display
                 try {
