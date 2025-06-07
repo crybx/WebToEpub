@@ -633,7 +633,7 @@ class LibraryBookData {
                     
                     // Update chapter table incrementally with merged data
                     let chapterUrlsUI = new ChapterUrlsUI(window.parser);
-                    await chapterUrlsUI.updateChapterTableIncremental(updatedChapters);
+                    await chapterUrlsUI.updateChapterListIncrementally(updatedChapters);
                     
                     // Add library-specific visual indicators
                     await ChapterUrlsUI.addLibraryChapterIndicators(bookId, updatedChapters);
