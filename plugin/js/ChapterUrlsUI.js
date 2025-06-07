@@ -467,26 +467,7 @@ class ChapterUrlsUI {
             } else {
                 ChapterUrlsUI.lastSelectedRow = row.rowIndex;
             }
-            
-            // Pre-cache library chapter content when selected for inclusion
-            if (checkbox.checked && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
-                try {
-                    // Check if already cached to avoid redundant work
-                    let cachedContent = await ChapterCache.get(chapter.sourceUrl);
-                    if (!cachedContent) {
-                        // Get library chapter content and cache it
-                        let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
-                        if (content) {
-                            await ChapterCache.set(chapter.sourceUrl, content);
-                            // Update visual status to show it's cached
-                            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
-                        }
-                    }
-                } catch (error) {
-                    console.error("Failed to cache library chapter:", error);
-                }
-            }
-            
+
             // Update the select all checkbox state (only if not in bulk update mode)
             if (!ChapterUrlsUI._updatingSelectAll) {
                 ChapterUrlsUI.updateSelectAllCheckboxState();
