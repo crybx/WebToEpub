@@ -244,6 +244,14 @@ const main = (function() {
 
         // Sync current checkbox states from UI back to parser state before download
         syncCheckboxStatesToParser();
+        
+        // Check if any chapters are selected after syncing
+        let selectedCount = [...parser.state.webPages.values()].filter(chapter => chapter.isIncludeable).length;
+        if (selectedCount === 0) {
+            alert("No chapters selected for download.");
+            setProcessingButtonsState(false);
+            return;
+        }
 
         // Check if we're in Library Mode with a library book loaded
         let isInLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
