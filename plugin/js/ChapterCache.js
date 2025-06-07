@@ -774,110 +774,171 @@ class ChapterCache {
     */
     static async downloadSingleChapterAsFile(sourceUrl, title) {
         try {
-            let content;
-            
-            // Check if we're in library mode and this is a library chapter
-            let isLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
-            let chapter = null;
-            
-            if (isLibraryMode) {
-                // Find the chapter data to check if it's a library chapter
-                let parser = ChapterCache.getCurrentParser();
-                if (parser && parser.state && parser.state.webPages) {
-                    chapter = [...parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
-                }
-                
-                // If this is a library chapter, get content from EPUB
-                if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
-                    content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
-                }
-            }
-            
-            // If we didn't get content from library, try the cache
-            if (!content) {
-                // Check if we have content in cache first
-                let cachedContent = await ChapterCache.get(sourceUrl);
-                if (cachedContent) {
-                    content = cachedContent;
-                } else {
-                    // Check if we have a cached error message
-                    let errorMessage = await ChapterCache.getChapterError(sourceUrl);
-                    if (errorMessage) {
-                        // Create error content element
-                        let errorElement = document.createElement("div");
-                        errorElement.className = "chapter-error";
-                        errorElement.innerHTML = `<h3>Chapter Download Failed</h3><p><strong>Error:</strong> ${errorMessage}</p><p class="error-details">This chapter could not be downloaded from the source website.</p>`;
-                        content = errorElement;
-                    } else if (webPage.rawDom) {
-                        // Use existing content from memory
-                        content = parser.convertRawDomToContent(webPage);
-                    } else {
-                        let parser = ChapterCache.getCurrentParser();
-                        if (!parser) {
-                            throw new Error("No parser available");
-                        }
-
-                        // Find the webPage object for this URL
-                        let webPage = null;
-                        for (let page of parser.getPagesToFetch().values()) {
-                            if (page.sourceUrl === sourceUrl) {
-                                webPage = page;
-                                break;
-                            }
-                        }
-
-                        if (!webPage) {
-                            throw new Error(`WebPage not found for URL: ${sourceUrl}`);
-                        }
-
-                        // Need to fetch the content
-                        if (!webPage.parser) {
-                            webPage.parser = parser;
-                        }
-                        await parser.fetchWebPageContent(webPage);
-                        if (webPage.rawDom && !webPage.error) {
-                            content = parser.convertRawDomToContent(webPage);
-                        }
-                    }
-                }
-            }
+            // Get content from appropriate source
+            let content = await this.getChapterContentForDownload(sourceUrl);
             
             if (!content) {
                 throw new Error("No content available for download");
             }
             
-            // Create HTML file with proper structure
-            let htmlContent = ChapterCache.createChapterHtml(title, content);
+            // Create and download the HTML file
+            await this.downloadContentAsHtml(content, title);
             
-            // Generate safe filename with book title and chapter title
-            let bookTitle = ChapterCache.getBookTitle();
-            let fileName = ChapterCache.createHtmlFilename(bookTitle, title);
-            
-            // Download the file
-            let blob = new Blob([htmlContent], {type: "text/html"});
-            let overwriteExisting = true; // Allow overwrite for individual downloads
-            // Respect user's "Don't popup Save As dialog" preference
-            let userPreferences = UserPreferences.readFromLocalStorage();
-            let backgroundDownload = userPreferences.noDownloadPopup.value;
-            
-            // Use the Download utility from the main codebase
-            if (typeof Download !== "undefined" && Download.save) {
-                await Download.save(blob, fileName, overwriteExisting, backgroundDownload);
-            } else {
-                // Fallback download method
-                let url = URL.createObjectURL(blob);
-                let a = document.createElement("a");
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
         } catch (error) {
             console.error("Failed to download chapter as file:", error);
             alert("Failed to download chapter as file: " + error.message);
         }
+    }
+    
+    /**
+    * Get chapter content from library, cache, or fetch new
+    */
+    static async getChapterContentForDownload(sourceUrl) {
+        // Try library mode first
+        let libraryContent = await this.getLibraryChapterContent(sourceUrl);
+        if (libraryContent) {
+            return libraryContent;
+        }
+        
+        // Try cache
+        let cachedContent = await ChapterCache.get(sourceUrl);
+        if (cachedContent) {
+            return cachedContent;
+        }
+        
+        // Check for cached error
+        let errorContent = await this.getCachedErrorContent(sourceUrl);
+        if (errorContent) {
+            return errorContent;
+        }
+        
+        // Fetch fresh content
+        return this.fetchFreshChapterContent(sourceUrl);
+    }
+    
+    /**
+    * Get content from library if in library mode
+    */
+    static async getLibraryChapterContent(sourceUrl) {
+        if (!window.currentLibraryBook?.id) {
+            return null;
+        }
+        
+        let parser = this.getCurrentParser();
+        if (!parser?.state?.webPages) {
+            return null;
+        }
+        
+        let chapter = [...parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
+        
+        if (chapter?.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+            return LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+        }
+        
+        return null;
+    }
+    
+    /**
+    * Get cached error content if available
+    */
+    static async getCachedErrorContent(sourceUrl) {
+        let errorMessage = await this.getChapterError(sourceUrl);
+        if (!errorMessage) {
+            return null;
+        }
+        
+        let errorElement = document.createElement("div");
+        errorElement.className = "chapter-error";
+        errorElement.innerHTML = `
+            <h3>Chapter Download Failed</h3>
+            <p><strong>Error:</strong> ${errorMessage}</p>
+            <p class="error-details">This chapter could not be downloaded from the source website.</p>`;
+        return errorElement;
+    }
+    
+    /**
+    * Fetch fresh chapter content from source
+    */
+    static async fetchFreshChapterContent(sourceUrl) {
+        let parser = this.getCurrentParser();
+        if (!parser) {
+            throw new Error("No parser available");
+        }
+        
+        // Find webPage
+        let webPage = this.findWebPageByUrl(parser, sourceUrl);
+        if (!webPage) {
+            throw new Error(`WebPage not found for URL: ${sourceUrl}`);
+        }
+        
+        // Check if already loaded in memory
+        if (webPage.rawDom) {
+            return parser.convertRawDomToContent(webPage);
+        }
+        
+        // Fetch fresh content
+        if (!webPage.parser) {
+            webPage.parser = parser;
+        }
+        
+        await parser.fetchWebPageContent(webPage);
+        
+        if (webPage.rawDom && !webPage.error) {
+            return parser.convertRawDomToContent(webPage);
+        }
+        
+        return null;
+    }
+    
+    /**
+    * Find webPage object by URL in parser
+    */
+    static findWebPageByUrl(parser, sourceUrl) {
+        for (let page of parser.getPagesToFetch().values()) {
+            if (page.sourceUrl === sourceUrl) {
+                return page;
+            }
+        }
+        return null;
+    }
+    
+    /**
+    * Download content as HTML file
+    */
+    static async downloadContentAsHtml(content, title) {
+        // Create HTML file
+        let htmlContent = this.createChapterHtml(title, content);
+        let bookTitle = this.getBookTitle();
+        let fileName = this.createHtmlFilename(bookTitle, title);
+        
+        // Create blob
+        let blob = new Blob([htmlContent], {type: "text/html"});
+        
+        // Get user preferences
+        let userPreferences = UserPreferences.readFromLocalStorage();
+        let backgroundDownload = userPreferences.noDownloadPopup.value;
+        
+        // Download file
+        if (typeof Download !== "undefined" && Download.save) {
+            await Download.save(blob, fileName, true, backgroundDownload);
+        } else {
+            // Fallback download
+            this.fallbackDownload(blob, fileName);
+        }
+    }
+    
+    /**
+    * Fallback download method using anchor element
+    */
+    static fallbackDownload(blob, fileName) {
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 
     /**
