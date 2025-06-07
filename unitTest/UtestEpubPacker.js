@@ -401,7 +401,7 @@ test("makeCoverImageXhtmlFile", function (assert) {
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">" +
         "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
             "<head>" +
-                "<title></title>" +
+                "<title>Cover</title>" +
                 "<link href=\"../Styles/stylesheet.css\" type=\"text/css\" rel=\"stylesheet\" />" +
             "</head>" +
             "<body>" +
@@ -436,7 +436,7 @@ test("makeCoverImageXhtmlFileAsImg", function (assert) {
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">" +
         "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
             "<head>" +
-                "<title></title>" +
+                "<title>Cover</title>" +
                 "<link href=\"../Styles/stylesheet.css\" type=\"text/css\" rel=\"stylesheet\" />" +
             "</head>" +
             "<body>" +
@@ -466,7 +466,7 @@ test("makeCoverImageXhtmlFileNoSourceUrl", function (assert) {
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">" +
         "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
             "<head>" +
-                "<title></title>" +
+                "<title>Cover</title>" +
                 "<link href=\"../Styles/stylesheet.css\" type=\"text/css\" rel=\"stylesheet\" />" +
             "</head>" +
             "<body>" +
