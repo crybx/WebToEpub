@@ -774,49 +774,70 @@ class ChapterCache {
     */
     static async downloadSingleChapterAsFile(sourceUrl, title) {
         try {
-            let parser = ChapterCache.getCurrentParser();
-            if (!parser) {
-                throw new Error("No parser available");
-            }
+            let content;
             
-            // Find the webPage object for this URL
-            let webPage = null;
-            for (let page of parser.getPagesToFetch().values()) {
-                if (page.sourceUrl === sourceUrl) {
-                    webPage = page;
-                    break;
+            // Check if we're in library mode and this is a library chapter
+            let isLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
+            let chapter = null;
+            
+            if (isLibraryMode) {
+                // Find the chapter data to check if it's a library chapter
+                let parser = ChapterCache.getCurrentParser();
+                if (parser && parser.state && parser.state.webPages) {
+                    chapter = [...parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
+                }
+                
+                // If this is a library chapter, get content from EPUB
+                if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+                    content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
                 }
             }
             
-            if (!webPage) {
-                throw new Error(`WebPage not found for URL: ${sourceUrl}`);
-            }
-            
-            let content;
-            // Check if we have content in cache first
-            let cachedContent = await ChapterCache.get(sourceUrl);
-            if (cachedContent) {
-                content = cachedContent;
-            } else {
-                // Check if we have a cached error message
-                let errorMessage = await ChapterCache.getChapterError(sourceUrl);
-                if (errorMessage) {
-                    // Create error content element
-                    let errorElement = document.createElement("div");
-                    errorElement.className = "chapter-error";
-                    errorElement.innerHTML = `<h3>Chapter Download Failed</h3><p><strong>Error:</strong> ${errorMessage}</p><p class="error-details">This chapter could not be downloaded from the source website.</p>`;
-                    content = errorElement;
-                } else if (webPage.rawDom) {
-                    // Use existing content from memory
-                    content = parser.convertRawDomToContent(webPage);
+            // If we didn't get content from library, try the cache
+            if (!content) {
+                // Check if we have content in cache first
+                let cachedContent = await ChapterCache.get(sourceUrl);
+                if (cachedContent) {
+                    content = cachedContent;
                 } else {
-                    // Need to fetch the content
-                    if (!webPage.parser) {
-                        webPage.parser = parser;
-                    }
-                    await parser.fetchWebPageContent(webPage);
-                    if (webPage.rawDom && !webPage.error) {
+                    // Check if we have a cached error message
+                    let errorMessage = await ChapterCache.getChapterError(sourceUrl);
+                    if (errorMessage) {
+                        // Create error content element
+                        let errorElement = document.createElement("div");
+                        errorElement.className = "chapter-error";
+                        errorElement.innerHTML = `<h3>Chapter Download Failed</h3><p><strong>Error:</strong> ${errorMessage}</p><p class="error-details">This chapter could not be downloaded from the source website.</p>`;
+                        content = errorElement;
+                    } else if (webPage.rawDom) {
+                        // Use existing content from memory
                         content = parser.convertRawDomToContent(webPage);
+                    } else {
+                        let parser = ChapterCache.getCurrentParser();
+                        if (!parser) {
+                            throw new Error("No parser available");
+                        }
+
+                        // Find the webPage object for this URL
+                        let webPage = null;
+                        for (let page of parser.getPagesToFetch().values()) {
+                            if (page.sourceUrl === sourceUrl) {
+                                webPage = page;
+                                break;
+                            }
+                        }
+
+                        if (!webPage) {
+                            throw new Error(`WebPage not found for URL: ${sourceUrl}`);
+                        }
+
+                        // Need to fetch the content
+                        if (!webPage.parser) {
+                            webPage.parser = parser;
+                        }
+                        await parser.fetchWebPageContent(webPage);
+                        if (webPage.rawDom && !webPage.error) {
+                            content = parser.convertRawDomToContent(webPage);
+                        }
                     }
                 }
             }
@@ -835,7 +856,7 @@ class ChapterCache {
             // Download the file
             let blob = new Blob([htmlContent], {type: "text/html"});
             let overwriteExisting = true; // Allow overwrite for individual downloads
-            // Respect user's "Don't popup SaveAs dialog" preference
+            // Respect user's "Don't popup Save As dialog" preference
             let userPreferences = UserPreferences.readFromLocalStorage();
             let backgroundDownload = userPreferences.noDownloadPopup.value;
             
