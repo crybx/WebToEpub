@@ -174,7 +174,25 @@ class EpubUpdater {
     }
 
     /**
-     * Validate chapter index against available chapters
+     * Find chapter filename by spine position (accounts for cover pages and spine order)
+     * @param {Array} entries - EPUB entries
+     * @param {Object} epubPaths - EPUB structure paths  
+     * @param {number} spineIndex - Index in spine order (0-based)
+     * @returns {Promise<string|null>} Chapter filename or null if not found
+     */
+    static async findChapterBySpineIndex(entries, epubPaths, spineIndex) {
+        try {
+            let chapters = LibraryBookData.extractChapterList(entries);
+
+
+        } catch (error) {
+            console.error("Error finding chapter by spine index:", error);
+            return null;
+        }
+    }
+
+    /**
+     * Validate chapter index against available chapters (in the chapter list UI, not valid against spine order)
      * @param {number} chapterIndex - Index to validate
      * @param {Array} chapterFiles - Available chapter files
      * @param {boolean} allowAppend - Whether to allow index at end for appending
@@ -277,20 +295,23 @@ class EpubUpdater {
 
     /**
      * Delete a chapter from an existing EPUB
-     * @param {string} epubBase64 - Base64 encoded EPUB data
-     * @param {number} chapterIndex - Index of chapter to delete (0-based)
-     * @returns {Promise<Blob>} Updated EPUB as blob
+     * @returns {Promise<boolean>} True if chapter was deleted successfully
      */
-    static async deleteChapter(epubBase64, chapterIndex) {
+    static async deleteChapter(chapter) {
         try {
+            let bookId = chapter.libraryBookId;
+            // Get the book data before changes
+            let bookData = await LibraryBookData.extractBookData(bookId);
+
+            // Get the stored EPUB data
+            let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + bookId);
+            if (!epubBase64) {
+                throw new Error("Book not found in library");
+            }
+
             // Load the EPUB using helper
             let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
             let epubPaths = util.getEpubStructure();
-
-            // Find and validate chapter files using helpers
-            let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
-            let targetChapterFile = EpubUpdater.validateChapterIndex(chapterIndex, chapterFiles);
-            let chapterFilename = targetChapterFile.filename;
 
             // Read metadata files using helper
             let {navXhtmlEntry, contentOpfText, tocNcxText, navXhtmlText} = await EpubUpdater.readMetadataFiles(entries, epubPaths);
@@ -300,7 +321,7 @@ class EpubUpdater {
 
             // Copy all entries except the deleted chapter and metadata files (we'll regenerate those)
             for (let entry of entries) {
-                if (entry.filename === chapterFilename ||
+                if (entry.filename === chapter.libraryFilePath ||
                     entry.filename === epubPaths.contentOpf ||
                     entry.filename === epubPaths.tocNcx ||
                     (navXhtmlEntry && entry.filename === epubPaths.navXhtml)) {
@@ -311,22 +332,27 @@ class EpubUpdater {
             }
 
             // Extract chapter identifier from the actual filename for metadata processing
-            let chapterRelativePath = chapterFilename.replace(epubPaths.contentDir + "/", "");
-            let chapterBasename = chapterFilename.split('/').pop().replace('.xhtml', '');
+            let chapterRelativePath = chapter.libraryFilePath.replace(epubPaths.contentDir + "/", "");
+            let chapterBasename = chapter.libraryFilePath.split('/').pop().replace('.xhtml', '');
             
             let updatedContentOpf = EpubUpdater.removeChapterFromContentOpfByFilename(contentOpfText, chapterRelativePath, chapterBasename);
             let updatedTocNcx = EpubUpdater.removeChapterFromTocNcxByFilename(tocNcxText, chapterRelativePath);
             let updatedNavXhtml = navXhtmlText ? EpubUpdater.removeChapterFromNavXhtmlByFilename(navXhtmlText, chapterRelativePath) : null;
 
             // Add metadata files and close EPUB using helper
-            return await EpubUpdater.addMetadataFilesAndClose(newEpubZip, epubZip, epubPaths, updatedContentOpf, updatedTocNcx, updatedNavXhtml);
+            let updatedEpubBlob = await EpubUpdater.addMetadataFilesAndClose(newEpubZip, epubZip, epubPaths, updatedContentOpf, updatedTocNcx, updatedNavXhtml);
+            let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
 
+            await LibraryStorage.LibSaveToStorage("LibEpub" + bookId, newEpubBase64);
+
+            // Verify the deletion worked
+            let verificationData = await LibraryBookData.extractBookData(bookId);
+            return !(verificationData.chapters.length === bookData.chapters.length);
         } catch (error) {
             console.error("Error deleting chapter from EPUB:", error);
             throw error;
         }
     }
-
 
     /**
      * Refresh a chapter in an existing EPUB by replacing its content
@@ -369,15 +395,15 @@ class EpubUpdater {
     }
 
     /**
-     * Add a new chapter to an existing EPUB
+     * Insert a new chapter at a specific position in an existing EPUB
      * @param {string} epubBase64 - Base64 encoded EPUB data
-     * @param {number} chapterIndex - Index where to insert the new chapter (0-based)
+     * @param {number} insertIndex - EPUB spine index where to insert the new chapter (0-based)
      * @param {string} newChapterXhtml - XHTML content for the new chapter
      * @param {string} chapterTitle - Title of the new chapter
      * @param {string} chapterSourceUrl - Source URL of the chapter (optional)
      * @returns {Promise<Blob>} Updated EPUB as blob
      */
-    static async addChapter(epubBase64, chapterIndex, newChapterXhtml, chapterTitle, chapterSourceUrl = "") {
+    static async insertChapter(epubBase64, insertIndex, newChapterXhtml, chapterTitle, chapterSourceUrl = "") {
         try {
             // Load the EPUB using helper
             let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
@@ -385,20 +411,19 @@ class EpubUpdater {
 
             // Find and validate chapter files using helpers
             let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
-            EpubUpdater.validateChapterIndex(chapterIndex, chapterFiles, true); // Allow appending
 
-            // Generate new chapter filename
-            let newChapterNumber = chapterFiles.length + 1; // Next available number
+            // Generate new chapter filename - use next available number
+            let newChapterNumber = chapterFiles.length + 1;
             let newChapterNumberStr = ("0000" + newChapterNumber).slice(-4);
             let newChapterFilename = `${epubPaths.textDir}/${newChapterNumberStr}.xhtml`;
 
             // Read metadata files using helper
             let {navXhtmlEntry, contentOpfText, tocNcxText, navXhtmlText} = await EpubUpdater.readMetadataFiles(entries, epubPaths);
 
-            // Update metadata files with new chapter
-            let updatedContentOpf = EpubUpdater.addChapterToContentOpf(contentOpfText, newChapterNumberStr, chapterTitle, chapterSourceUrl, epubPaths);
-            let updatedTocNcx = EpubUpdater.addChapterToTocNcx(tocNcxText, newChapterNumber, newChapterNumberStr, chapterTitle, epubPaths);
-            let updatedNavXhtml = navXhtmlText ? EpubUpdater.addChapterToNavXhtml(navXhtmlText, newChapterNumberStr, chapterTitle, epubPaths) : null;
+            // Update metadata files with new chapter at the correct position
+            let updatedContentOpf = EpubUpdater.insertChapterInContentOpf(contentOpfText, newChapterNumberStr, chapterTitle, chapterSourceUrl, insertIndex, epubPaths);
+            let updatedTocNcx = EpubUpdater.insertChapterInTocNcx(tocNcxText, newChapterNumber, newChapterNumberStr, chapterTitle, insertIndex, epubPaths);
+            let updatedNavXhtml = navXhtmlText ? EpubUpdater.insertChapterInNavXhtml(navXhtmlText, newChapterNumberStr, chapterTitle, insertIndex, epubPaths) : null;
 
             // Create new EPUB writer using helper
             let {newEpubZip} = EpubUpdater.createEpubWriter();
@@ -421,21 +446,22 @@ class EpubUpdater {
             return await EpubUpdater.addMetadataFilesAndClose(newEpubZip, epubZip, epubPaths, updatedContentOpf, updatedTocNcx, updatedNavXhtml);
 
         } catch (error) {
-            console.error("Error adding chapter to EPUB:", error);
+            console.error("Error inserting chapter into EPUB:", error);
             throw error;
         }
     }
 
     /**
-     * Add chapter references to content.opf file
+     * Insert chapter references into content.opf file at specific position
      * @param {string} contentOpf - Original content.opf content
-     * @param {string} chapterNumberStr - Chapter number as 4-digit string (e.g., "0001")
+     * @param {string} chapterNumberStr - Chapter number as 4-digit string
      * @param {string} chapterTitle - Title of the chapter
      * @param {string} chapterSourceUrl - Source URL of the chapter (optional)
+     * @param {number} insertIndex - Position to insert at (0-based)
      * @param {Object} epubPaths - EPUB structure paths
      * @returns {string} Updated content.opf
      */
-    static addChapterToContentOpf(contentOpf, chapterNumberStr, chapterTitle, chapterSourceUrl, epubPaths) {
+    static insertChapterInContentOpf(contentOpf, chapterNumberStr, chapterTitle, chapterSourceUrl, insertIndex, epubPaths) {
         let updated = contentOpf;
 
         // Add dc:source for the chapter if source URL is provided
@@ -444,57 +470,105 @@ class EpubUpdater {
             updated = updated.replace('</metadata>', sourceElement + '\n    </metadata>');
         }
 
-        // Add manifest item for the chapter
+        // For manifest, we can append since file order doesn't matter
         let manifestItem = `\n        <item href="${epubPaths.textDirRel}/${chapterNumberStr}.xhtml" id="xhtml${chapterNumberStr}" media-type="application/xhtml+xml"/>`;
         updated = updated.replace('</manifest>', manifestItem + '\n    </manifest>');
 
-        // Add spine itemref for the chapter
+        // For spine, we need to insert at the correct position
         let spineItem = `\n        <itemref idref="xhtml${chapterNumberStr}"/>`;
-        updated = updated.replace('</spine>', spineItem + '\n    </spine>');
+        
+        // Find all existing itemref elements to determine insertion point
+        let itemrefRegex = /<itemref[^>]*\/>/g;
+        let itemrefs = [...updated.matchAll(itemrefRegex)];
+        
+        if (insertIndex >= itemrefs.length) {
+            // Insert at end
+            updated = updated.replace('</spine>', spineItem + '\n    </spine>');
+        } else {
+            // Insert before the itemref at insertIndex
+            let targetItemref = itemrefs[insertIndex][0];
+            updated = updated.replace(targetItemref, spineItem + '\n        ' + targetItemref);
+        }
 
         return updated;
     }
 
     /**
-     * Add chapter references to toc.ncx file
+     * Insert chapter references into toc.ncx file at specific position
      * @param {string} tocNcx - Original toc.ncx content
      * @param {number} chapterNumber - Chapter number (1-based)
      * @param {string} chapterNumberStr - Chapter number as 4-digit string
      * @param {string} chapterTitle - Title of the chapter
+     * @param {number} insertIndex - Position to insert at (0-based)
      * @param {Object} epubPaths - EPUB structure paths
      * @returns {string} Updated toc.ncx
      */
-    static addChapterToTocNcx(tocNcx, chapterNumber, chapterNumberStr, chapterTitle, epubPaths) {
+    static insertChapterInTocNcx(tocNcx, chapterNumber, chapterNumberStr, chapterTitle, insertIndex, epubPaths) {
         let updated = tocNcx;
 
-        // Add navPoint for the new chapter
-        let navPointElement = `\n
-        <navPoint id="body${chapterNumberStr}" playOrder="${chapterNumber}">
+        // Find all existing navPoint elements to determine insertion point
+        let navPointRegex = /<navPoint[^>]*>.*?<\/navPoint>/gs;
+        let navPoints = [...updated.matchAll(navPointRegex)];
+
+        // Calculate the playOrder - it should be insertIndex + 1 (1-based)
+        let playOrder = insertIndex + 1;
+
+        // Update playOrder for subsequent chapters (increment by 1)
+        updated = updated.replace(/playOrder="(\d+)"/g, (match, playOrderStr) => {
+            let currentPlayOrder = parseInt(playOrderStr);
+            if (currentPlayOrder >= playOrder) {
+                return `playOrder="${currentPlayOrder + 1}"`;
+            }
+            return match;
+        });
+
+        // Create navPoint for the new chapter
+        let navPointElement = `\n        <navPoint id="body${chapterNumberStr}" playOrder="${playOrder}">
             <navLabel>
                 <text>${chapterTitle}</text>
             </navLabel>
             <content src="${epubPaths.textDirRel}/${chapterNumberStr}.xhtml"/>
         </navPoint>`;
 
-        updated = updated.replace('</navMap>', navPointElement + '\n    </navMap>');
+        if (insertIndex >= navPoints.length) {
+            // Insert at end
+            updated = updated.replace('</navMap>', navPointElement + '\n    </navMap>');
+        } else {
+            // Insert before the navPoint at insertIndex
+            let targetNavPoint = navPoints[insertIndex][0];
+            updated = updated.replace(targetNavPoint, navPointElement + '\n        ' + targetNavPoint);
+        }
 
         return updated;
     }
 
     /**
-     * Add chapter references to nav.xhtml file (EPUB 3)
+     * Insert chapter references into nav.xhtml file at specific position (EPUB 3)
      * @param {string} navXhtml - Original nav.xhtml content
      * @param {string} chapterNumberStr - Chapter number as 4-digit string
      * @param {string} chapterTitle - Title of the chapter
+     * @param {number} insertIndex - Position to insert at (0-based)
      * @param {Object} epubPaths - EPUB structure paths
      * @returns {string} Updated nav.xhtml
      */
-    static addChapterToNavXhtml(navXhtml, chapterNumberStr, chapterTitle, epubPaths) {
+    static insertChapterInNavXhtml(navXhtml, chapterNumberStr, chapterTitle, insertIndex, epubPaths) {
         let updated = navXhtml;
 
-        // Add list item for the new chapter
+        // Find all existing list items to determine insertion point
+        let listItemRegex = /<li><a href="[^"]*"[^>]*>[^<]*<\/a><\/li>/g;
+        let listItems = [...updated.matchAll(listItemRegex)];
+
+        // Create list item for the new chapter
         let listItem = `\n            <li><a href="${epubPaths.textDirRel}/${chapterNumberStr}.xhtml">${chapterTitle}</a></li>`;
-        updated = updated.replace('</ol></nav>', listItem + '\n        </ol></nav>');
+
+        if (insertIndex >= listItems.length) {
+            // Insert at end
+            updated = updated.replace('</ol></nav>', listItem + '\n        </ol></nav>');
+        } else {
+            // Insert before the list item at insertIndex
+            let targetListItem = listItems[insertIndex][0];
+            updated = updated.replace(targetListItem, listItem + '\n            ' + targetListItem);
+        }
 
         return updated;
     }

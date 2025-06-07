@@ -594,9 +594,12 @@ class ChapterCache {
                 throw new Error(`WebPage not found for URL: ${sourceUrl}`);
             }
             
-            // Ensure webPage has parser reference (it may be missing in some cases)
+            // Ensure webPage has parser reference and nextPrevChapters set (it may be missing in some cases)
             if (!webPage.parser) {
                 webPage.parser = parser;
+            }
+            if (!webPage.nextPrevChapters) {
+                webPage.nextPrevChapters = new Set();
             }
             
             // Trigger the download using the existing download system
@@ -611,16 +614,10 @@ class ChapterCache {
 
                 if (isLibraryMode && chapter && chapter.libraryBookId !== undefined) {
                     // In library mode - add chapter directly to library book (whether it's new or existing)
-                    // For new chapters, we need to determine the next available chapter index
-                    if (chapter.libraryChapterIndex === undefined) {
-                        // This is a new chapter - find the next available index
-                        try {
-                            let bookData = await LibraryBookData.extractBookData(chapter.libraryBookId);
-                            chapter.libraryChapterIndex = bookData.chapters.length; // Append at end
-                        } catch (error) {
-                            console.error("Error getting book data for new chapter:", error);
-                            chapter.libraryChapterIndex = 0; // Fallback
-                        }
+                    // For new chapters, we need to determine the correct index to insert at
+                    if (chapter.epubSpineIndex === undefined) {
+                        // This is a new chapter - find the correct position based on UI chapter list
+                        chapter.epubSpineIndex = await LibraryBookData.calculateChapterInsertionIndex(chapter, sourceUrl);
                     }
                     await ChapterCache.addChapterToLibraryBook(chapter, content, sourceUrl, title, row);
                 } else {
@@ -797,8 +794,8 @@ class ChapterCache {
         
         let chapter = [...parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
         
-        if (chapter?.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
-            return LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+        if (chapter?.isInBook && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
+            return LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.epubSpineIndex);
         }
         
         return null;
@@ -1041,7 +1038,7 @@ class ChapterCache {
     static async addChapterToLibraryBook(chapter, content, sourceUrl, title, row) {
         try {
             // Generate XHTML using existing EPUB infrastructure
-            let epubItem = new ChapterEpubItem({sourceUrl, title}, content, chapter.libraryChapterIndex);
+            let epubItem = new ChapterEpubItem({sourceUrl, title}, content, chapter.epubSpineIndex);
             let parser = ChapterCache.getCurrentParser();
             let emptyDocFactory = parser.emptyDocFactory || util.createEmptyXhtmlDoc;
             let contentValidator = parser.contentValidator || (xml => util.isXhtmlInvalid(xml, EpubPacker.XHTML_MIME_TYPE));
@@ -1067,21 +1064,54 @@ class ChapterCache {
                 throw new Error("Book not found in library");
             }
             
-            // Add the new chapter using EpubUpdater
-            let updatedEpubBlob = await EpubUpdater.addChapter(
+            // Get the current book data to determine the correct spine index for insertion
+            let bookData = await LibraryBookData.extractBookData(chapter.libraryBookId);
+
+            // EpubUpdater needs the insertIndex to be the actual
+            // correct spot in the epub's spine to put the new chapter at.
+            let insertIndex;
+            let lastBookChapter = bookData.chapters[bookData.chapters.length - 1];
+            if (chapter.epubSpineIndex > lastBookChapter?.epubSpineIndex ?? -1) {
+                // Appending at the end
+                insertIndex = lastBookChapter?.epubSpineIndex + 1;
+            } else {
+                insertIndex = chapter.epubSpineIndex;
+            }
+
+            // Add the new chapter using EpubUpdater.insertChapter for proper positioning
+            let updatedEpubBlob = await EpubUpdater.insertChapter(
                 epubBase64, 
-                chapter.libraryChapterIndex, 
+                insertIndex,
                 newChapterXhtml, 
                 title, 
                 sourceUrl
             );
-            
+
             // Convert blob to base64 and save back to storage
             let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
             await LibraryStorage.LibSaveToStorage("LibEpub" + chapter.libraryBookId, newEpubBase64);
             
             // Remove from cache if it was there
             await ChapterCache.deleteChapter(sourceUrl);
+            
+            // Update the cached indices for chapters that got pushed forward by the insertion
+            if (window.parser && window.parser.state && window.parser.state.webPages) {
+                
+                // EpubUpdater.insertChapter inserts BEFORE the given index, pushing subsequent chapters forward
+                // So we need to increment the epubSpineIndex for all chapters at or after the insertion point
+                for (let [key, chapterObj] of window.parser.state.webPages.entries()) {
+                    if (chapterObj.isInBook && 
+                        chapterObj.libraryBookId === chapter.libraryBookId &&
+                        chapterObj.epubSpineIndex !== undefined &&
+                        chapterObj.epubSpineIndex >= insertIndex) {
+                        chapterObj.epubSpineIndex++;
+                    }
+                }
+
+                // Set this chapter's index to the insertion point (it now occupies that position)
+                chapter.isInBook = true;
+                chapter.epubSpineIndex = insertIndex;
+            }
             
             // Update UI to show library status
             if (row) {
@@ -1096,6 +1126,7 @@ class ChapterCache {
             throw error;
         }
     }
+
 
     /**
      * Update UI icons from eye (cache) to book (library) when chapters are moved

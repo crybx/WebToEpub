@@ -135,8 +135,9 @@ var ChapterInclusionLogic = (function() {
                 title: bookChapter.title,
                 isInBook: true,
                 previousDownload: true,
-                libraryChapterIndex: index,
+                epubSpineIndex: bookChapter.epubSpineIndex, // Preserve original spine position
                 libraryBookId: bookId,
+                libraryFilePath: bookChapter.libraryFilePath,
                 source: source,
                 chapterIndex: index,
                 rawDom: null,

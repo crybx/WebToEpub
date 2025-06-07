@@ -148,7 +148,7 @@ class LibraryBookData {
      * Extract chapter list from EPUB content
      * @param {Array} epubContent - EPUB file entries  
      * @param {string} bookId - The Library book ID
-     * @returns {Array} Array of chapter objects for UI
+     * @returns {Promise<Array>} Promise that resolves to array of chapter objects
      */
     static async extractChapterList(epubContent, bookId) {
         try {
@@ -201,51 +201,47 @@ class LibraryBookData {
                 }
             }
 
-            // Build chapter list
+            // Build chapter list - include ALL spine items to get real spine positions
             let chapters = [];
-            let chapterIndex = 0;
             
-            for (let i = 0; i < itemrefMatches.length; i++) {
-                let idrefMatch = itemrefMatches[i].match(/idref="([^"]+)"/);
+            for (let spinePosition = 0; spinePosition < itemrefMatches.length; spinePosition++) {
+                let idrefMatch = itemrefMatches[spinePosition].match(/idref="([^"]+)"/);
                 if (!idrefMatch) continue;
 
                 let idref = idrefMatch[1];
                 let href = manifest[idref];
                 if (!href) continue;
 
-                // Skip cover and non-chapter files
-                if (href.includes("Cover") || href.includes("nav.xhtml") || href.includes("toc")) {
-                    continue;
-                }
-
                 let fullPath = epubPaths.contentDir + "/" + href;
                 let chapterFile = epubContent.find(entry => entry.filename === fullPath);
                 if (!chapterFile) continue;
                 
-                // Try to extract chapter title from the file
+                // Try to extract title from the file
                 let chapterContent = await chapterFile.getData(new zip.TextWriter());
                 let titleMatch = chapterContent.match(/<title[^>]*>([^<]+)<\/title>/) || 
                                 chapterContent.match(/<h[1-6][^>]*>([^<]+)<\/h[1-6]>/);
                 
-                let title = titleMatch ? titleMatch[1] : `Chapter ${chapterIndex + 1}`;
+                let title = titleMatch ? titleMatch[1] : href; // Use filename if no title found
 
                 // Use original source URL if available, otherwise use library URL
                 // The source URLs are keyed by "id.{idref}" format
                 let sourceUrlKey = `id.${idref}`;
-                let sourceUrl = sourceUrls[sourceUrlKey] || `library://${bookId}/${chapterIndex}`;
+                let sourceUrl = sourceUrls[sourceUrlKey] || `library://${bookId}/${spinePosition}`;
                 
                 chapters.push({
                     sourceUrl: sourceUrl,
                     title: title,
                     libraryBookId: bookId,
-                    libraryChapterIndex: chapterIndex,
+                    epubSpineIndex: spinePosition, // Use ACTUAL spine position
                     libraryFilePath: fullPath
                 });
-                
-                chapterIndex++;
             }
 
-            return chapters;
+            // Filter out cover and TOC pages for display, but keep real spine positions
+            return chapters.filter(chapter => {
+                let href = chapter.libraryFilePath.split('/').pop();
+                return !href.includes("Cover") && !href.includes("nav.xhtml") && !href.includes("toc");
+            });
         } catch (error) {
             console.error("Error extracting chapter list:", error);
             throw error;
@@ -255,16 +251,17 @@ class LibraryBookData {
     /**
      * Get individual chapter content from Library EPUB
      * @param {string} bookId - The Library book ID
-     * @param {number} chapterIndex - The chapter index
+     * @param {number} spinePosition - The chapter's position in the EPUB spine (epubSpineIndex)
      * @returns {Element} Chapter content as DOM element
      */
-    static async getChapterContent(bookId, chapterIndex) {
+    static async getChapterContent(bookId, spinePosition) {
         try {
             // First extract book data to get chapter info
             let bookData = await LibraryBookData.extractBookData(bookId);
-            let chapter = bookData.chapters[chapterIndex];
+            // Find chapter by spine position, not array index
+            let chapter = bookData.chapters.find(ch => ch.epubSpineIndex === spinePosition);
             if (!chapter) {
-                throw new Error("Chapter not found");
+                throw new Error(`Chapter not found at spine position ${spinePosition}`);
             }
 
             // Get the EPUB content again 
@@ -398,7 +395,7 @@ class LibraryBookData {
                         // For original URLs, find the matching library chapter
                         let chapter = bookData.chapters.find(ch => ch.sourceUrl === urlString);
                         if (chapter) {
-                            return await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+                            return await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.epubSpineIndex);
                         }
                         throw new Error("Chapter not found in library book");
                     }
@@ -523,7 +520,7 @@ class LibraryBookData {
                 if (chapter.isInBook && chapter.sourceUrl && !chapter.sourceUrl.startsWith('library://')) {
                     let normalizedUrl = LibraryBookData.normalizeUrl(chapter.sourceUrl);
                     let totalCount = urlCounts.get(normalizedUrl) || 1;
-                    let bookIndex = chapter.libraryChapterIndex;
+                    let bookIndex = chapter.epubSpineIndex;
                     let isFirstOccurrence = urlFirstOccurrence.get(normalizedUrl) === bookIndex;
                     
                     if (totalCount > 1) {
@@ -688,57 +685,13 @@ class LibraryBookData {
     }
 
     /**
-     * Delete a specific chapter from a library book
-     * @param {string} bookId - The Library book ID
-     * @param {number} chapterIndex - Index of the chapter to delete (0-based)
-     * @returns {Promise<boolean>} True if chapter was deleted successfully
-     */
-    static async deleteChapterFromBook(bookId, chapterIndex) {
-        try {
-            // Get the current book data
-            let bookData = await LibraryBookData.extractBookData(bookId);
-            
-            if (chapterIndex < 0 || chapterIndex >= bookData.chapters.length) {
-                throw new Error(`Chapter index ${chapterIndex} out of range (0-${bookData.chapters.length - 1})`);
-            }
-
-            // Get the stored EPUB data
-            let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + bookId);
-            if (!epubBase64) {
-                throw new Error("Book not found in library");
-            }
-            
-            // Use EpubUpdater to delete the chapter
-            let updatedEpubBlob = await EpubUpdater.deleteChapter(epubBase64, chapterIndex);
-            
-            // Convert blob to base64 and save back to storage
-            let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
-            await LibraryStorage.LibSaveToStorage("LibEpub" + bookId, newEpubBase64);
-            
-            // Verify the deletion worked
-            let verificationData = await LibraryBookData.extractBookData(bookId);
-            
-            if (verificationData.chapters.length === bookData.chapters.length) {
-                console.error(`Delete failed: Chapter count unchanged`);
-                return false;
-            } else {
-                return true;
-            }
-            
-        } catch (error) {
-            console.error("Error deleting chapter from book:", error);
-            throw error;
-        }
-    }
-
-    /**
      * Refresh a specific chapter in a library book by downloading new content from its source URL
      * @param {string} bookId - The Library book ID  
-     * @param {number} chapterIndex - Index of the chapter to refresh (0-based)
+     * @param {number} chapterListIndex - Index in the filtered chapters array (0-based, same as chapterListIndex)
      * @param {string} sourceUrl - Source URL to fetch updated content from
      * @returns {Promise<boolean>} True if chapter was refreshed successfully
      */
-    static async refreshChapterInBook(bookId, chapterIndex, sourceUrl) {
+    static async refreshChapterInBook(bookId, chapterListIndex, sourceUrl) {
         try {
             if (!sourceUrl || sourceUrl.startsWith('library://')) {
                 throw new Error("Cannot refresh library-only chapters (no source URL)");
@@ -747,11 +700,11 @@ class LibraryBookData {
             // Get the current book data
             let bookData = await LibraryBookData.extractBookData(bookId);
             
-            if (chapterIndex < 0 || chapterIndex >= bookData.chapters.length) {
-                throw new Error(`Chapter index ${chapterIndex} out of range (0-${bookData.chapters.length - 1})`);
+            if (chapterListIndex < 0 || chapterListIndex >= bookData.chapters.length) {
+                throw new Error(`Chapter index ${chapterListIndex} out of range (0-${bookData.chapters.length - 1})`);
             }
             
-            let chapterToRefresh = bookData.chapters[chapterIndex];
+            let chapterToRefresh = bookData.chapters[chapterListIndex];
             
             // Create a mock webPage object for the existing parser pipeline
             let webPage = {
@@ -787,7 +740,7 @@ class LibraryBookData {
             }
             
             // Generate XHTML using existing EpubItem infrastructure
-            let epubItem = new ChapterEpubItem(webPage, processedContent, chapterIndex);
+            let epubItem = new ChapterEpubItem(webPage, processedContent, chapterListIndex);
             let emptyDocFactory = window.parser.emptyDocFactory || util.createEmptyXhtmlDoc;
             let contentValidator = window.parser.contentValidator || (xml => util.isXhtmlInvalid(xml, EpubPacker.XHTML_MIME_TYPE));
             
@@ -795,6 +748,7 @@ class LibraryBookData {
             
             // Add refresh timestamp for verification
             let refreshTimestamp = new Date().toISOString();
+            //TODO: move inline css to css file
             let timestampElement = `<p style="font-size: 0.8em; color: #666; text-align: right; margin-top: 2em; border-top: 1px solid #eee; padding-top: 0.5em;"><em>Refreshed: ${refreshTimestamp}</em></p>`;
             
             // Inject timestamp before </body>
@@ -807,10 +761,10 @@ class LibraryBookData {
             }
             
             // Update the EPUB file with new content
-            await LibraryBookData.updateChapterInEpub(bookId, chapterIndex, newChapterXhtml);
+            await LibraryBookData.updateChapterInEpub(bookId, chapterListIndex, newChapterXhtml);
             
             // Store refresh timestamp in localStorage for UI indicators
-            let refreshKey = `LibRefresh_${bookId}_${chapterIndex}`;
+            let refreshKey = `LibRefresh_${bookId}_${chapterListIndex}`;
             localStorage.setItem(refreshKey, new Date().toISOString());
             return true;
             
@@ -823,10 +777,10 @@ class LibraryBookData {
     /**
      * Update a specific chapter file in the EPUB
      * @param {string} bookId - The Library book ID
-     * @param {number} chapterIndex - Index of the chapter to update (0-based)
+     * @param {number} chapterListIndex - Index in the chapter list (0-based, not spine index)
      * @param {string} newChapterXhtml - New XHTML content for the chapter
      */
-    static async updateChapterInEpub(bookId, chapterIndex, newChapterXhtml) {
+    static async updateChapterInEpub(bookId, chapterListIndex, newChapterXhtml) {
         // Get the stored EPUB data
         let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + bookId);
         if (!epubBase64) {
@@ -834,12 +788,89 @@ class LibraryBookData {
         }
         
         // Use EpubUpdater to refresh the chapter
-        let updatedEpubBlob = await EpubUpdater.refreshChapter(epubBase64, chapterIndex, newChapterXhtml);
+        let updatedEpubBlob = await EpubUpdater.refreshChapter(epubBase64, chapterListIndex, newChapterXhtml);
         
         // Convert blob to base64 and save back to storage
         let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
         
         // Save the updated EPUB
         await LibraryStorage.LibSaveToStorage("LibEpub" + bookId, newEpubBase64);
+    }
+
+    /**
+     * Calculate the correct insertion index for a chapter in the EPUB spine based on its position in the UI list
+     * Uses the actual epubSpineIndex values of adjacent chapters in the UI to determine correct spine position
+     * @param {Object} chapter - Chapter object
+     * @param {string} sourceUrl - Chapter source URL
+     * @returns {Promise<number>} The index where the chapter should be inserted in the EPUB spine
+     */
+    static async calculateChapterInsertionIndex(chapter, sourceUrl) {
+        try {
+            if (!window.parser || !window.parser.state || !window.parser.state.webPages) {
+                throw new Error("Parser state not available");
+            }
+
+            // Get all chapters from parser state (this preserves UI order)
+            let allChapters = [...window.parser.state.webPages.values()];
+            
+            // Find the position of our target chapter in the UI list
+            let targetChapterIndexInUI = allChapters.findIndex(ch => ch.sourceUrl === sourceUrl);
+            if (targetChapterIndexInUI === -1) {
+                throw new Error("Target chapter not found in UI list");
+            }
+
+            // Look backwards in UI to find the previous library chapter with a real spine index
+            let previousLibraryChapterIndex = null;
+            for (let i = targetChapterIndexInUI - 1; i >= 0; i--) {
+                let prevChapter = allChapters[i];
+                if (prevChapter.isInBook && prevChapter.epubSpineIndex !== undefined) {
+                    previousLibraryChapterIndex = prevChapter.epubSpineIndex;
+                    break;
+                }
+            }
+
+            // Look forwards in UI to find the next library chapter with a real spine index
+            let nextLibraryChapterIndex = null;
+            for (let i = targetChapterIndexInUI + 1; i < allChapters.length; i++) {
+                let nextChapter = allChapters[i];
+                if (nextChapter.isInBook && nextChapter.epubSpineIndex !== undefined) {
+                    nextLibraryChapterIndex = nextChapter.epubSpineIndex;
+                    break;
+                }
+            }
+
+            let insertionIndex;
+            
+            // Determine insertion index based on adjacent library chapters
+            if (nextLibraryChapterIndex !== null) {
+                // We have a next library chapter - insert right before it
+                // This will push the next chapter and all subsequent chapters forward by 1
+                insertionIndex = nextLibraryChapterIndex;
+            } else if (previousLibraryChapterIndex !== null) {
+                // We only have a previous library chapter - insert right after it
+                // Since insertChapter inserts BEFORE the index, we need previousIndex + 1
+                insertionIndex = previousLibraryChapterIndex + 1;
+            } else {
+                // No adjacent library chapters found - this is either the first chapter
+                // or we need to check the current EPUB structure to append at the end
+                let hasAnyLibraryChapters = allChapters.some(ch => ch.isInBook && ch.epubSpineIndex !== undefined);
+                if (!hasAnyLibraryChapters) {
+                    // This shouldn't even be a library book if there are no chapters. How did we get here?
+                } else {
+                    let bookData = await LibraryBookData.extractBookData(chapter.libraryBookId);
+                    // If there are existing chapters, append after the last one
+                    let lastChapter = bookData.chapters[bookData.chapters.length - 1];
+                    if (lastChapter) {
+                        insertionIndex = lastChapter.epubSpineIndex + 1;
+                    }
+                }
+            }
+            
+            return insertionIndex;
+
+        } catch (error) {
+            console.error("Error in calculateChapterInsertionIndex:", error);
+            throw error;
+        }
     }
 }

@@ -87,7 +87,10 @@ class LibraryUI {
                 document.getElementById("LibCover"+CurrentLibKeys[i]).src = await LibraryStorage.LibGetFromStorage("LibCover" + CurrentLibKeys[i]);
                 let newChapterCount = await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0;
                 let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + LibTemplateNewChapter;
-                document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]).textContent = newChapterText;
+                let newChapterElement = document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]);
+                if (newChapterElement) {
+                    newChapterElement.textContent = newChapterText;
+                }
             }
             // Resize spacer to match the height of the absolutely positioned compact wrapper
             LibraryUI.resizeCompactSpacer();
@@ -237,7 +240,10 @@ class LibraryUI {
                 
                 let newChapterCount = await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0;
                 let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + LibTemplateNewChapter;
-                document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]).textContent = newChapterText;
+                let newChapterElement = document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]);
+                if (newChapterElement) {
+                    newChapterElement.textContent = newChapterText;
+                }
                 
                 // Show/hide the clear new chapters menu item based on whether there are new chapters
                 let clearMenuItem = document.getElementById("LibClearNewChaptersMenuItem" + CurrentLibKeys[i]);

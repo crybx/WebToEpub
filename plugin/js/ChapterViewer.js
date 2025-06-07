@@ -263,27 +263,27 @@ class ChapterViewer {
 
     /**
      * Get chapter content from Library EPUB
-     * @param {string} sourceUrl - Library URL in format library://bookId/chapterIndex
+     * @param {string} sourceUrl - Library URL in format library://bookId/spinePosition
      * @returns {Element} Chapter content DOM element
      */
     static async getLibraryChapterContent(sourceUrl) {
         try {
-            // Parse library URL: library://bookId/chapterIndex
+            // Parse library URL: library://bookId/spinePosition
             let urlParts = sourceUrl.replace("library://", "").split("/");
             if (urlParts.length !== 2) {
                 throw new Error("Invalid library URL format");
             }
             
             let bookId = urlParts[0];
-            let chapterIndex = parseInt(urlParts[1]);
+            let spinePosition = parseInt(urlParts[1]);
             
             
-            // Get chapter content from Library
-            let content = await LibraryBookData.getChapterContent(bookId, chapterIndex);
+            // Get chapter content from Library using spine position
+            let content = await LibraryBookData.getChapterContent(bookId, spinePosition);
             
             return content;
         } catch (error) {
-            console.error("❌ Error getting library chapter content:", error);
+            console.error("Error getting library chapter content:", error);
             throw new Error("Failed to load library chapter: " + error.message);
         }
     }
@@ -307,11 +307,11 @@ class ChapterViewer {
             
             
             // Get the content using the library chapter index
-            let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.libraryChapterIndex);
+            let content = await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.epubSpineIndex);
             
             return content;
         } catch (error) {
-            console.error("❌ Error getting library chapter by original URL:", error);
+            console.error("Error getting library chapter by original URL:", error);
             throw new Error("Failed to load library chapter: " + error.message);
         }
     }
@@ -356,31 +356,39 @@ class ChapterViewer {
     }
 
     /**
-     * Open a library chapter by book ID and chapter index
+     * Open a library chapter by book ID and spine position
      * @param {string} bookId - The library book ID
-     * @param {number} chapterIndex - The chapter index within the book
+     * @param {number} spinePosition - The chapter's position in the EPUB spine (epubSpineIndex)
      */
-    static async openLibraryChapter(bookId, chapterIndex) {
+    static async openLibraryChapter(bookId, spinePosition) {
         try {
+            // Validate inputs - this is a spine position, not a UI array index
+            if (typeof spinePosition !== 'number' || spinePosition < 0) {
+                throw new Error("Spine position must be a non-negative number");
+            }
             
-            // Create library URL format
-            let libraryUrl = `library://${bookId}/${chapterIndex}`;
+            // Create library URL format using spine position
+            let libraryUrl = `library://${bookId}/${spinePosition}`;
             
             
-            // Get the chapter title from library data if possible
-            let title = `Chapter ${chapterIndex + 1}`;
+            // Get the chapter title from library data
+            // Find the chapter by spine position in the extracted book data
+            let title = `Chapter ${spinePosition + 1}`;
             try {
                 let bookData = await LibraryBookData.extractBookData(bookId);
-                if (bookData.chapters[chapterIndex]) {
-                    title = bookData.chapters[chapterIndex].title || title;
+                // Find the chapter with matching spine position
+                let chapter = bookData.chapters.find(ch => ch.epubSpineIndex === spinePosition);
+                if (chapter) {
+                    title = chapter.title || title;
                 }
             } catch (error) {
+                // Fallback title if we can't get book data
             }
             
             // Use the existing viewChapter method
             await ChapterViewer.viewChapter(libraryUrl, title);
         } catch (error) {
-            console.error("❌ Error opening library chapter:", error);
+            console.error("Error opening library chapter:", error);
             alert("Failed to open library chapter: " + error.message);
         }
     }

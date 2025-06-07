@@ -63,6 +63,10 @@ class ChapterUrlsUI {
         let row = document.createElement("div");
         row.className = "chapter-row";
         row.rowIndex = index;
+        
+        // Ensure chapterListIndex is set to track UI list position
+        chapter.chapterListIndex = index;
+        
         ChapterUrlsUI.appendCheckBoxToRow(row, chapter);
         ChapterUrlsUI.appendInputTextToRow(row, chapter);
         chapter.row = row;
@@ -105,6 +109,9 @@ class ChapterUrlsUI {
 
         // Update existing rows and add new ones
         newChapters.forEach((chapter, index) => {
+            // Add chapterListIndex to track UI list position (distinct from epubSpineIndex spine position)
+            chapter.chapterListIndex = index;
+            
             let existingRow = existingRows[index];
             
             if (existingRow) {
@@ -644,7 +651,7 @@ class ChapterUrlsUI {
         refreshItem.onclick = async (e) => {
             e.stopPropagation();
             // Check if this is a library chapter and handle accordingly
-            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
                 await ChapterUrlsUI.refreshLibraryChapter(chapter, row);
             } else {
                 await ChapterCache.refreshChapter(sourceUrl, title, row);
@@ -838,8 +845,8 @@ class ChapterUrlsUI {
                     if (window.parser && window.parser.state && window.parser.state.webPages) {
                         chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
                     }
-                    if (chapter && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
-                        ChapterViewer.openLibraryChapter(chapter.libraryBookId, chapter.libraryChapterIndex);
+                    if (chapter && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
+                        ChapterViewer.openLibraryChapter(chapter.libraryBookId, chapter.epubSpineIndex);
                     }
                 };
                 row.classList.add("chapter-in-library");
@@ -1406,7 +1413,7 @@ class ChapterUrlsUI {
 
     /**
      * Refresh a library chapter by updating its content in the actual library book
-     * @param {Object} chapter - Chapter object with libraryBookId and libraryChapterIndex
+     * @param {Object} chapter - Chapter object with libraryBookId and epubSpineIndex
      * @param {HTMLElement} row - The table row element
      */
     static async refreshLibraryChapter(chapter, row) {
@@ -1426,7 +1433,7 @@ class ChapterUrlsUI {
             // Use the LibraryBookData method to refresh the chapter
             await LibraryBookData.refreshChapterInBook(
                 chapter.libraryBookId,
-                chapter.libraryChapterIndex,
+                chapter.chapterListIndex,
                 chapter.sourceUrl
             );
 
@@ -1444,20 +1451,41 @@ class ChapterUrlsUI {
      */
     static async deleteChapter(chapter, row) {
         try {
+            console.log(chapter);
             // Check if this is a library chapter or a cached chapter
-            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.libraryChapterIndex !== undefined) {
+            if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
+                // Store the deleted index before we modify the chapter object
+                let deletedIndex = chapter.epubSpineIndex;
+                
                 // Use the LibraryBookData method to delete
-                await LibraryBookData.deleteChapterFromBook(
-                    chapter.libraryBookId,
-                    chapter.libraryChapterIndex
-                );
+                let isDeleted = await EpubUpdater.deleteChapter(chapter);
+                if (isDeleted) {
+                    // Update this chapter's status (no longer in library) without moving it
+                    chapter.isInBook = false;
+                    chapter.epubSpineIndex = undefined;
+
+                    // Update visual status to show it's no longer in library
+                    ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
+
+                    // Update epubSpineIndex for remaining chapters without UI re-render
+                    if (window.parser && window.parser.state && window.parser.state.webPages) {
+                        // Update all chapters that had a higher epubSpineIndex (shift them down by 1)
+                        for (let [key, chapterObj] of window.parser.state.webPages.entries()) {
+                            if (chapterObj.isInBook &&
+                                chapterObj.libraryBookId === chapter.libraryBookId &&
+                                chapterObj.epubSpineIndex !== undefined &&
+                                chapterObj.epubSpineIndex > deletedIndex) {
+                                chapterObj.epubSpineIndex--;
+                            }
+                        }
+                    }
+                }
             } else {
                 // Use the ChapterCache method to delete
                 await ChapterCache.deleteChapter(chapter.sourceUrl);
                 await ChapterCache.refreshCacheStats();
+                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
             }
-
-            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
 
         } catch (error) {
             console.error("Failed to delete chapter:", error);
