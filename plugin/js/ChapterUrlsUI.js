@@ -606,13 +606,24 @@ class ChapterUrlsUI {
     /**
     * Update visibility of header more actions based on whether any chapters are downloaded or if in Library Mode
     */
-    static async updateHeaderMoreActionsVisibility() {
+    static updateHeaderMoreActionsVisibility() {
         let headerMoreActions = document.getElementById("headerMoreActionsWrapper");
         
         if (headerMoreActions) {
-            let hasCache = await ChapterCache.hasAnyCachedChaptersOnPage();
+            // Check for library mode first
             let isLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
-            let showMenu = hasCache || isLibraryMode;
+            
+            // Check for cached chapters by looking at visual state (much faster than cache queries)
+            let hasCachedChapters = false;
+            if (!isLibraryMode) {
+                // Look for checkboxes with successBox class (indicates cached content)
+                // or rows with error-state class (indicates cached error content)
+                let cachedCheckboxes = document.querySelectorAll('.chapterSelectCheckbox.successBox');
+                let errorRows = document.querySelectorAll('.chapter-row.error-state');
+                hasCachedChapters = cachedCheckboxes.length > 0 || errorRows.length > 0;
+            }
+            
+            let showMenu = isLibraryMode || hasCachedChapters;
             headerMoreActions.style.display = showMenu ? "block" : "none";
         }
     }
@@ -855,7 +866,7 @@ class ChapterUrlsUI {
                 break;
         }
 
-        this.updateHeaderMoreActionsVisibility().then();
+        this.updateHeaderMoreActionsVisibility();
     }
 
     static setVisibleUI(toTable) {
@@ -1451,7 +1462,7 @@ class ChapterUrlsUI {
                     // Update the visual status of the chapter row
                     let row = ChapterUrlsUI.findRowBySourceUrl(chapter.sourceUrl);
                     if (row) {
-                        await ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
+                        ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                     }
                 } catch (error) {
                     console.error(`Failed to delete cached chapter "${chapter.title}":`, error);

@@ -472,7 +472,7 @@ class ChapterCache {
                     await this.clearAll();
                     await this.refreshCacheStats();
                     // Update the chapter table to remove cache indicators
-                    await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
+                    ChapterUrlsUI.updateHeaderMoreActionsVisibility();
                 } catch (error) {
                     console.error("Failed to clear cache:", error);
                     alert(ChapterCache.CacheText.errorClearCache.replace("$error$", error.message));
@@ -633,8 +633,6 @@ class ChapterCache {
             } else {
                 throw new Error(webPage.error || "Failed to fetch web page content");
             }
-            
-            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
         } catch (error) {
             console.log("Failed to download chapter:", error);
             // Store error message in cache
@@ -643,7 +641,6 @@ class ChapterCache {
             if (row) {
                 ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, sourceUrl, title);
             }
-            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
         }
     }
 
@@ -690,9 +687,6 @@ class ChapterCache {
                     ChapterUrlsUI.setChapterStatusVisuals(chapter.row, ChapterUrlsUI.CHAPTER_STATUS_NONE, chapter.sourceUrl, chapter.title);
                 }
             });
-            
-            // Update delete button visibility
-            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
         } catch (err) {
             console.error("Error deleting cached chapters:", err);
             alert("Error deleting cached chapters");
@@ -738,35 +732,7 @@ class ChapterCache {
         }
         
         // Update UI to show cached icons
-        await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
-    }
-
-    /**
-    * Check if any chapters on the current page are actually cached
-    */
-    static async hasAnyCachedChaptersOnPage() {
-        try {
-            let parser = ChapterCache.getCurrentParser();
-            if (!parser) {
-                return false;
-            }
-            
-            // Get all chapter URLs from the current page
-            let webPages = [...parser.state.webPages.values()];
-            
-            // Check if any of these chapters are cached
-            for (let webPage of webPages) {
-                let cachedContent = await ChapterCache.get(webPage.sourceUrl);
-                if (cachedContent) {
-                    return true;
-                }
-            }
-            
-            return false;
-        } catch (error) {
-            console.error("Error checking cached chapters:", error);
-            return false;
-        }
+        ChapterUrlsUI.updateHeaderMoreActionsVisibility();
     }
 
     /**
@@ -1154,10 +1120,6 @@ class ChapterCache {
                     ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, sourceUrl, title);
                 }
             });
-            
-            // Update cache button visibility using existing method
-            await ChapterUrlsUI.updateHeaderMoreActionsVisibility();
-            
         } catch (error) {
             console.error("Error updating cache to library icons:", error);
         }
