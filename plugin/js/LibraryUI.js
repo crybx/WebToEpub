@@ -301,7 +301,7 @@ class LibraryUI {
     /**
      * Delete all library items
      */
-    static Libdeleteall() {
+    static LibDeleteAll() {
         if (!confirm(chrome.i18n.getMessage("__MSG_confirm_Clear_Library__"))) {
             return;
         }
@@ -501,6 +501,7 @@ class LibraryUI {
     
     /**
      * Handle metadata editing
+     * TODO: update name to editMetadataClick
      */
     static async LibEditMetadata(objbtn) {
         let LibTemplateMetadataSave = document.getElementById("LibTemplateMetadataSave").innerHTML;
@@ -526,7 +527,7 @@ class LibraryUI {
         LibRenderString += "<div class='lib-list-field'>";
         LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataAuthor+"</label>";
         LibRenderString += "<div class='lib-list-input-container'>";
-        LibRenderString += "<input id='LibAutorInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[1]+"'>";
+        LibRenderString += "<input id='LibAuthorInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[1]+"'>";
         LibRenderString += "</div>";
         LibRenderString += "</div>";
         
@@ -564,7 +565,7 @@ class LibraryUI {
         
         // Add auto-save event listeners to all metadata input fields
         document.getElementById("LibTitleInput"+objbtn.dataset.libepubid).addEventListener("change", function() {LibraryUI.LibAutoSaveMetadata(this);});
-        document.getElementById("LibAutorInput"+objbtn.dataset.libepubid).addEventListener("change", function() {LibraryUI.LibAutoSaveMetadata(this);});
+        document.getElementById("LibAuthorInput"+objbtn.dataset.libepubid).addEventListener("change", function() {LibraryUI.LibAutoSaveMetadata(this);});
         document.getElementById("LibLanguageInput"+objbtn.dataset.libepubid).addEventListener("change", function() {LibraryUI.LibAutoSaveMetadata(this);});
         document.getElementById("LibSubjectInput"+objbtn.dataset.libepubid).addEventListener("change", function() {LibraryUI.LibAutoSaveMetadata(this);});
         document.getElementById("LibDescriptionInput"+objbtn.dataset.libepubid).addEventListener("change", function() {LibraryUI.LibAutoSaveMetadata(this);});
@@ -591,6 +592,7 @@ class LibraryUI {
 
     /**
      * Close metadata editing interface and save changes
+     * TODO: update name to closeMetadataClick
      */
     static async LibCloseMetadata(objbtn) {
         // Save any pending changes before closing
@@ -626,7 +628,7 @@ class LibraryUI {
             LibraryUI.LibExitLibraryMode();
         }
         
-        LibraryUI.LibRenderSavedEpubs();
+        await LibraryUI.LibRenderSavedEpubs();
     }
 
     /**
@@ -675,7 +677,7 @@ class LibraryUI {
     static async LibLoadBook(objbtn) {
         let bookId = objbtn.dataset.libepubid;
         try {
-            await LibraryBookData.loadLibraryBookInMainUI(bookId);
+            await LibraryUI.loadLibraryBookInMainUI(bookId);
         } catch (error) {
             console.error("Error in LibLoadBook:", error);
             // Fallback to old behavior if new method fails
@@ -986,7 +988,7 @@ class LibraryUI {
     /**
      * Export all library items
      */
-    static Libexportall() {
+    static LibExportAll() {
         LibraryUI.LibShowLoadingText();
         chrome.storage.local.get(null, async function(items) {
             let CurrentLibKeys = items["LibArray"];
@@ -1425,13 +1427,13 @@ class LibraryUI {
         // Library action buttons
         let deleteAllBtn = document.getElementById("libdeleteallModal");
         if (deleteAllBtn && !deleteAllBtn.dataset.hasListener) {
-            deleteAllBtn.addEventListener("click", LibraryUI.Libdeleteall);
+            deleteAllBtn.addEventListener("click", LibraryUI.LibDeleteAll);
             deleteAllBtn.dataset.hasListener = "true";
         }
         
-        let exportAllBtn = document.getElementById("libexportallModal");
+        let exportAllBtn = document.getElementById("libExportAllModal");
         if (exportAllBtn && !exportAllBtn.dataset.hasListener) {
-            exportAllBtn.addEventListener("click", LibraryUI.Libexportall);
+            exportAllBtn.addEventListener("click", LibraryUI.LibExportAll);
             exportAllBtn.dataset.hasListener = "true";
         }
         
@@ -1445,7 +1447,7 @@ class LibraryUI {
         
         let importFile = document.getElementById("LibImportLibraryFileModal");
         if (importFile && !importFile.dataset.hasListener) {
-            importFile.addEventListener("change", function() {LibraryStorage.LibHandelImport(this);});
+            importFile.addEventListener("change", function() {LibraryStorage.LibHandleImport(this);});
             importFile.dataset.hasListener = "true";
         }
         
@@ -1483,5 +1485,250 @@ class LibraryUI {
         let modal = document.getElementById("libraryOptionsModal");
         modal.style.display = "none";
         document.body.classList.remove("modal-open");
+    }
+
+    /**
+     * Library book selection - moved from LibraryBookData.js
+     * @param {HTMLElement} objbtn - The select button element
+     */
+    static async LibSelectBook(objbtn) {
+        try {
+            let bookId = objbtn.dataset.libepubid;
+            
+            // Extract book data from stored EPUB
+            let bookData = await LibraryBookData.extractBookData(bookId);
+            
+            // Populate main UI with book data
+            LibraryUI.populateMainUIWithBookData(bookData);
+            
+            // Switch to main tab/section
+            LibraryUI.switchToMainUI();
+            
+        } catch (error) {
+            console.error("Error selecting library book:", error);
+            ErrorLog.showErrorMessage("Failed to load library book: " + error.message);
+        }
+    }
+
+    /**
+     * Populate main UI with library book data - moved from LibraryBookData.js
+     * @param {Object} bookData - Extracted book data with metadata and chapters
+     */
+    static populateMainUIWithBookData(bookData) {
+        // Populate main metadata fields using main.js API
+        if (bookData.metadata.sourceUrl) {
+            main.setUiFieldToValue("startingUrlInput", bookData.metadata.sourceUrl);
+        }
+        if (bookData.metadata.title) {
+            main.setUiFieldToValue("titleInput", bookData.metadata.title);
+        }
+        if (bookData.metadata.author) {
+            main.setUiFieldToValue("authorInput", bookData.metadata.author);
+        }
+        if (bookData.metadata.language) {
+            main.setUiFieldToValue("languageInput", bookData.metadata.language);
+        }
+        if (bookData.metadata.filename) {
+            main.setUiFieldToValue("fileNameInput", bookData.metadata.filename);
+        }
+        if (bookData.metadata.coverUrl) {
+            main.setUiFieldToValue("coverImageUrlInput", bookData.metadata.coverUrl);
+        }
+        
+        // Populate advanced metadata fields (only visible when "Show more Metadata options" is checked)
+        if (bookData.metadata.subject) {
+            main.setUiFieldToValue("subjectInput", bookData.metadata.subject);
+        }
+        if (bookData.metadata.description) {
+            main.setUiFieldToValue("descriptionInput", bookData.metadata.description);
+        }
+        if (bookData.metadata.seriesName) {
+            main.setUiFieldToValue("seriesNameInput", bookData.metadata.seriesName);
+        }
+        if (bookData.metadata.seriesIndex) {
+            main.setUiFieldToValue("seriesIndexInput", bookData.metadata.seriesIndex);
+        }
+        
+        // Create a mock parser to work with existing UI
+        let libraryParser = {
+            getPagesToFetch: () => new Map(bookData.chapters.map((ch, i) => [i, ch])),
+            setPagesToFetch: (chapters) => {
+                // Store updated chapter list if needed
+            },
+            getRateLimit: () => 0, // Library chapters don't need rate limiting
+            constructor: { name: "LibraryParser" },
+            
+            // Mock state.webPages property for cache checking
+            state: {
+                webPages: new Map(bookData.chapters.map((ch, i) => [i, {...ch, isIncludeable: true}]))
+            },
+            
+            // Mock fetchWebPageContent for download functionality
+            async fetchWebPageContent(sourceUrl) {
+                try {
+                    // Ensure sourceUrl is a string
+                    let urlString = typeof sourceUrl === 'string' ? sourceUrl : sourceUrl?.sourceUrl || String(sourceUrl);
+                    
+                    // Check if this is a library chapter
+                    if (urlString.startsWith("library://")) {
+                        // Parse library URL: library://bookId/chapterIndex
+                        let urlParts = urlString.replace("library://", "").split("/");
+                        let bookId = urlParts[0];
+                        let chapterIndex = parseInt(urlParts[1]);
+                        
+                        // Get chapter content from Library
+                        return await LibraryBookData.getChapterContent(bookId, chapterIndex);
+                    } else {
+                        // For original URLs, find the matching library chapter
+                        let chapter = bookData.chapters.find(ch => ch.sourceUrl === urlString);
+                        if (chapter) {
+                            return await LibraryBookData.getChapterContent(chapter.libraryBookId, chapter.epubSpineIndex);
+                        }
+                        throw new Error("Chapter not found in library book");
+                    }
+                } catch (error) {
+                    console.error("Error fetching library chapter content:", error);
+                    throw error;
+                }
+            }
+        };
+        
+        // Store the parser globally for ChapterUrlsUI to access
+        window.parser = libraryParser;
+        
+        // Use existing ChapterUrlsUI to display chapters
+        let chapterUrlsUI = new ChapterUrlsUI(libraryParser);
+        chapterUrlsUI.populateChapterUrlsTable(bookData.chapters);
+        
+        // Connect button handlers for the library chapters
+        chapterUrlsUI.connectButtonHandlers();
+    }
+
+    /**
+     * Switch to main UI section - moved from LibraryBookData.js
+     */
+    static switchToMainUI() {
+        // Hide library section if visible
+        let librarySection = document.getElementById("libraryExpandableSection");
+        if (librarySection && !librarySection.hidden) {
+            let libraryButton = document.getElementById("libraryButton");
+            if (libraryButton) {
+                libraryButton.click();
+            }
+        }
+        
+        // Ensure input section is visible
+        let inputSection = document.getElementById("inputSection");
+        if (inputSection) {
+            inputSection.classList.remove("hidden");
+            inputSection.classList.add("visible");
+        }
+    }
+
+    /**
+     * COMBINED LIBRARY BOOK LOADING - moved from LibraryBookData.js
+     * Replaces separate "Search new Chapters" and "Select" actions
+     * @param {string} bookId - The Library book ID
+     */
+    static async loadLibraryBookInMainUI(bookId) {
+        try {
+            // Show loading indicator
+            LibraryUI.LibShowLoadingText();
+
+            // 1. Extract EPUB metadata and populate UI with it
+            let bookData = await LibraryBookData.extractBookData(bookId);
+            main.resetUI();
+            LibraryUI.populateMainUIWithBookData(bookData);
+            
+            // 2. Load library chapters with mock parser
+            await LibraryUI.loadBookWithMockParser(bookId);
+            
+            // 3. Clear loading indicator and switch to main UI early
+            LibraryUI.LibRenderSavedEpubs();
+            LibraryUI.switchToMainUI();
+            
+            // 4. Fetch website chapters in background and merge when ready (preserving EPUB metadata)
+            try {
+                // Store actual EPUB metadata (not defaults) before website fetch
+                let epubMetadata = bookData.metadata;
+                
+                // Try to load real parser for website
+                await main.onLoadAndAnalyseButtonClick();
+                
+                // Restore only non-empty EPUB metadata after website parsing
+                // Only override website data if we have actual EPUB metadata values
+                if (epubMetadata.title && epubMetadata.title.trim() !== "") {
+                    main.setUiFieldToValue("titleInput", epubMetadata.title);
+                }
+                if (epubMetadata.author && epubMetadata.author.trim() !== "") {
+                    main.setUiFieldToValue("authorInput", epubMetadata.author);
+                }
+                if (epubMetadata.language && epubMetadata.language.trim() !== "") {
+                    main.setUiFieldToValue("languageInput", epubMetadata.language);
+                }
+                if (epubMetadata.filename && epubMetadata.filename.trim() !== "") {
+                    main.setUiFieldToValue("fileNameInput", epubMetadata.filename);
+                }
+                if (epubMetadata.coverUrl && epubMetadata.coverUrl.trim() !== "") {
+                    main.setUiFieldToValue("coverImageUrlInput", epubMetadata.coverUrl);
+                }
+                if (epubMetadata.subject && epubMetadata.subject.trim() !== "") {
+                    main.setUiFieldToValue("subjectInput", epubMetadata.subject);
+                }
+                if (epubMetadata.description && epubMetadata.description.trim() !== "") {
+                    main.setUiFieldToValue("descriptionInput", epubMetadata.description);
+                }
+                if (epubMetadata.seriesName && epubMetadata.seriesName.trim() !== "") {
+                    main.setUiFieldToValue("seriesNameInput", epubMetadata.seriesName);
+                }
+                if (epubMetadata.seriesIndex && epubMetadata.seriesIndex.trim() !== "") {
+                    main.setUiFieldToValue("seriesIndexInput", epubMetadata.seriesIndex);
+                }
+                
+                // Get chapters from website using real parser
+                if (window.parser && window.parser.state && window.parser.state.webPages) {
+                    let websiteChapters = [...window.parser.state.webPages.values()];
+                    
+                    // Compare and merge with library chapters
+                    let updatedChapters = await LibraryBookData.detectNewChapters(bookId, websiteChapters);
+                    
+                    // Update parser state with enhanced chapter data
+                    window.parser.state.webPages.clear();
+                    updatedChapters.forEach((chapter, index) => {
+                        window.parser.state.webPages.set(index, chapter);
+                    });
+                    
+                    // Update chapter table incrementally with merged data
+                    let chapterUrlsUI = new ChapterUrlsUI(window.parser);
+                    await chapterUrlsUI.updateChapterListIncrementally(updatedChapters);
+                    
+                    // Add library-specific visual indicators
+                    await ChapterUrlsUI.addLibraryChapterIndicators(bookId, updatedChapters);
+                }
+                
+            } catch (parserError) {
+                // Library chapters are already displayed, so this is graceful degradation
+            }
+            
+        } catch (error) {
+            console.error("Error loading library book in main UI:", error);
+            LibraryUI.LibRenderSavedEpubs();
+            alert("Failed to load library book: " + error.message);
+        }
+    }
+
+    /**
+     * Load book with mock parser fallback - moved from LibraryBookData.js
+     * @param {string} bookId - The Library book ID
+     */
+    static async loadBookWithMockParser(bookId) {
+        try {
+            // Use existing LibSelectBook logic as fallback
+            await LibraryUI.LibSelectBook({dataset: {libepubid: bookId}});
+            
+        } catch (error) {
+            console.error("Error loading book with mock parser:", error);
+            throw error;
+        }
     }
 }

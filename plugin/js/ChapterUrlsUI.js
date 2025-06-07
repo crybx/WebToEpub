@@ -1423,22 +1423,14 @@ class ChapterUrlsUI {
                 return;
             }
 
-            if (!confirm(`Refresh "${chapter.title}" in the library book with new content from the website?\n\nThis will permanently update the chapter in your library.`)) {
-                return;
-            }
-
             // Update UI to show refreshing state
             ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, chapter.sourceUrl, chapter.title);
 
-            // Use the LibraryBookData method to refresh the chapter
-            await LibraryBookData.refreshChapterInBook(
-                chapter.libraryBookId,
-                chapter.chapterListIndex,
-                chapter.sourceUrl
-            );
+            // Do the refresh
+            await EpubUpdater.refreshChapterInBook(chapter);
 
             // Update UI to show success - keep the eye icon since it's still in the library
-            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, chapter.sourceUrl, chapter.title);
+            ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, chapter.sourceUrl, chapter.title);
         } catch (error) {
             console.error("Failed to refresh library chapter:", error);
             ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_ERROR, chapter.sourceUrl, chapter.title);

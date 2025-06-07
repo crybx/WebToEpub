@@ -125,7 +125,7 @@ class LibraryStorage {
                 regex2 = ("0000"+ImagenumberAddEpub).slice(-4);
                 string1 = "</metadata>";
                 string2 = ("0000"+ImagenumberPreviousEpub).slice(-4);
-                PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTO(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2);
+                PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTo(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2);
                 // eslint-disable-next-line
                 regex1 = new RegExp('<item href="' + epubPaths.imagesDirRel + '\/'+(("0000"+ImagenumberAddEpub).slice(-4))+".+?\/>");
                 // eslint-disable-next-line
@@ -136,7 +136,7 @@ class LibraryStorage {
                 string2 = epubPaths.imagesDirRel + "/"+(("0000"+ImagenumberPreviousEpub).slice(-4));
                 // eslint-disable-next-line
                 string3 = 'id="image'+(("0000"+ImagenumberPreviousEpub).slice(-4));
-                PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTO(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2, regex3, string3);
+                PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTo(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2, regex3, string3);
                 ImagenumberAddEpubIndex++;
                 ImagenumberPreviousEpub++;
             }
@@ -147,7 +147,7 @@ class LibraryStorage {
             regex2 = ("0000"+TextnumberAddEpub).slice(-4);
             string1 = "</metadata>";
             string2 = ("0000"+TextnumberPreviousEpub).slice(-4);
-            PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTO(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2);
+            PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTo(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2);
             // eslint-disable-next-line
             regex1 = new RegExp('<item href="' + epubPaths.textDirRel + '\/'+(("0000"+TextnumberAddEpub).slice(-4))+".+?\/>");
             // eslint-disable-next-line
@@ -158,13 +158,13 @@ class LibraryStorage {
             string2 = epubPaths.textDirRel + "/"+(("0000"+TextnumberPreviousEpub).slice(-4));
             // eslint-disable-next-line
             string3 = 'id="xhtml'+(("0000"+TextnumberPreviousEpub).slice(-4));
-            PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTO(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2, regex3, string3);
+            PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTo(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2, regex3, string3);
             // eslint-disable-next-line
             regex1 = new RegExp('<itemref idref="xhtml'+(("0000"+TextnumberAddEpub).slice(-4))+'"\/>');
             regex2 = new RegExp("xhtml"+(("0000"+TextnumberAddEpub).slice(-4))+"");
             string1 = "</spine>";
             string2 = "xhtml"+(("0000"+TextnumberPreviousEpub).slice(-4));
-            PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTO(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2);
+            PreviousEpubContentText = LibraryStorage.LibManipulateContentFromTo(AddEpubContentText, PreviousEpubContentText, regex1, string1, regex2, string2);
             // eslint-disable-next-line
             regex1 = new RegExp('<navPoint id="body'+(("0000"+(TextnumberAddEpub+1)).slice(-4))+'".+?<\/navPoint>');
             regex2 = new RegExp("body"+(("0000"+(TextnumberAddEpub+1)).slice(-4))+"");
@@ -178,7 +178,7 @@ class LibraryStorage {
             string3 = 'playOrder="'+(TextnumberPreviousEpub+1)+'"';
             // eslint-disable-next-line
             string4 = '<content src="' + newChaptername.slice(epubPaths.contentDir.length + 1) + '"/>';
-            PreviousEpubTocText = LibraryStorage.LibManipulateContentFromTO(AddEpubTocText, PreviousEpubTocText, regex1, string1, regex2, string2, regex3, string3, regex4, string4);
+            PreviousEpubTocText = LibraryStorage.LibManipulateContentFromTo(AddEpubTocText, PreviousEpubTocText, regex1, string1, regex2, string2, regex3, string3, regex4, string4);
             if (PreviousEpubTocEpub3Text != null) {
                 string1 = "</ol></nav>";
                 regex2 = new RegExp(".+<text>");
@@ -207,10 +207,10 @@ class LibraryStorage {
     /**
      * Manipulate content from one EPUB to another
      */
-    static LibManipulateContentFromTO(ContentFrom = "", ContentTo = "", regexFrom1 = "", stringTo1 = "", regexFrom2 = "", stringTo2 = "", regexFrom3 = "", stringTo3 = "", regexFrom4 = "", stringTo4 = "") {
+    static LibManipulateContentFromTo(ContentFrom = "", ContentTo = "", regexFrom1 = "", stringTo1 = "", regexFrom2 = "", stringTo2 = "", regexFrom3 = "", stringTo3 = "", regexFrom4 = "", stringTo4 = "") {
         let match = ContentFrom.match(regexFrom1);
         if (!match) {
-            console.error("LibManipulateContentFromTO: regex match failed", {
+            console.error("LibManipulateContentFromTo: regex match failed", {
                 regexFrom1: regexFrom1.toString(),
                 contentFromLength: ContentFrom.length,
                 contentFromStart: ContentFrom.substring(0, 200)
@@ -456,11 +456,11 @@ class LibraryStorage {
             if (isNewBook) {
                 try {
                     // Load the newly added book in the main UI
-                    await LibraryBookData.loadLibraryBookInMainUI(LibFileReader.LibStorageValueId.toString());
+                    await LibraryUI.loadLibraryBookInMainUI(LibFileReader.LibStorageValueId.toString());
                 } catch (error) {
                     console.error("Error switching to library mode after adding book:", error);
                     // If automatic loading fails, just show the library banner
-                    LibraryUI.LibShowBookIndicator(LibFileReader.LibStorageValueId.toString());
+                    await LibraryUI.LibShowBookIndicator(LibFileReader.LibStorageValueId.toString());
                 }
             }
         });
@@ -522,18 +522,18 @@ class LibraryStorage {
      * Add file reader event listeners
      */
     static LibFileReaderAddListeners() {
-        LibFileReader.removeEventListener("load", LibraryStorage.LibFileReaderloadImport);
-        LibFileReader.removeEventListener("error", function(event) {LibraryStorage.LibFileReadererror(event);});
-        LibFileReader.removeEventListener("abort", function(event) {LibraryStorage.LibFileReaderabort(event);});
+        LibFileReader.removeEventListener("load", LibraryStorage.LibFileReaderLoadImport);
+        LibFileReader.removeEventListener("error", function(event) {LibraryStorage.LibFileReaderError(event);});
+        LibFileReader.removeEventListener("abort", function(event) {LibraryStorage.LibFileReaderAbort(event);});
         LibFileReader.addEventListener("load", LibraryStorage.LibFileReaderload);
-        LibFileReader.addEventListener("error", function(event) {LibraryStorage.LibFileReadererror(event);});
-        LibFileReader.addEventListener("abort", function(event) {LibraryStorage.LibFileReaderabort(event);});
+        LibFileReader.addEventListener("error", function(event) {LibraryStorage.LibFileReaderError(event);});
+        LibFileReader.addEventListener("abort", function(event) {LibraryStorage.LibFileReaderAbort(event);});
     }
 
     /**
      * Handle import file operations
      */
-    static async LibHandelImport(objbtn) {
+    static async LibHandleImport(objbtn) {
         LibraryUI.LibShowLoadingText();
         LibraryStorage.LibFileReaderAddListenersImport();
         let blobData = objbtn.files[0];
@@ -551,17 +551,17 @@ class LibraryStorage {
      */
     static LibFileReaderAddListenersImport() {
         LibFileReader.removeEventListener("load", LibraryStorage.LibFileReaderload);
-        LibFileReader.removeEventListener("error", function(event) {LibraryStorage.LibFileReadererror(event);});
-        LibFileReader.removeEventListener("abort", function(event) {LibraryStorage.LibFileReaderabort(event);});
-        LibFileReader.addEventListener("load", LibraryStorage.LibFileReaderloadImport);
-        LibFileReader.addEventListener("error", function(event) {LibraryStorage.LibFileReadererror(event);});
-        LibFileReader.addEventListener("abort", function(event) {LibraryStorage.LibFileReaderabort(event);});
+        LibFileReader.removeEventListener("error", function(event) {LibraryStorage.LibFileReaderError(event);});
+        LibFileReader.removeEventListener("abort", function(event) {LibraryStorage.LibFileReaderAbort(event);});
+        LibFileReader.addEventListener("load", LibraryStorage.LibFileReaderLoadImport);
+        LibFileReader.addEventListener("error", function(event) {LibraryStorage.LibFileReaderError(event);});
+        LibFileReader.addEventListener("abort", function(event) {LibraryStorage.LibFileReaderAbort(event);});
     }
 
     /**
      * Handle import file reader load event
      */
-    static async LibFileReaderloadImport() {
+    static async LibFileReaderLoadImport() {
         let regex = new RegExp("zip$");
         if (!regex.test(LibFileReader.name)) {
             let json = JSON.parse(LibFileReader.result);
@@ -618,19 +618,19 @@ class LibraryStorage {
                 HighestLibEpub++;
             }
             UserPreferences.readFromLocalStorage().loadReadingListFromJson(JSON.parse( await (await entries.filter((a) => a.filename === "ReadingList.json")[0]).getData(new zip.TextWriter())));
-            LibraryUI.LibRenderSavedEpubs();
+            await LibraryUI.LibRenderSavedEpubs();
         }
     }
 
     /**
      * File reader error handler
      */
-    static LibFileReadererror(event) {ErrorLog.showErrorMessage(event);}
+    static LibFileReaderError(event) {ErrorLog.showErrorMessage(event);}
 
     /**
      * File reader abort handler
      */
-    static LibFileReaderabort(event) {ErrorLog.showErrorMessage(event);}
+    static LibFileReaderAbort(event) {ErrorLog.showErrorMessage(event);}
 
     /**
      * Get all library storage keys with substring filter

@@ -662,6 +662,16 @@ input[type=checkbox].successBox {
 }
 
 
+/* Chapter refresh timestamp styles */
+.refresh-timestamp {
+    font-size: 0.8em;
+    color: #666;
+    text-align: right;
+    margin-top: 2em;
+    border-top: 1px solid #eee;
+    padding-top: 0.5em;
+}
+
 /* Shared more actions dropdown menu styles */
 .more-actions-menu,
 .header-more-actions-menu,

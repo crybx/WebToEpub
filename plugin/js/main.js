@@ -414,7 +414,7 @@ const main = (function() {
                 window.isLoadingLibraryBook = true;
                 try {
                     // Load library book first, then show indicator with correct title
-                    await LibraryBookData.loadLibraryBookInMainUI(libraryBookId);
+                    await LibraryUI.loadLibraryBookInMainUI(libraryBookId);
                     await LibraryUI.LibShowBookIndicator(libraryBookId);
                 } finally {
                     // Clear loading flag

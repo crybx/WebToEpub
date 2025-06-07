@@ -354,45 +354,6 @@ class EpubUpdater {
         }
     }
 
-    /**
-     * Refresh a chapter in an existing EPUB by replacing its content
-     * @param {string} epubBase64 - Base64 encoded EPUB data
-     * @param {number} chapterIndex - Index of chapter to refresh (0-based)
-     * @param {string} newChapterXhtml - New XHTML content for the chapter
-     * @returns {Promise<Blob>} Updated EPUB as blob
-     */
-    static async refreshChapter(epubBase64, chapterIndex, newChapterXhtml) {
-        try {
-            // Load the EPUB using helper
-            let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
-            let epubPaths = util.getEpubStructure();
-
-            // Find and validate chapter files using helpers
-            let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
-            let targetChapterFile = EpubUpdater.validateChapterIndex(chapterIndex, chapterFiles);
-            let chapterFilename = targetChapterFile.filename;
-
-            // Create new EPUB writer using helper
-            let {newEpubZip} = EpubUpdater.createEpubWriter();
-
-            // Copy all entries, replacing the target chapter
-            for (let entry of entries) {
-                if (entry.filename === chapterFilename) {
-                    // Replace with new content
-                    await newEpubZip.add(entry.filename, new zip.TextReader(newChapterXhtml));
-                } else {
-                    await EpubUpdater.copyEntry(newEpubZip, entry);
-                }
-            }
-
-            // Close and return the new EPUB using helper
-            return await EpubUpdater.closeEpub(newEpubZip, epubZip);
-
-        } catch (error) {
-            console.error("Error refreshing chapter in EPUB:", error);
-            throw error;
-        }
-    }
 
     /**
      * Insert a new chapter at a specific position in an existing EPUB
@@ -612,6 +573,97 @@ class EpubUpdater {
         } catch (error) {
             console.error("Error validating EPUB:", error);
             return false;
+        }
+    }
+
+    /**
+     * Refresh a specific chapter in a library book by downloading new content from its source URL
+     * Combines the entire flow: fetch content → generate XHTML → update EPUB → save to storage
+     * @param {Object} chapter - Chapter object containing libraryBookId, chapterListIndex, sourceUrl, and title
+     * @returns {Promise<boolean>} True if chapter was refreshed successfully
+     */
+    static async refreshChapterInBook(chapter) {
+        try {
+            // Validate chapter object and source URL
+            if (!chapter || !chapter.sourceUrl || chapter.sourceUrl.startsWith("library://")) {
+                throw new Error("Cannot refresh library-only chapters (no source URL)");
+            }
+            if (!chapter.libraryBookId || chapter.chapterListIndex === undefined) {
+                throw new Error("Chapter must have libraryBookId and chapterListIndex");
+            }
+            if (!window.parser) {
+                throw new Error("No parser available to extract chapter content");
+            }
+
+            // STEP 1: Fetch and process web content
+            let webPage = {
+                sourceUrl: chapter.sourceUrl,
+                title: chapter.title,
+                rawDom: null,
+                isIncludeable: true,
+                parser: window.parser
+            };
+
+            await window.parser.fetchWebPageContent(webPage);
+            if (webPage.error) {
+                throw new Error(webPage.error);
+            }
+            if (!webPage.rawDom) {
+                throw new Error("Failed to fetch chapter content");
+            }
+
+            let processedContent = window.parser.convertRawDomToContent(webPage);
+            if (!processedContent) {
+                throw new Error("Failed to process chapter content");
+            }
+
+            // STEP 2: Generate XHTML content
+            let epubItem = new ChapterEpubItem(webPage, processedContent, chapter.chapterListIndex);
+            let emptyDocFactory = window.parser.emptyDocFactory || util.createEmptyXhtmlDoc;
+            let contentValidator = window.parser.contentValidator || (xml => util.isXhtmlInvalid(xml, EpubPacker.XHTML_MIME_TYPE));
+            let newChapterXhtml = epubItem.fileContentForEpub(emptyDocFactory, contentValidator);
+
+            // STEP 3: Get EPUB from storage
+            let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + chapter.libraryBookId);
+            if (!epubBase64) {
+                throw new Error("Book not found in library");
+            }
+
+            // STEP 4: Update EPUB content (inline the refreshChapter logic)
+            let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
+            let epubPaths = util.getEpubStructure();
+
+            // Find target chapter file
+            let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
+            let targetChapterFile = EpubUpdater.validateChapterIndex(chapter.chapterListIndex, chapterFiles);
+            let chapterFilename = targetChapterFile.filename;
+
+            // Create new EPUB with updated chapter
+            let {newEpubZip} = EpubUpdater.createEpubWriter();
+
+            for (let entry of entries) {
+                if (entry.filename === chapterFilename) {
+                    // Replace with new content
+                    await newEpubZip.add(entry.filename, new zip.TextReader(newChapterXhtml));
+                } else {
+                    await EpubUpdater.copyEntry(newEpubZip, entry);
+                }
+            }
+
+            let updatedEpubBlob = await EpubUpdater.closeEpub(newEpubZip, epubZip);
+
+            // STEP 5: Save back to storage
+            let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
+            await LibraryStorage.LibSaveToStorage("LibEpub" + chapter.libraryBookId, newEpubBase64);
+            
+            // Store refresh timestamp for UI indicators
+            let refreshTimestamp = new Date().toISOString();
+            localStorage.setItem(`LibRefresh_${chapter.libraryBookId}_${chapter.chapterListIndex}`, refreshTimestamp);
+            return true;
+            
+        } catch (error) {
+            console.error("Error refreshing chapter in book:", error);
+            throw error;
         }
     }
 }
