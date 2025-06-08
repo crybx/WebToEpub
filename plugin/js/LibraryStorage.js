@@ -447,7 +447,7 @@ class LibraryStorage {
         }, async function() {
             await LibraryStorage.LibSaveCoverImgInStorage(LibFileReader.LibStorageValueId);
             await LibraryStorage.LibCreateStorageIDs(parseInt(LibFileReader.LibStorageValueId));
-            LibraryUI.LibRenderSavedEpubs();
+            await LibraryUI.LibRenderSavedEpubs();
             
             // Remove cached chapters that are now in library storage
             await LibraryStorage.LibRemoveCachedChaptersMovedToLibrary(LibFileReader.LibStorageValueId.toString());

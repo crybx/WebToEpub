@@ -344,7 +344,7 @@ class LibraryBookData {
      * REPLACES BRITTLE READING LIST DEPENDENCY
      * @param {string} bookId - The Library book ID
      * @param {Array} websiteChapters - Chapters found on the website
-     * @returns {Array} All chapters in book order with website chapters added at end
+     * @returns Promise<{Array}> All chapters in book order with website chapters added at end
      */
     static async detectNewChapters(bookId, websiteChapters) {
         try {

@@ -413,9 +413,8 @@ const main = (function() {
                 // Set flag to prevent re-entry during loading
                 window.isLoadingLibraryBook = true;
                 try {
-                    // Load library book first, then show indicator with correct title
-                    await LibraryUI.loadLibraryBookInMainUI(libraryBookId);
                     await LibraryUI.LibShowBookIndicator(libraryBookId);
+                    await LibraryUI.loadLibraryBookInMainUI(libraryBookId);
                 } finally {
                     // Clear loading flag
                     window.isLoadingLibraryBook = false;

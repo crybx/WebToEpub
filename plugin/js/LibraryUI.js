@@ -212,7 +212,7 @@ class LibraryUI {
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 // Standard event handlers
                 document.getElementById("LibUpdateNewChapter"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibUpdateNewChapter(this);});
-                document.getElementById("LibLoadBook"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.LibLoadBook(this);});
+                document.getElementById("LibLoadBook"+CurrentLibKeys[i]).addEventListener("click", function() {LibraryUI.loadLibraryBook(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("change", function() {LibraryUI.LibSaveTextURLChange(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusin", function() {LibraryUI.LibShowTextURLWarning(this);});
                 document.getElementById("LibStoryURL"+CurrentLibKeys[i]).addEventListener("focusout", function() {LibraryUI.LibHideTextURLWarning(this);});
@@ -674,12 +674,12 @@ class LibraryUI {
      * UNIFIED LOAD BOOK ACTION - Replaces separate "Search new Chapters" and "Select" 
      * Uses reliable EPUB-based chapter detection instead of brittle Reading List
      */
-    static async LibLoadBook(objbtn) {
+    static async loadLibraryBook(objbtn) {
         let bookId = objbtn.dataset.libepubid;
         try {
             await LibraryUI.loadLibraryBookInMainUI(bookId);
         } catch (error) {
-            console.error("Error in LibLoadBook:", error);
+            console.error("Error in loadLibraryBook:", error);
             // Fallback to old behavior if new method fails
             LibraryUI.LibSearchNewChapter(objbtn);
         }
@@ -817,7 +817,7 @@ class LibraryUI {
                 // Execute the action
                 switch (action) {
                     case "select":
-                        LibraryUI.LibLoadBook({dataset: {libepubid}});
+                        LibraryUI.loadLibraryBook({dataset: {libepubid}});
                         break;
                     case "update":
                         LibraryUI.LibUpdateNewChapter({dataset: {libepubid}});
@@ -1062,42 +1062,16 @@ class LibraryUI {
     }
 
     /**
-     * Show library book indicator banner when a library book is automatically detected
-     * Note: This should be called AFTER the library book data has been loaded into the UI
+     * Show indicator that user is viewing a library book
      */
     static async LibShowBookIndicator(bookId) {
         try {
-            // First try to get the actual book title from the EPUB metadata
-            let bookTitle = null;
-            try {
-                let metadata = await LibraryStorage.LibGetMetadata(bookId);
-                if (metadata && metadata[0]) {
-                    bookTitle = metadata[0]; // metadata[0] is the title
-                }
-            } catch (error) {
-                console.warn("Could not get metadata for book", bookId, error);
-            }
-            
-            // Fallback to titleInput field if metadata fetch failed
-            if (!bookTitle) {
-                bookTitle = main.getValueFromUiField("titleInput");
-            }
-            
-            // Final fallback to filename if both above methods failed
-            if (!bookTitle) {
-                bookTitle = await LibraryStorage.LibGetFromStorage("LibFilename" + bookId);
-                // Clean up the title by removing .epub extension if present
-                if (bookTitle && bookTitle.endsWith(".epub")) {
-                    bookTitle = bookTitle.replace(/\.epub$/, "");
-                }
-            }
-            
             // Show the banner
             let indicator = document.getElementById("libraryBookIndicator");
             indicator.hidden = false;
             
             // Store current library book for reference
-            window.currentLibraryBook = { id: bookId, title: bookTitle };
+            window.currentLibraryBook = { id: bookId };
 
             // Add library-mode class to enable library-only menu items
             document.body.classList.add("library-mode");
@@ -1106,10 +1080,8 @@ class LibraryUI {
             if (typeof main !== 'undefined' && main.updateLibraryButtonText) {
                 main.updateLibraryButtonText();
             }
-            
-            ChapterUrlsUI?.updateHeaderMoreActionsVisibility();
         } catch (error) {
-            console.error("Error showing library book indicator:", error);
+            console.error("Error showing library book banner:", error);
         }
     }
 
@@ -1143,7 +1115,7 @@ class LibraryUI {
             // Clear UI and load as normal website
             main.resetUI();
             main.setUiFieldToValue("startingUrlInput", currentUrl);
-            main.onLoadAndAnalyseButtonClick();
+            main.onLoadAndAnalyseButtonClick().then();
         } else {
             // Fallback: just reload the page
             location.reload();
@@ -1350,7 +1322,7 @@ class LibraryUI {
         // Save to localStorage
         userPreferences.LibShowCompactView.writeToLocalStorage();
         // Trigger the re-render
-        LibraryUI.LibRenderSavedEpubs();
+        LibraryUI.LibRenderSavedEpubs().then();
     }
 
     /**
@@ -1370,8 +1342,7 @@ class LibraryUI {
         if (modalDownloadCheckbox) {
             modalDownloadCheckbox.checked = userPreferences.LibDownloadEpubAfterUpdate.value;
         }
-        
-        
+
         // Populate library usage
         if (!util.isFirefox()) {
             let libraryUsage = await LibraryUI.LibBytesInUse();
@@ -1636,7 +1607,6 @@ class LibraryUI {
     }
 
     /**
-     * COMBINED LIBRARY BOOK LOADING - moved from LibraryBookData.js
      * Replaces separate "Search new Chapters" and "Select" actions
      * @param {string} bookId - The Library book ID
      */
@@ -1654,7 +1624,7 @@ class LibraryUI {
             await LibraryUI.loadBookWithMockParser(bookId);
             
             // 3. Clear loading indicator and switch to main UI early
-            LibraryUI.LibRenderSavedEpubs();
+            await LibraryUI.LibRenderSavedEpubs();
             LibraryUI.switchToMainUI();
             
             // 4. Fetch website chapters in background and merge when ready (preserving EPUB metadata)
