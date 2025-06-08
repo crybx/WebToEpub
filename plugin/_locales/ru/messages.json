@@ -500,6 +500,10 @@
 		"message": "Вы уверены, что хотите очистить всю библиотеку? Это удалит все сохранённые книги и не может быть отменено.",
 		"description": "Confirmation dialog when clearing the entire library"
 	},
+	"__MSG_confirm_delete_library_book__": {
+		"message": "Вы уверены, что хотите удалить эту книгу из библиотеки? Это действие нельзя отменить.",
+		"description": "Confirmation dialog when deleting a single library book"
+	},
 	"__MSG_button_Lib_Template_Export_Library__": {
 		"message": "Экспорт библиотеки",
 		"description": "Label on button to export Library in json format"
@@ -521,8 +525,8 @@
 		"description": "Label on button to Update all Epubs"
 	},
 	"__MSG_button_Lib_Template_Delete_EPUB__": {
-		"message": "Удалить книгу",
-		"description": "Label on button to Delete Book from Library"
+		"message": "Удалить книгу из библиотеки",
+		"description": "Label on button to Delete Library Book"
 	},
 	"__MSG_button_Lib_Template_Search_new_Chapters__": {
 		"message": "Поиск новых глав",

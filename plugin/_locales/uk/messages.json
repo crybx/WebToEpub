@@ -500,6 +500,10 @@
 		"message": "Ви впевнені, що хочете очистити всю бібліотеку? Це видалить всі збережені книги і не може бути скасовано.",
 		"description": "Confirmation dialog when clearing the entire library"
 	},
+	"__MSG_confirm_delete_library_book__": {
+		"message": "Ви впевнені, що хочете видалити цю книгу з бібліотеки? Цю дію не можна скасувати.",
+		"description": "Confirmation dialog when deleting a single library book"
+	},
 	"__MSG_button_Lib_Template_Export_Library__": {
 		"message": "Експорт бібліотеки",
 		"description": "Label on button to export Library in json format"
@@ -521,8 +525,8 @@
 		"description": "Label on button to Update all Epubs"
 	},
 	"__MSG_button_Lib_Template_Delete_EPUB__": {
-		"message": "Видалити книгу",
-		"description": "Label on button to Delete Book from Library"
+		"message": "Видалити книгу з бібліотеки",
+		"description": "Label on button to Delete Library Book"
 	},
 	"__MSG_button_Lib_Template_Search_new_Chapters__": {
 		"message": "Пошук нових розділів",

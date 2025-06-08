@@ -43,6 +43,10 @@
 		"message": "Are you sure you want to clear the entire library? This will delete all saved books and cannot be undone.",
 		"description": "Confirmation dialog when clearing the entire library"
 	},
+	"__MSG_confirm_delete_library_book__": {
+		"message": "Are you sure you want to delete this library book? This action cannot be undone.",
+		"description": "Confirmation dialog when deleting a single library book"
+	},
 	"__MSG_button_Lib_Template_Export_Library__": {
 		"message": "Export Library",
 		"description": "Label on button to export Library in json format"
@@ -64,8 +68,8 @@
 		"description": "Label on button to Update all Epubs"
 	},
 	"__MSG_button_Lib_Template_Delete_EPUB__": {
-		"message": "Delete Book",
-		"description": "Label on button to Delete Book"
+		"message": "Delete Library Book",
+		"description": "Label on button to Delete Library Book"
 	},
 	"__MSG_button_Lib_Template_Search_new_Chapters__": {
 		"message": "Search new Chapters",

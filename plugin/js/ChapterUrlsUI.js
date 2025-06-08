@@ -1235,6 +1235,12 @@ class ChapterUrlsUI {
         if (reorderChaptersIcon && reorderChaptersIcon.children.length === 0) {
             reorderChaptersIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILTER));
         }
+
+        // Set up delete library book icon
+        let deleteLibraryBookIcon = document.getElementById("deleteLibraryBookIcon");
+        if (deleteLibraryBookIcon && deleteLibraryBookIcon.children.length === 0) {
+            deleteLibraryBookIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
+        }
         
         // Set up click handler for the three dots icon
         let headerMoreActionsWrapper = document.getElementById("headerMoreActionsWrapper");
@@ -1283,6 +1289,21 @@ class ChapterUrlsUI {
                 e.stopPropagation();
                 await ChapterUrlsUI.openChapterReorderModal(chapters);
                 ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+
+        // Set up delete library book handler
+        let deleteLibraryBookItem = document.getElementById("deleteLibraryBookMenuItem");
+        if (deleteLibraryBookItem) {
+            deleteLibraryBookItem.onclick = async (e) => {
+                e.stopPropagation();
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+                
+                // Confirm deletion since this is a destructive action
+                if (window.currentLibraryBook && confirm(chrome.i18n.getMessage("__MSG_confirm_delete_library_book__") || "Are you sure you want to delete this library book? This action cannot be undone.")) {
+                    // Use the existing LibDeleteEpub function with the current library book ID
+                    LibraryUI.LibDeleteEpub({ dataset: { libepubid: window.currentLibraryBook.id } });
+                }
             };
         }
         
