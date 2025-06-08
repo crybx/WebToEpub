@@ -135,6 +135,10 @@
         "message": "Tên tập tin",
         "description": ""
     },
+    "__MSG_label_Default_Author_Name__": {
+        "message": "Tên tác giả mặc định",
+        "description": ""
+    },
     "__MSG_label_Developer_Stuff__": {
         "message": "Dành Cho Lập Trình Viên",
         "description": ""

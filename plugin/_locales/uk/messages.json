@@ -183,6 +183,10 @@
 		"message": "Ім’я файлу:",
 		"description": "Label in front input for file to save EPUB as"
 	},
+	"__MSG_label_Default_Author_Name__": {
+		"message": "Ім'я автора за замовчуванням",
+		"description": "Fallback author name when none is found"
+	},
 	"__MSG_label_Developer_Stuff__": {
 		"message": "Інструменти розробника",
 		"description": "Label for checkbox to show/hide buttons for developer testing (in Advanced settings)."

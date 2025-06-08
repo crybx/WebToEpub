@@ -901,7 +901,8 @@ const main = (function() {
             let metaAddInfo = EpubMetaInfo.getEpubMetaAddInfo(dom, url, allTags);
             setUiFieldToValue("subjectInput", metaAddInfo.subject);
             setUiFieldToValue("descriptionInput", metaAddInfo.description);
-            if (getValueFromUiField("authorInput") == "<unknown>") {
+            let defaultAuthor = userPreferences ? userPreferences.defaultAuthorName.value : "<unknown>";
+            if (getValueFromUiField("authorInput") == defaultAuthor) {
                 setUiFieldToValue("authorInput", metaAddInfo.author);
             }
             setMetadataButtonsState(false);

@@ -399,6 +399,10 @@
 		"message": "Custom Filename",
 		"description": "Custom Filename input"
 	},
+	"__MSG_label_Default_Author_Name__": {
+		"message": "Default Author Name",
+		"description": "Fallback author name when none is found"
+	},
 	"__MSG_label_Metadata_subject__": {
 		"message": "Tags",
 		"description": "Tags for epub"
