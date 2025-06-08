@@ -532,6 +532,22 @@
 		"message": "Tải xuống tệp HTML",
 		"description": "Menu option to download a single chapter as HTML file"
 	},
+	"__MSG_menu_Reorder_Chapters__": {
+		"message": "Sắp xếp lại chương",
+		"description": "Menu option to reorder chapters in a library book"
+	},
+	"__MSG_modal_title_Reorder_Chapters__": {
+		"message": "Sắp xếp lại chương",
+		"description": "Title for the chapter reordering modal"
+	},
+	"__MSG_label_Reorder_Instructions__": {
+		"message": "Sử dụng các nút mũi tên để sắp xếp lại thứ tự chương. Các thay đổi sẽ được lưu vào thư viện của bạn.",
+		"description": "Instructions text in the chapter reordering modal"
+	},
+	"__MSG_button_Save_Order__": {
+		"message": "Lưu thứ tự",
+		"description": "Button to save the new chapter order"
+	},
 	"__MSG_tooltip_More_Actions__": {
         "message": "Thêm hành động",
         "description": "Tooltip for more actions menu button"

@@ -244,6 +244,14 @@ progress::-moz-progress-bar {
     --scrollbar-border: rgba(102, 0, 204, 0.3);
 }
 
+/* Reorder Chapter List Scrollbar - Cyberpunk */
+.reorder-chapter-list {
+    --scrollbar-track: rgba(26, 26, 46, 0.3);
+    --scrollbar-thumb: #6600cc;
+    --scrollbar-thumb-hover: var(--color-secondary);
+    --scrollbar-border: rgba(102, 0, 204, 0.3);
+}
+
 /* Modal cyberpunk styling */
 .modal-backdrop {
     background: rgba(0, 0, 0, 0.8);

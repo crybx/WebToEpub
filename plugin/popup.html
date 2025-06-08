@@ -632,6 +632,10 @@
                                   <span id="downloadSelectedHtmlIcon"></span>
                                   <span>Download Selected Chapters as Individual HTML Files</span>
                                 </div>
+                                <div class="menu-item library-only" id="reorderChaptersMenuItem">
+                                    <span id="reorderChaptersIcon"></span>
+                                    <span class="i18n">__MSG_menu_Reorder_Chapters__</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -781,6 +785,28 @@
             </div>
             <div class="cover-modal-content">
                 <img id="fullSizeCoverImg" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Chapter Reordering Modal -->
+    <div id="chapterReorderModal" class="modal-backdrop">
+        <div class="modal-container reorder-modal">
+            <div class="modal-title-bar">
+                <h2 class="modal-title i18n">__MSG_modal_title_Reorder_Chapters__</h2>
+                <button id="closeChapterReorder" class="modal-close">✕</button>
+            </div>
+            <div class="reorder-modal-content">
+                <div class="reorder-instructions">
+                    <p class="i18n">__MSG_label_Reorder_Instructions__</p>
+                </div>
+                <div class="reorder-chapter-list" id="reorderChapterList">
+                    <!-- Chapter items will be populated here -->
+                </div>
+                <div class="reorder-modal-buttons">
+                    <button id="saveChapterOrderButton" class="expandedButton i18n">__MSG_button_Save_Order__</button>
+                    <button id="cancelChapterOrderButton" class="expandedButton i18n">__MSG_button_error_Cancel__</button>
+                </div>
             </div>
         </div>
     </div>

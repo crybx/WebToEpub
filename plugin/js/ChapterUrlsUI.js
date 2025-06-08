@@ -1229,6 +1229,12 @@ class ChapterUrlsUI {
         if (downloadSelectedHtmlIcon && downloadSelectedHtmlIcon.children.length === 0) {
             downloadSelectedHtmlIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
         }
+
+        // Set up reorder chapters icon
+        let reorderChaptersIcon = document.getElementById("reorderChaptersIcon");
+        if (reorderChaptersIcon && reorderChaptersIcon.children.length === 0) {
+            reorderChaptersIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILTER));
+        }
         
         // Set up click handler for the three dots icon
         let headerMoreActionsWrapper = document.getElementById("headerMoreActionsWrapper");
@@ -1266,6 +1272,16 @@ class ChapterUrlsUI {
             deleteAllCachedItem.onclick = async (e) => {
                 e.stopPropagation();
                 await ChapterCache.deleteAllCachedChapters(chapters);
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+
+        // Set up reorder chapters handler
+        let reorderChaptersItem = document.getElementById("reorderChaptersMenuItem");
+        if (reorderChaptersItem) {
+            reorderChaptersItem.onclick = async (e) => {
+                e.stopPropagation();
+                await ChapterUrlsUI.openChapterReorderModal(chapters);
                 ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
             };
         }
@@ -1448,7 +1464,7 @@ class ChapterUrlsUI {
             if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
                 // Store the deleted index before we modify the chapter object
                 let deletedIndex = chapter.epubSpineIndex;
-                
+                console.log(chapter);
                 // Use the LibraryBookData method to delete
                 let isDeleted = await EpubUpdater.deleteChapter(chapter);
                 if (isDeleted) {
@@ -1485,6 +1501,258 @@ class ChapterUrlsUI {
             alert("Failed to delete chapter: " + error.message);
         }
     }
+
+    /**
+     * Open the chapter reordering modal for library books
+     * @param {Array} chapters - Array of chapter objects (optional, will get from parser state if not provided)
+     */
+    static async openChapterReorderModal(chapters) {
+        try {
+            // Get chapters from parser state if not provided, as these should have library properties
+            let currentChapters = chapters;
+            if (!currentChapters || currentChapters.length === 0 || !currentChapters[0].hasOwnProperty('isInBook')) {
+                if (window.parser && window.parser.state && window.parser.state.webPages) {
+                    currentChapters = [...window.parser.state.webPages.values()];
+                } else {
+                    alert("No chapters available for reordering.");
+                    return;
+                }
+            }
+            
+            // Only show reordering for library chapters
+            let libraryChapters = currentChapters.filter(chapter => chapter.isInBook && chapter.libraryBookId);
+            console.log("Total chapters:", currentChapters.length);
+            console.log("Library chapters found:", libraryChapters.length);
+            console.log("First chapter isInBook:", currentChapters[0]?.isInBook);
+            console.log("First chapter libraryBookId:", currentChapters[0]?.libraryBookId);
+            
+            if (libraryChapters.length === 0) {
+                alert("No library chapters found to reorder.");
+                return;
+            }
+
+            // Sort chapters by their current order in the book (epubSpineIndex)
+            libraryChapters.sort((a, b) => (a.epubSpineIndex || 0) - (b.epubSpineIndex || 0));
+
+            // Store the original order for comparison
+            ChapterUrlsUI._originalChapterOrder = libraryChapters.map(ch => ({...ch}));
+            ChapterUrlsUI._currentReorderChapters = libraryChapters.map(ch => ({...ch}));
+
+            // Populate the modal
+            ChapterUrlsUI.populateReorderModal(ChapterUrlsUI._currentReorderChapters);
+
+            // Show the modal
+            let modal = document.getElementById("chapterReorderModal");
+            document.body.classList.add("modal-open");
+            modal.style.display = "flex";
+
+            // Set up modal event handlers
+            ChapterUrlsUI.setupReorderModalHandlers();
+
+        } catch (error) {
+            console.error("Error opening chapter reorder modal:", error);
+            alert("Failed to open chapter reordering interface: " + error.message);
+        }
+    }
+
+    /**
+     * Populate the reorder modal with chapter items
+     * @param {Array} chapters - Array of library chapters
+     */
+    static populateReorderModal(chapters) {
+        let container = document.getElementById("reorderChapterList");
+        container.innerHTML = "";
+
+        chapters.forEach((chapter, index) => {
+            let item = document.createElement("div");
+            item.className = "reorder-chapter-item";
+            item.dataset.originalIndex = index;
+
+            // Chapter number
+            let chapterNumber = document.createElement("div");
+            chapterNumber.className = "reorder-chapter-number";
+            chapterNumber.textContent = (index + 1).toString();
+
+            // Chapter title
+            let chapterTitle = document.createElement("div");
+            chapterTitle.className = "reorder-chapter-title";
+            chapterTitle.textContent = chapter.title;
+            chapterTitle.title = chapter.title; // Tooltip for long titles
+
+            // Move buttons (side by side like library cards)
+            let moveButtons = document.createElement("div");
+            moveButtons.className = "reorder-move-buttons";
+
+            let moveUpBtn = document.createElement("button");
+            moveUpBtn.className = "reorder-move-up";
+            moveUpBtn.appendChild(SvgIcons.createSvgElement(SvgIcons.ARROW_UP));
+            moveUpBtn.disabled = index === 0;
+            moveUpBtn.onclick = () => ChapterUrlsUI.moveChapterUp(index);
+
+            let moveDownBtn = document.createElement("button");
+            moveDownBtn.className = "reorder-move-down"; 
+            let downArrow = SvgIcons.createSvgElement(SvgIcons.ARROW_UP);
+            downArrow.style.transform = "rotate(180deg)";
+            moveDownBtn.appendChild(downArrow);
+            moveDownBtn.disabled = index === chapters.length - 1;
+            moveDownBtn.onclick = () => ChapterUrlsUI.moveChapterDown(index);
+
+            moveButtons.appendChild(moveUpBtn);
+            moveButtons.appendChild(moveDownBtn);
+
+            // Assemble the item
+            item.appendChild(chapterNumber);
+            item.appendChild(chapterTitle);
+            item.appendChild(moveButtons);
+
+            container.appendChild(item);
+        });
+    }
+
+    /**
+     * Move chapter up in the reorder list
+     * @param {number} index - Index of chapter to move up
+     */
+    static moveChapterUp(index) {
+        if (index > 0) {
+            // Swap with previous chapter
+            let temp = ChapterUrlsUI._currentReorderChapters[index];
+            ChapterUrlsUI._currentReorderChapters[index] = ChapterUrlsUI._currentReorderChapters[index - 1];
+            ChapterUrlsUI._currentReorderChapters[index - 1] = temp;
+
+            // Re-populate the modal and flash the moved item
+            ChapterUrlsUI.populateReorderModal(ChapterUrlsUI._currentReorderChapters);
+            ChapterUrlsUI.flashMovedItem(index - 1); // Flash the item at its new position
+        }
+    }
+
+    /**
+     * Move chapter down in the reorder list
+     * @param {number} index - Index of chapter to move down
+     */
+    static moveChapterDown(index) {
+        if (index < ChapterUrlsUI._currentReorderChapters.length - 1) {
+            // Swap with next chapter  
+            let temp = ChapterUrlsUI._currentReorderChapters[index];
+            ChapterUrlsUI._currentReorderChapters[index] = ChapterUrlsUI._currentReorderChapters[index + 1];
+            ChapterUrlsUI._currentReorderChapters[index + 1] = temp;
+
+            // Re-populate the modal and flash the moved item
+            ChapterUrlsUI.populateReorderModal(ChapterUrlsUI._currentReorderChapters);
+            ChapterUrlsUI.flashMovedItem(index + 1); // Flash the item at its new position
+        }
+    }
+
+    /**
+     * Apply a brief flash effect to a moved chapter item
+     * @param {number} itemIndex - Index of the item to flash
+     */
+    static flashMovedItem(itemIndex) {
+        // Wait a moment for the DOM to update after re-population
+        setTimeout(() => {
+            let container = document.getElementById("reorderChapterList");
+            let items = container.querySelectorAll(".reorder-chapter-item");
+            if (items[itemIndex]) {
+                items[itemIndex].classList.add("flash");
+                // Remove the class after animation completes
+                setTimeout(() => {
+                    items[itemIndex].classList.remove("flash");
+                }, 600); // Match the animation duration
+            }
+        }, 10);
+    }
+
+    /**
+     * Set up event handlers for the reorder modal
+     */
+    static setupReorderModalHandlers() {
+        // Close button
+        document.getElementById("closeChapterReorder").onclick = () => {
+            ChapterUrlsUI.closeReorderModal();
+        };
+
+        // Cancel button
+        document.getElementById("cancelChapterOrderButton").onclick = () => {
+            ChapterUrlsUI.closeReorderModal();
+        };
+
+        // Save button
+        document.getElementById("saveChapterOrderButton").onclick = async () => {
+            await ChapterUrlsUI.saveChapterOrder();
+        };
+
+        // Close on background click
+        document.getElementById("chapterReorderModal").onclick = (e) => {
+            if (e.target.id === "chapterReorderModal") {
+                ChapterUrlsUI.closeReorderModal();
+            }
+        };
+    }
+
+    /**
+     * Close the reorder modal
+     */
+    static closeReorderModal() {
+        let modal = document.getElementById("chapterReorderModal");
+        modal.style.display = "none";
+        document.body.classList.remove("modal-open");
+
+        // Clean up
+        ChapterUrlsUI._originalChapterOrder = null;
+        ChapterUrlsUI._currentReorderChapters = null;
+    }
+
+    /**
+     * Save the new chapter order to the EPUB
+     */
+    static async saveChapterOrder() {
+        try {
+            // Check if order has changed
+            let hasChanged = ChapterUrlsUI.hasChapterOrderChanged();
+            if (!hasChanged) {
+                ChapterUrlsUI.closeReorderModal();
+                return;
+            }
+
+            // Get the library book ID
+            let bookId = ChapterUrlsUI._currentReorderChapters[0].libraryBookId;
+
+            // Update the EPUB with new chapter order
+            await EpubUpdater.reorderChapters(bookId, ChapterUrlsUI._currentReorderChapters);
+
+            // Reload the library book to reflect new order
+            await LibraryUI.loadLibraryBookInMainUI(bookId);
+            
+            ChapterUrlsUI.closeReorderModal();
+
+        } catch (error) {
+            console.error("Error saving chapter order:", error);
+            alert("Failed to save chapter order: " + error.message);
+        }
+    }
+
+    /**
+     * Check if the chapter order has changed
+     * @returns {boolean} True if order has changed
+     */
+    static hasChapterOrderChanged() {
+        if (!ChapterUrlsUI._originalChapterOrder || !ChapterUrlsUI._currentReorderChapters) {
+            return false;
+        }
+
+        if (ChapterUrlsUI._originalChapterOrder.length !== ChapterUrlsUI._currentReorderChapters.length) {
+            return true;
+        }
+
+        for (let i = 0; i < ChapterUrlsUI._originalChapterOrder.length; i++) {
+            if (ChapterUrlsUI._originalChapterOrder[i].sourceUrl !== ChapterUrlsUI._currentReorderChapters[i].sourceUrl) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
 
 ChapterUrlsUI.RangeCalculator = class {

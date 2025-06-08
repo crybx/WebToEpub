@@ -1098,12 +1098,16 @@ class LibraryUI {
             
             // Store current library book for reference
             window.currentLibraryBook = { id: bookId, title: bookTitle };
-            
+
+            // Add library-mode class to enable library-only menu items
+            document.body.classList.add("library-mode");
+
             // Update library button text
             if (typeof main !== 'undefined' && main.updateLibraryButtonText) {
                 main.updateLibraryButtonText();
             }
             
+            ChapterUrlsUI?.updateHeaderMoreActionsVisibility();
         } catch (error) {
             console.error("Error showing library book indicator:", error);
         }
@@ -1119,6 +1123,9 @@ class LibraryUI {
         window.currentLibraryBook = null;
         window.isLoadingLibraryBook = false;
         
+        // Remove library-mode class to hide library-only menu items
+        document.body.classList.remove("library-mode");
+        
         // Update library button text
         if (typeof main !== 'undefined' && main.updateLibraryButtonText) {
             main.updateLibraryButtonText();
@@ -1126,6 +1133,9 @@ class LibraryUI {
         
         // Set a flag to bypass library detection on next load
         window.bypassLibraryDetection = true;
+        
+        // Update header more actions visibility for normal mode
+        ChapterUrlsUI?.updateHeaderMoreActionsVisibility();
         
         // Get current URL and reload as website
         let currentUrl = main.getValueFromUiField("startingUrlInput");
@@ -1709,10 +1719,11 @@ class LibraryUI {
             } catch (parserError) {
                 // Library chapters are already displayed, so this is graceful degradation
             }
-            
+
+            ChapterUrlsUI?.updateHeaderMoreActionsVisibility();
         } catch (error) {
             console.error("Error loading library book in main UI:", error);
-            LibraryUI.LibRenderSavedEpubs();
+            await LibraryUI.LibRenderSavedEpubs();
             alert("Failed to load library book: " + error.message);
         }
     }

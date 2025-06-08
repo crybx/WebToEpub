@@ -894,6 +894,22 @@
 		"message": "Download HTML File",
 		"description": "Menu option to download a single chapter as HTML file"
 	},
+	"__MSG_menu_Reorder_Chapters__": {
+		"message": "Reorder Chapters",
+		"description": "Menu option to reorder chapters in a library book"
+	},
+	"__MSG_modal_title_Reorder_Chapters__": {
+		"message": "Reorder Chapters",
+		"description": "Title for the chapter reordering modal"
+	},
+	"__MSG_label_Reorder_Instructions__": {
+		"message": "Use the arrow buttons to reorder chapters. Changes will be saved to your library book.",
+		"description": "Instructions text in the chapter reordering modal"
+	},
+	"__MSG_button_Save_Order__": {
+		"message": "Save Order",
+		"description": "Button to save the new chapter order"
+	},
 	"__MSG_confirm_Clear_All_Cache__": {
 		"message": "Are you sure you want to clear all cached chapters? This action cannot be undone.",
 		"description": "Confirmation dialog when clearing all cached chapters"

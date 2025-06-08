@@ -174,24 +174,6 @@ class EpubUpdater {
     }
 
     /**
-     * Find chapter filename by spine position (accounts for cover pages and spine order)
-     * @param {Array} entries - EPUB entries
-     * @param {Object} epubPaths - EPUB structure paths  
-     * @param {number} spineIndex - Index in spine order (0-based)
-     * @returns {Promise<string|null>} Chapter filename or null if not found
-     */
-    static async findChapterBySpineIndex(entries, epubPaths, spineIndex) {
-        try {
-            let chapters = LibraryBookData.extractChapterList(entries);
-
-
-        } catch (error) {
-            console.error("Error finding chapter by spine index:", error);
-            return null;
-        }
-    }
-
-    /**
      * Validate chapter index against available chapters (in the chapter list UI, not valid against spine order)
      * @param {number} chapterIndex - Index to validate
      * @param {Array} chapterFiles - Available chapter files
@@ -665,5 +647,258 @@ class EpubUpdater {
             console.error("Error refreshing chapter in book:", error);
             throw error;
         }
+    }
+
+    /**
+     * Reorder chapters in an existing EPUB by updating metadata files
+     * @param {string} bookId - Library book ID
+     * @param {Array} newChapterOrder - Array of chapters in new order
+     * @returns {Promise<boolean>} Success status
+     */
+    static async reorderChapters(bookId, newChapterOrder) {
+        try {
+            // Get the stored EPUB data
+            let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + bookId);
+            if (!epubBase64) {
+                throw new Error("Book not found in library");
+            }
+
+            // Load the EPUB
+            let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
+            let epubPaths = util.getEpubStructure();
+
+            // Read current metadata files
+            let {navXhtmlEntry, contentOpfText, tocNcxText, navXhtmlText} = await EpubUpdater.readMetadataFiles(entries, epubPaths);
+
+            // Create new EPUB writer
+            let {newEpubZip} = EpubUpdater.createEpubWriter();
+
+            // Copy all entries except metadata files (we'll regenerate those)
+            for (let entry of entries) {
+                if (entry.filename === epubPaths.contentOpf ||
+                    entry.filename === epubPaths.tocNcx ||
+                    (navXhtmlEntry && entry.filename === epubPaths.navXhtml)) {
+                    continue; // Skip metadata files - we'll regenerate them
+                }
+                await EpubUpdater.copyEntry(newEpubZip, entry);
+            }
+
+            // Generate new metadata files with reordered chapters
+            let updatedContentOpf = EpubUpdater.reorderContentOpf(contentOpfText, newChapterOrder, epubPaths);
+            let updatedTocNcx = EpubUpdater.reorderTocNcx(tocNcxText, newChapterOrder, epubPaths);
+            let updatedNavXhtml = navXhtmlText ? EpubUpdater.reorderNavXhtml(navXhtmlText, newChapterOrder, epubPaths) : null;
+
+            // Add updated metadata files and close EPUB
+            let updatedEpubBlob = await EpubUpdater.addMetadataFilesAndClose(newEpubZip, epubZip, epubPaths, updatedContentOpf, updatedTocNcx, updatedNavXhtml);
+            let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
+
+            // Save updated EPUB back to storage
+            await LibraryStorage.LibSaveToStorage("LibEpub" + bookId, newEpubBase64);
+
+            return true;
+
+        } catch (error) {
+            console.error("Error reordering chapters:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Reorder spine elements in content.opf based on new chapter order
+     * @param {string} contentOpf - Original content.opf content
+     * @param {Array} newChapterOrder - Array of chapters in new order
+     * @param {Object} epubPaths - EPUB structure paths
+     * @returns {string} Updated content.opf
+     */
+    static reorderContentOpf(contentOpf, newChapterOrder, epubPaths) {
+        let updated = contentOpf;
+
+        // Extract current spine itemrefs
+        let spineRegex = /<spine[^>]*>([\s\S]*?)<\/spine>/;
+        let spineMatch = updated.match(spineRegex);
+        if (!spineMatch) {
+            throw new Error("Could not find spine section in content.opf");
+        }
+
+        let spineContent = spineMatch[1];
+        let itemrefRegex = /<itemref[^>]*idref="([^"]*)"[^>]*\/>/g;
+        let existingItemrefs = [];
+        let match;
+        while ((match = itemrefRegex.exec(spineContent)) !== null) {
+            existingItemrefs.push({
+                idref: match[1],
+                fullTag: match[0]
+            });
+        }
+
+        // Build manifest map from href to id to get actual idrefs
+        let manifestRegex = /<item[^>]*href="([^"]*)"[^>]*id="([^"]*)"[^>]*\/>/g;
+        let hrefToIdMap = {};
+        let manifestMatch;
+        while ((manifestMatch = manifestRegex.exec(updated)) !== null) {
+            hrefToIdMap[manifestMatch[1]] = manifestMatch[2]; // href -> id
+        }
+
+        // Build set of chapter idrefs that will be reordered
+        let chapterIdrefs = new Set();
+        newChapterOrder.forEach(chapter => {
+            let relativePath = chapter.libraryFilePath.replace(epubPaths.contentDir + "/", "");
+            let actualIdref = hrefToIdMap[relativePath];
+            if (actualIdref) {
+                chapterIdrefs.add(actualIdref);
+            }
+        });
+
+        // Create new spine content: preserve non-chapters in original order, insert reordered chapters
+        let newSpineContent = "\n";
+        let chapterItemrefs = [];
+        
+        // First, collect the reordered chapter itemrefs
+        newChapterOrder.forEach(chapter => {
+            let relativePath = chapter.libraryFilePath.replace(epubPaths.contentDir + "/", "");
+            let actualIdref = hrefToIdMap[relativePath];
+            
+            if (actualIdref) {
+                let itemref = existingItemrefs.find(ir => ir.idref === actualIdref);
+                if (itemref) {
+                    chapterItemrefs.push(itemref);
+                }
+            }
+        });
+
+        // Now build the new spine: replace chapter section with reordered chapters, keep everything else
+        let chapterInserted = false;
+        existingItemrefs.forEach(itemref => {
+            if (chapterIdrefs.has(itemref.idref)) {
+                // This is a chapter that will be reordered - insert all reordered chapters here once
+                if (!chapterInserted) {
+                    chapterItemrefs.forEach(chapterItemref => {
+                        newSpineContent += `        ${chapterItemref.fullTag}\n`;
+                    });
+                    chapterInserted = true;
+                }
+                // Skip this individual chapter (already inserted as part of reordered group)
+            } else {
+                // This is a non-chapter item (Cover, Information, etc.) - preserve in original position
+                newSpineContent += `        ${itemref.fullTag}\n`;
+            }
+        });
+
+        // Replace the spine content
+        updated = updated.replace(spineRegex, `<spine toc="ncx">${newSpineContent}    </spine>`);
+
+        return updated;
+    }
+
+    /**
+     * Reorder navigation points in toc.ncx based on new chapter order
+     * @param {string} tocNcx - Original toc.ncx content
+     * @param {Array} newChapterOrder - Array of chapters in new order
+     * @param {Object} epubPaths - EPUB structure paths
+     * @returns {string} Updated toc.ncx
+     */
+    static reorderTocNcx(tocNcx, newChapterOrder, epubPaths) {
+        let updated = tocNcx;
+
+        // Extract current navPoints
+        let navMapRegex = /<navMap[^>]*>([\s\S]*?)<\/navMap>/;
+        let navMapMatch = updated.match(navMapRegex);
+        if (!navMapMatch) {
+            throw new Error("Could not find navMap section in toc.ncx");
+        }
+
+        let navMapContent = navMapMatch[1];
+        let navPointRegex = /<navPoint[^>]*id="([^"]*)"[^>]*>([\s\S]*?)<\/navPoint>/g;
+        let existingNavPoints = [];
+        let match;
+        while ((match = navPointRegex.exec(navMapContent)) !== null) {
+            existingNavPoints.push({
+                id: match[1],
+                content: match[2],
+                fullTag: match[0]
+            });
+        }
+
+        // Create new navMap order based on chapter order
+        let newNavMapContent = "\n";
+        newChapterOrder.forEach((chapter, index) => {
+            let chapterBasename = chapter.libraryFilePath.split('/').pop().replace('.xhtml', '');
+            let expectedId = `navpoint${chapterBasename}`;
+            
+            let navPoint = existingNavPoints.find(np => np.id === expectedId);
+            if (navPoint) {
+                // Update the playOrder attribute to match new position
+                let updatedNavPoint = navPoint.fullTag.replace(
+                    /playOrder="[^"]*"/,
+                    `playOrder="${index + 1}"`
+                );
+                newNavMapContent += `        ${updatedNavPoint}\n`;
+            }
+        });
+
+        // Replace the navMap content
+        updated = updated.replace(navMapRegex, `<navMap>${newNavMapContent}    </navMap>`);
+
+        return updated;
+    }
+
+    /**
+     * Reorder navigation in nav.xhtml based on new chapter order (EPUB 3)
+     * @param {string} navXhtml - Original nav.xhtml content
+     * @param {Array} newChapterOrder - Array of chapters in new order
+     * @param {Object} epubPaths - EPUB structure paths
+     * @returns {string} Updated nav.xhtml
+     */
+    static reorderNavXhtml(navXhtml, newChapterOrder, epubPaths) {
+        let updated = navXhtml;
+
+        // Extract current navigation list
+        let tocRegex = /<nav[^>]*epub:type="toc"[^>]*>([\s\S]*?)<\/nav>/;
+        let tocMatch = updated.match(tocRegex);
+        if (!tocMatch) {
+            // Try alternative pattern
+            tocRegex = /<ol[^>]*>([\s\S]*?)<\/ol>/;
+            tocMatch = updated.match(tocRegex);
+        }
+        
+        if (!tocMatch) {
+            return updated; // If we can't find navigation, return unchanged
+        }
+
+        let listContent = tocMatch[1];
+        let liRegex = /<li[^>]*>([\s\S]*?)<\/li>/g;
+        let existingItems = [];
+        let match;
+        while ((match = liRegex.exec(listContent)) !== null) {
+            existingItems.push({
+                content: match[1],
+                fullTag: match[0]
+            });
+        }
+
+        // Create new navigation order based on chapter order
+        let newListContent = "\n";
+        newChapterOrder.forEach(chapter => {
+            let chapterFilename = chapter.libraryFilePath.split('/').pop();
+            
+            // Find the matching navigation item by href
+            let navItem = existingItems.find(item => 
+                item.content.includes(`href="${epubPaths.textDirRel}/${chapterFilename}"`) ||
+                item.content.includes(`href="../${epubPaths.textDir}/${chapterFilename}"`)
+            );
+            if (navItem) {
+                newListContent += `            ${navItem.fullTag}\n`;
+            }
+        });
+
+        // Replace the list content
+        if (tocMatch) {
+            let isOlElement = updated.includes('<ol');
+            let tagName = isOlElement ? 'ol' : 'nav epub:type="toc"';
+            let closeTag = isOlElement ? 'ol' : 'nav';
+            updated = updated.replace(tocRegex, `<${tagName}>${newListContent}        </${closeTag}>`);
+        }
+
+        return updated;
     }
 }
