@@ -538,3 +538,8 @@ body.modal-open {
 .library-mode .menu-item.library-only {
     display: flex;
 }
+
+/* Non-library menu items - visible by default, hidden in library mode */
+.library-mode .menu-item.non-library-only {
+    display: none;
+}

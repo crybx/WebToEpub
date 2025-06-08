@@ -902,6 +902,14 @@
 		"message": "Reorder Chapters",
 		"description": "Menu option to reorder chapters in a library book"
 	},
+	"__MSG_menu_Hide_Library_Chapters__": {
+		"message": "Hide Chapters in Library Book",
+		"description": "Menu option to hide chapters that are already in the library book"
+	},
+	"__MSG_menu_Show_Library_Chapters__": {
+		"message": "Show Chapters in Library Book",
+		"description": "Menu option to show chapters that are already in the library book"
+	},
 	"__MSG_modal_title_Reorder_Chapters__": {
 		"message": "Reorder Chapters",
 		"description": "Title for the chapter reordering modal"

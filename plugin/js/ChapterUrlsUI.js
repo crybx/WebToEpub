@@ -1251,6 +1251,19 @@ class ChapterUrlsUI {
             reorderChaptersIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILTER));
         }
 
+        // Set up download library book icon
+        let downloadLibraryBookIcon = document.getElementById("downloadLibraryBookIcon");
+        if (downloadLibraryBookIcon && downloadLibraryBookIcon.children.length === 0) {
+            downloadLibraryBookIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.DOWNLOAD));
+        }
+
+        // Set up toggle library chapters icon and initialize its state
+        let toggleLibraryChaptersIcon = document.getElementById("toggleLibraryChaptersIcon");
+        if (toggleLibraryChaptersIcon && toggleLibraryChaptersIcon.children.length === 0) {
+            // Initialize the toggle menu state (this will set the correct icon and text)
+            ChapterUrlsUI.initializeLibraryChaptersToggle();
+        }
+
         // Set up delete library book icon
         let deleteLibraryBookIcon = document.getElementById("deleteLibraryBookIcon");
         if (deleteLibraryBookIcon && deleteLibraryBookIcon.children.length === 0) {
@@ -1304,6 +1317,32 @@ class ChapterUrlsUI {
                 e.stopPropagation();
                 await ChapterUrlsUI.openChapterReorderModal(chapters);
                 ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+            };
+        }
+
+        // Set up download library book handler
+        let downloadLibraryBookItem = document.getElementById("downloadLibraryBookMenuItem");
+        if (downloadLibraryBookItem) {
+            downloadLibraryBookItem.onclick = async (e) => {
+                e.stopPropagation();
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+                
+                // Download the current library book using the existing LibDownload function
+                if (window.currentLibraryBook) {
+                    LibraryUI.LibDownload({ dataset: { libepubid: window.currentLibraryBook.id } });
+                }
+            };
+        }
+
+        // Set up toggle library chapters handler
+        let toggleLibraryChaptersItem = document.getElementById("toggleLibraryChaptersMenuItem");
+        if (toggleLibraryChaptersItem) {
+            toggleLibraryChaptersItem.onclick = async (e) => {
+                e.stopPropagation();
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+                
+                // Toggle visibility of library chapters
+                ChapterUrlsUI.toggleLibraryChaptersVisibility();
             };
         }
 
@@ -1787,6 +1826,146 @@ class ChapterUrlsUI {
         }
 
         return false;
+    }
+
+    /**
+     * Toggle visibility of library chapters and update menu text
+     */
+    static toggleLibraryChaptersVisibility() {
+        try {
+            // Get the current state from window property (default: show chapters)
+            let hideLibraryChapters = window.hideLibraryChapters === true;
+            
+            // Toggle the state
+            hideLibraryChapters = !hideLibraryChapters;
+            window.hideLibraryChapters = hideLibraryChapters;
+            
+            // Update the menu text and icon based on new state
+            let toggleMenuItem = document.getElementById("toggleLibraryChaptersMenuItem");
+            let toggleText = document.getElementById("toggleLibraryChaptersText");
+            let toggleIcon = document.getElementById("toggleLibraryChaptersIcon");
+            
+            if (toggleText && toggleIcon) {
+                if (hideLibraryChapters) {
+                    // Currently hiding chapters, so show "Show" option
+                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Show_Library_Chapters__");
+                    toggleIcon.innerHTML = "";
+                    let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
+                    iconElement.style.opacity = "0.5"; // Make it dimmed to indicate hidden state
+                    toggleIcon.appendChild(iconElement);
+                } else {
+                    // Currently showing chapters, so show "Hide" option
+                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Hide_Library_Chapters__");
+                    toggleIcon.innerHTML = "";
+                    let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
+                    iconElement.style.opacity = "1"; // Normal opacity for visible state
+                    toggleIcon.appendChild(iconElement);
+                }
+            }
+            
+            // Apply the visibility changes to library chapters
+            ChapterUrlsUI.updateLibraryChaptersVisibility(hideLibraryChapters);
+            
+        } catch (error) {
+            console.error("Error toggling library chapters visibility:", error);
+        }
+    }
+
+    /**
+     * Update visibility of library chapters based on the hide state
+     * @param {boolean} hideLibraryChapters - Whether to hide library chapters
+     */
+    static updateLibraryChaptersVisibility(hideLibraryChapters) {
+        try {
+            // Find all chapter rows that are in the library
+            let libraryChapterRows = document.querySelectorAll('.chapter-row.chapter-in-library');
+            
+            libraryChapterRows.forEach(row => {
+                if (hideLibraryChapters) {
+                    row.style.display = "none";
+                    
+                    // Uncheck the checkbox for hidden chapters
+                    let checkbox = row.querySelector('.chapterSelectCheckbox');
+                    if (checkbox && checkbox.checked) {
+                        checkbox.checked = false;
+                        // Trigger the onclick handler to update the chapter's isIncludeable property
+                        if (checkbox.onclick) {
+                            checkbox.onclick();
+                        }
+                    }
+                } else {
+                    row.style.display = "";
+                    // Note: We don't re-check the checkbox when showing chapters again
+                }
+            });
+            
+            // Update the chapter count display to reflect visible chapters
+            ChapterUrlsUI.updateVisibleChapterCount();
+            
+        } catch (error) {
+            console.error("Error updating library chapters visibility:", error);
+        }
+    }
+
+    /**
+     * Update the chapter count display to show only visible chapters
+     */
+    static updateVisibleChapterCount() {
+        try {
+            let allRows = document.querySelectorAll('.chapter-row');
+            let visibleRows = Array.from(allRows).filter(row => 
+                row.style.display !== "none" && !row.hidden
+            );
+            
+            let spanChapterCount = document.getElementById("spanChapterCount");
+            if (spanChapterCount) {
+                spanChapterCount.textContent = visibleRows.length.toString();
+            }
+            
+        } catch (error) {
+            console.error("Error updating visible chapter count:", error);
+        }
+    }
+
+    /**
+     * Initialize the library chapters visibility toggle menu state
+     */
+    static initializeLibraryChaptersToggle() {
+        try {
+            // Reset state to default (show chapters) when initializing
+            window.hideLibraryChapters = false;
+            
+            // Get the current state from window property (default: show chapters)
+            let hideLibraryChapters = window.hideLibraryChapters === true;
+            
+            // Update the menu text and icon to reflect current state
+            let toggleText = document.getElementById("toggleLibraryChaptersText");
+            let toggleIcon = document.getElementById("toggleLibraryChaptersIcon");
+            
+            if (toggleText && toggleIcon) {
+                if (hideLibraryChapters) {
+                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Show_Library_Chapters__");
+                    toggleIcon.innerHTML = "";
+                    let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
+                    iconElement.style.opacity = "0.5";
+                    toggleIcon.appendChild(iconElement);
+                } else {
+                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Hide_Library_Chapters__");
+                    toggleIcon.innerHTML = "";
+                    let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
+                    iconElement.style.opacity = "1";
+                    toggleIcon.appendChild(iconElement);
+                }
+            }
+            
+            // Apply the visibility changes if we should hide chapters
+            if (hideLibraryChapters) {
+                ChapterUrlsUI.updateLibraryChaptersVisibility(hideLibraryChapters);
+            }
+            
+        } catch (error) {
+            console.error("Error initializing library chapters toggle:", error);
+        }
     }
 
 }

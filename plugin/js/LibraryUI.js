@@ -1612,6 +1612,9 @@ class LibraryUI {
      */
     static async loadLibraryBookInMainUI(bookId) {
         try {
+            // Reset library chapters visibility state when loading a new library book
+            window.hideLibraryChapters = false;
+            
             // Show loading indicator
             LibraryUI.LibShowLoadingText();
 
