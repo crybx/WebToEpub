@@ -43,6 +43,7 @@ class ChapterUrlsUI {
         document.getElementById("copyUrlsToClipboardButton").onclick = this.copyUrlsToClipboard.bind(this);
         document.getElementById("showChapterUrlsCheckbox").onclick = this.toggleShowUrlsForChapterRanges.bind(this);
         ChapterUrlsUI.modifyApplyChangesButtons(button => button.onclick = this.setTableMode.bind(this));
+        ChapterUrlsUI.modifyCancelEditButtons(button => button.onclick = this.cancelEditMode.bind(this));
     }
 
     populateChapterUrlsTable(chapters) {
@@ -349,6 +350,12 @@ class ChapterUrlsUI {
     static modifyApplyChangesButtons(mutator) {
         mutator(document.getElementById("applyChangesButton"));
         mutator(document.getElementById("applyChangesButton2"));
+    }
+
+    /** @private */
+    static modifyCancelEditButtons(mutator) {
+        mutator(document.getElementById("cancelEditButton"));
+        mutator(document.getElementById("cancelEditButton2"));
     }
 
     /** @private */
@@ -865,6 +872,7 @@ class ChapterUrlsUI {
         document.getElementById("coverUrlSection").hidden = !toTable;
         document.getElementById("chapterSelectControlsDiv").hidden = !toTable;
         ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = toTable);
+        ChapterUrlsUI.modifyCancelEditButtons(button => button.hidden = toTable);
         document.getElementById("editURLsHint").hidden = toTable;
         document.querySelector(".progressSection").hidden = !toTable;
         document.querySelector(".HiddenButtonSection").hidden = !toTable;
@@ -889,6 +897,13 @@ class ChapterUrlsUI {
         } catch (err) {
             ErrorLog.showErrorMessage(err);
         }
+    }
+
+    /** @private */
+    cancelEditMode() {
+        // Switch back to table mode without saving changes
+        this.usingTable = true;
+        ChapterUrlsUI.setVisibleUI(this.usingTable);
     }
 
     /** @private */
