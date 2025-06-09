@@ -198,7 +198,7 @@ class EpubPacker {
         let relativeHref = this.makeRelative(href);
         // I seriously don't care about this warning.
         // if (mediaType === "image/webp") {
-        //     let errorMsg = chrome.i18n.getMessage("warningWebpImage", [relativeHref]);
+        //     let errorMsg = UIText.Warning.warningWebpImage(relativeHref);
         //     ErrorLog.log(errorMsg);
         // }
         item.setAttributeNS(null, "href", relativeHref);

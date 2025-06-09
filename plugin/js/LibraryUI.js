@@ -20,16 +20,6 @@ class LibraryUI {
         let ShowCompactView = userPreferences.LibShowCompactView.value;
         let CurrentLibKeys = LibArray;
         let LibRenderString = "";
-        let LibTemplateDeleteEpub = document.getElementById("LibTemplateDeleteEpub").innerHTML;
-        let LibTemplateSearchNewChapter = document.getElementById("LibTemplateSearchNewChapter").innerHTML;
-        let LibTemplateUpdateNewChapter = document.getElementById("LibTemplateUpdateNewChapter").innerHTML;
-        let LibTemplateDownload = document.getElementById("LibTemplateDownload").innerHTML;
-        let LibTemplateSelectBook = document.getElementById("LibTemplateSelectBook").innerHTML;
-        let LibTemplateNewChapter = document.getElementById("LibTemplateNewChapter").innerHTML;
-        let LibTemplateURL = document.getElementById("LibTemplateURL").innerHTML;
-        let LibTemplateFilename = document.getElementById("LibTemplateFilename").innerHTML;
-        let LibTemplateMergeUploadButton = "";
-        let LibTemplateEditMetadataButton = "";
 
         // Calculate library usage once for both views
         let LibraryUsesHTML = "";
@@ -38,13 +28,11 @@ class LibraryUI {
         }
 
         // Library Header
-        LibTemplateMergeUploadButton = document.getElementById("LibTemplateMergeUploadButton").innerHTML;
-        LibTemplateEditMetadataButton = document.getElementById("LibTemplateEditMetadataButton").innerHTML;
         LibRenderString += "<div class='library-header'>";
         LibRenderString += "<div class='library-title-column'>Library</div>";
         LibRenderString += "<div class='library-controls-column'>";
-        LibRenderString += "<button id='libupdateall'>"+document.getElementById("LibTemplateUpdateAll").innerHTML+"</button>";
-        let viewToggleText = ShowCompactView ? chrome.i18n.getMessage("__MSG_button_View_Library_List__") : chrome.i18n.getMessage("__MSG_button_View_Compact_Library__");
+        LibRenderString += "<button id='libupdateall'>"+UIText.Library.updateAll+"</button>";
+        let viewToggleText = ShowCompactView ? UIText.Library.viewListMode : UIText.Library.viewCompactMode;
         LibRenderString += "<button id='libViewToggle'>" + viewToggleText + "</button>";
         LibRenderString += "<button id='libraryOptionsButton'>Library Options</button>";
         LibRenderString += "</div>";
@@ -54,7 +42,7 @@ class LibraryUI {
             // Library Compact View Container
             LibRenderString += "<div class='lib-compact-view-container'>";
             if (CurrentLibKeys.length === 0) {
-                LibRenderString += "<div class='lib-empty-message'>" + chrome.i18n.getMessage("__MSG_label_library_no_books__") + "</div>";
+                LibRenderString += "<div class='lib-empty-message'>" + UIText.Library.noBooksMessage + "</div>";
             } else {
                 LibRenderString += "<div class='lib-compact-spacer' id='lib-compact-spacer'></div>";
                 LibRenderString += "<div class='lib-compact-wrapper' id='lib-compact-wrapper'>";
@@ -86,7 +74,7 @@ class LibraryUI {
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 document.getElementById("LibCover"+CurrentLibKeys[i]).src = await LibraryStorage.LibGetFromStorage("LibCover" + CurrentLibKeys[i]);
                 let newChapterCount = await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0;
-                let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + LibTemplateNewChapter;
+                let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + UIText.Library.newChapter;
                 let newChapterElement = document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]);
                 if (newChapterElement) {
                     newChapterElement.textContent = newChapterText;
@@ -98,7 +86,7 @@ class LibraryUI {
             // Library List View Container (flex-based)
             LibRenderString += "<div class='lib-list-view-container'>";
             if (CurrentLibKeys.length === 0) {
-                LibRenderString += "<div class='lib-empty-message'>" + chrome.i18n.getMessage("__MSG_label_library_no_books__") + "</div>";
+                LibRenderString += "<div class='lib-empty-message'>" + UIText.Library.noBooksMessage + "</div>";
             }
             for (let i = 0; i < CurrentLibKeys.length; i++) {
                 LibRenderString += "<div class='lib-list-item'>";
@@ -123,33 +111,33 @@ class LibraryUI {
                 // 1. Download EPUB
                 LibRenderString += "<div class='menu-item' id='LibDownloadEpubMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                 LibRenderString += "<span id='LibDownloadEpubIcon"+CurrentLibKeys[i]+"'></span>";
-                LibRenderString += "<span>"+LibTemplateDownload+"</span>";
+                LibRenderString += "<span>"+UIText.Library.download+"</span>";
                 LibRenderString += "</div>";
                 // 2. Open Story URL
                 LibRenderString += "<div class='menu-item' id='LibOpenStoryUrlMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                 LibRenderString += "<span id='LibOpenStoryUrlIcon"+CurrentLibKeys[i]+"'></span>";
-                LibRenderString += "<span>"+chrome.i18n.getMessage("__MSG_menu_Open_Story_URL__")+"</span>";
+                LibRenderString += "<span>"+UIText.Library.openStoryURL+"</span>";
                 LibRenderString += "</div>";
                 // 3. Delete EPUB
                 LibRenderString += "<div class='menu-item' id='LibDeleteEpubMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                 LibRenderString += "<span id='LibDeleteIcon"+CurrentLibKeys[i]+"'></span>";
-                LibRenderString += "<span>"+LibTemplateDeleteEpub+"</span>";
+                LibRenderString += "<span>"+UIText.Library.deleteEpub+"</span>";
                 LibRenderString += "</div>";
                 // Hidden Clear New Chapters option (shown conditionally)
                 LibRenderString += "<div class='menu-item' id='LibClearNewChaptersMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"' style='display: none;'>";
                 LibRenderString += "<span id='LibClearNewChaptersIcon"+CurrentLibKeys[i]+"'></span>";
-                LibRenderString += "<span>"+chrome.i18n.getMessage("__MSG_menu_Clear_New_Chapters_Alert__")+"</span>";
+                LibRenderString += "<span>"+UIText.Library.clearNewChaptersAlert+"</span>";
                 LibRenderString += "</div>";
                 if (ShowAdvancedOptions) {
                     // 4. Add Chapter from different EPUB
                     LibRenderString += "<div class='menu-item' id='LibMergeUploadMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                     LibRenderString += "<span id='LibMergeIcon"+CurrentLibKeys[i]+"'></span>";
-                    LibRenderString += "<span>"+LibTemplateMergeUploadButton+"</span>";
+                    LibRenderString += "<span>"+UIText.Library.mergeUpload+"</span>";
                     LibRenderString += "</div>";
                     // 5. Edit Metadata
                     LibRenderString += "<div class='menu-item' id='LibEditMetadataMenuItem"+CurrentLibKeys[i]+"' data-libepubid='"+CurrentLibKeys[i]+"'>";
                     LibRenderString += "<span id='LibEditIcon"+CurrentLibKeys[i]+"'></span>";
-                    LibRenderString += "<span>"+LibTemplateEditMetadataButton+"</span>";
+                    LibRenderString += "<span>"+UIText.Library.editMetadata+"</span>";
                     LibRenderString += "</div>";
                 }
                 LibRenderString += "</div>";
@@ -161,8 +149,8 @@ class LibraryUI {
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderUp"+CurrentLibKeys[i]+"'>↑</button>";
                     LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibChangeOrderDown"+CurrentLibKeys[i]+"'>↓</button>";
                 }
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>"+LibTemplateSelectBook+"</button>";
-                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+LibTemplateUpdateNewChapter+"</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibLoadBook"+CurrentLibKeys[i]+"'>"+UIText.Library.selectBook+"</button>";
+                LibRenderString += "<button data-libepubid="+CurrentLibKeys[i]+" id='LibUpdateNewChapter"+CurrentLibKeys[i]+"'>"+UIText.Library.updateNewChapter+"</button>";
                 
                 LibRenderString += "<span class='new-chapter-badge new-chapter-normal' id='LibNewChapterCount"+CurrentLibKeys[i]+"'></span>";
                 LibRenderString += "</div>";
@@ -180,7 +168,7 @@ class LibraryUI {
                 LibRenderString += "</div>";
                 LibRenderString += "</div>";
                 LibRenderString += "<div class='lib-list-field'>";
-                LibRenderString += "<label class='lib-list-label'>"+LibTemplateURL+"</label>";
+                LibRenderString += "<label class='lib-list-label'>"+UIText.Library.storyURL+"</label>";
                 LibRenderString += "<div class='lib-list-input-container'>";
                 LibRenderString += "<input data-libepubid="+CurrentLibKeys[i]+" id='LibStoryURL"+CurrentLibKeys[i]+"' type='url' value=''>";
                 LibRenderString += "</div>";
@@ -188,7 +176,7 @@ class LibraryUI {
                 
                 // Filename section
                 LibRenderString += "<div class='lib-list-field'>";
-                LibRenderString += "<label class='lib-list-label'>"+LibTemplateFilename+"</label>";
+                LibRenderString += "<label class='lib-list-label'>"+UIText.Library.filename+"</label>";
                 LibRenderString += "<div class='lib-list-input-container'>";
                 LibRenderString += "<input id='LibFilename"+CurrentLibKeys[i]+"' type='text' value=''>";
                 LibRenderString += "</div>";
@@ -239,7 +227,7 @@ class LibraryUI {
                 });
                 
                 let newChapterCount = await LibraryStorage.LibGetFromStorage("LibNewChapterCount"+CurrentLibKeys[i]) || 0;
-                let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + LibTemplateNewChapter;
+                let newChapterText = (newChapterCount == 0) ? "" : newChapterCount + UIText.Library.newChapter;
                 let newChapterElement = document.getElementById("LibNewChapterCount"+CurrentLibKeys[i]);
                 if (newChapterElement) {
                     newChapterElement.textContent = newChapterText;
@@ -279,7 +267,7 @@ class LibraryUI {
         let LibRenderString = "";
         LibRenderString += "<div class='LibDivRenderWrapper'>";
         LibRenderString += "<div class='warning'>";
-        LibRenderString += document.getElementById("LibTemplateWarningInProgress").innerHTML;
+        LibRenderString += UIText.Library.warningInProgress;
         LibRenderString += "</div>";
         LibRenderString += "</div>";
         LibraryUI.AppendHtmlInDiv(LibRenderString, LibRenderResult, "LibDivRenderWrapper");
@@ -302,7 +290,7 @@ class LibraryUI {
      * Delete all library items
      */
     static LibDeleteAll() {
-        if (!confirm(chrome.i18n.getMessage("__MSG_confirm_Clear_Library__"))) {
+        if (!confirm(UIText.Library.confirmClearLibrary)) {
             return;
         }
         LibraryUI.LibShowLoadingText();
@@ -504,12 +492,6 @@ class LibraryUI {
      * TODO: update name to editMetadataClick
      */
     static async LibEditMetadata(objbtn) {
-        let LibTemplateMetadataSave = document.getElementById("LibTemplateMetadataSave").innerHTML;
-        let LibTemplateMetadataTitle = document.getElementById("LibTemplateMetadataTitle").innerHTML;
-        let LibTemplateMetadataAuthor = document.getElementById("LibTemplateMetadataAuthor").innerHTML;
-        let LibTemplateMetadataLanguage = document.getElementById("LibTemplateMetadataLanguage").innerHTML;
-        let LibTemplateMetadataSubject = document.getElementById("LibTemplateMetadataSubject").innerHTML;
-        let LibTemplateMetadataDescription = document.getElementById("LibTemplateMetadataDescription").innerHTML;
         let LibRenderResult = document.getElementById("LibRenderMetadata" + objbtn.dataset.libepubid);
         let LibMetadata = await LibraryStorage.LibGetMetadata(objbtn.dataset.libepubid);
         let LibRenderString = "";
@@ -517,7 +499,7 @@ class LibraryUI {
         
         // Title field
         LibRenderString += "<div class='lib-list-field'>";
-        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataTitle+"</label>";
+        LibRenderString += "<label class='lib-list-label'>"+UIText.Metadata.title+"</label>";
         LibRenderString += "<div class='lib-list-input-container'>";
         LibRenderString += "<input id='LibTitleInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[0]+"'>";
         LibRenderString += "</div>";
@@ -525,7 +507,7 @@ class LibraryUI {
         
         // Author field
         LibRenderString += "<div class='lib-list-field'>";
-        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataAuthor+"</label>";
+        LibRenderString += "<label class='lib-list-label'>"+UIText.Metadata.author+"</label>";
         LibRenderString += "<div class='lib-list-input-container'>";
         LibRenderString += "<input id='LibAuthorInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[1]+"'>";
         LibRenderString += "</div>";
@@ -533,7 +515,7 @@ class LibraryUI {
         
         // Language field
         LibRenderString += "<div class='lib-list-field'>";
-        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataLanguage+"</label>";
+        LibRenderString += "<label class='lib-list-label'>"+UIText.Metadata.language+"</label>";
         LibRenderString += "<div class='lib-list-input-container'>";
         LibRenderString += "<input id='LibLanguageInput"+objbtn.dataset.libepubid+"' type='text' value='"+LibMetadata[2]+"'>";
         LibRenderString += "</div>";
@@ -541,7 +523,7 @@ class LibraryUI {
         
         // Subject field
         LibRenderString += "<div class='lib-list-field'>";
-        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataSubject+"</label>";
+        LibRenderString += "<label class='lib-list-label'>"+UIText.Metadata.subject+"</label>";
         LibRenderString += "<div class='lib-list-input-container'>";
         LibRenderString += "<textarea rows='2' id='LibSubjectInput"+objbtn.dataset.libepubid+"' name='subjectInput'>"+LibMetadata[3]+"</textarea>";
         LibRenderString += "</div>";
@@ -549,7 +531,7 @@ class LibraryUI {
         
         // Description field
         LibRenderString += "<div class='lib-list-field lib-description-field'>";
-        LibRenderString += "<label class='lib-list-label'>"+LibTemplateMetadataDescription+"</label>";
+        LibRenderString += "<label class='lib-list-label'>"+UIText.Metadata.description+"</label>";
         LibRenderString += "<div class='lib-list-input-container'>";
         LibRenderString += "<textarea rows='2' id='LibDescriptionInput"+objbtn.dataset.libepubid+"' name='descriptionInput'>"+LibMetadata[4]+"</textarea>";
         LibRenderString += "</div>";
@@ -731,10 +713,6 @@ class LibraryUI {
             menu.remove();
         });
 
-        // Get template strings using localization
-        let LibTemplateDownload = chrome.i18n.getMessage("__MSG_button_Lib_Template_Download_EPUB__");
-        let LibTemplateUpdateNewChapter = chrome.i18n.getMessage("__MSG_button_Lib_Template_Update_new_Chapters__");
-        let LibTemplateSelectBook = chrome.i18n.getMessage("__MSG_button_Lib_Template_Select_Book__");
 
         // Create the menu
         let menu = document.createElement("div");
@@ -742,23 +720,23 @@ class LibraryUI {
         menu.innerHTML = `
             <div class="menu-item" data-action="select" data-libepubid="${bookId}">
                 <span class="compact-menu-icon" data-icon="select"></span>
-                <span>${LibTemplateSelectBook}</span>
+                <span>${UIText.Library.selectBook}</span>
             </div>
             <div class="menu-item" data-action="update" data-libepubid="${bookId}">
                 <span class="compact-menu-icon" data-icon="update"></span>
-                <span>${LibTemplateUpdateNewChapter}</span>
+                <span>${UIText.Library.updateNewChapter}</span>
             </div>
             <div class="menu-item" data-action="download" data-libepubid="${bookId}">
                 <span class="compact-menu-icon" data-icon="download"></span>
-                <span>${LibTemplateDownload}</span>
+                <span>${UIText.Library.download}</span>
             </div>
             <div class="menu-item" data-action="open-url" data-libepubid="${bookId}">
                 <span class="compact-menu-icon" data-icon="open-url"></span>
-                <span>${chrome.i18n.getMessage("__MSG_menu_Open_Story_URL__")}</span>
+                <span>${UIText.Library.openStoryURL}</span>
             </div>
             <div class="menu-item" data-action="delete" data-libepubid="${bookId}">
                 <span class="compact-menu-icon" data-icon="delete"></span>
-                <span>${chrome.i18n.getMessage("__MSG_button_Lib_Template_Delete_EPUB__")}</span>
+                <span>${UIText.Library.deleteEpub}</span>
             </div>
         `;
 
@@ -1036,11 +1014,10 @@ class LibraryUI {
      * Show URL change warning
      */
     static LibShowTextURLWarning(obj) {
-        let LibTemplateWarningURLChange = document.getElementById("LibTemplateWarningURLChange").innerHTML;
         let LibWarningElement = document.getElementById("LibURLWarning"+obj.dataset.libepubid);
         let LibWarningField = document.getElementById("LibURLWarningField"+obj.dataset.libepubid);
         
-        LibWarningElement.textContent = LibTemplateWarningURLChange;
+        LibWarningElement.textContent = UIText.Library.warningURLChange;
         LibWarningElement.classList.add("warning-text");
         if (LibWarningField) {
             LibWarningField.style.display = "flex";

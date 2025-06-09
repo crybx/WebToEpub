@@ -2,20 +2,6 @@
 
 /** Class that handles UI for selecting (chapter) URLs to fetch */
 class ChapterUrlsUI {
-    // Localized text strings for chapter UI
-    static UIText = {
-        menuRefreshChapter: chrome.i18n.getMessage("__MSG_menu_Refresh_Chapter__"),
-        menuOpenChapterURL: chrome.i18n.getMessage("__MSG_menu_Open_Chapter_URL__"),
-        menuDeleteChapter: chrome.i18n.getMessage("__MSG_menu_Delete_Chapter__"),
-        menuDownloadChapter: chrome.i18n.getMessage("__MSG_menu_Download_Chapter__"),
-        tooltipDeleteAllCached: chrome.i18n.getMessage("__MSG_tooltip_Delete_All_Cached__"),
-        tooltipDownloadChapter: chrome.i18n.getMessage("__MSG_tooltip_Download_Chapter__"),
-        tooltipChapterDownloading: chrome.i18n.getMessage("__MSG_Tooltip_chapter_downloading__"),
-        tooltipViewChapter: chrome.i18n.getMessage("__MSG_tooltip_View_Chapter__"),
-        tooltipChapterSleeping: chrome.i18n.getMessage("__MSG_Tooltip_chapter_sleeping__"),
-        maxChaptersSelected: chrome.i18n.getMessage("__MSG_More_than_max_chapters_selected__"),
-        shiftClickMessage: chrome.i18n.getMessage("__MSG_Shift_Click__")
-    };
     constructor(parser) {
         this.parser = parser;
         ChapterUrlsUI.getPleaseWaitMessageRow().hidden = false;
@@ -277,7 +263,7 @@ class ChapterUrlsUI {
             .filter(c => c.checked)
             .map(c => c.closest(".chapter-row"));
         if (max< selectedRows.length ) {
-            let message = ChapterUrlsUI.UIText.maxChaptersSelected.replace("$1", 
+            let message = UIText.Chapter.maxChaptersSelected.replace("$1", 
                 selectedRows.length).replace("$2", max);
             if (confirm(message) === false) {
                 for (let row of selectedRows.slice(max)) {
@@ -652,7 +638,7 @@ class ChapterUrlsUI {
         refreshItem.className = "menu-item";
         let refreshIcon = SvgIcons.createSvgElement(SvgIcons.ARROW_CLOCKWISE);
         let refreshText = document.createElement("span");
-        refreshText.textContent = ChapterUrlsUI.UIText.menuRefreshChapter;
+        refreshText.textContent = UIText.Chapter.menuRefreshChapter;
         refreshItem.appendChild(refreshIcon);
         refreshItem.appendChild(refreshText);
         refreshItem.onclick = async (e) => {
@@ -671,7 +657,7 @@ class ChapterUrlsUI {
         openUrlItem.className = "menu-item";
         let openUrlIcon = SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT);
         let openUrlText = document.createElement("span");
-        openUrlText.textContent = ChapterUrlsUI.UIText.menuOpenChapterURL;
+        openUrlText.textContent = UIText.Chapter.menuOpenChapterURL;
         openUrlItem.appendChild(openUrlIcon);
         openUrlItem.appendChild(openUrlText);
         openUrlItem.onclick = (e) => {
@@ -685,7 +671,7 @@ class ChapterUrlsUI {
         deleteItem.className = "menu-item";
         let deleteIcon = SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL);
         let deleteText = document.createElement("span");
-        deleteText.textContent = ChapterUrlsUI.UIText.menuDeleteChapter;
+        deleteText.textContent = UIText.Chapter.menuDeleteChapter;
         deleteItem.appendChild(deleteIcon);
         deleteItem.appendChild(deleteText);
         deleteItem.onclick = async (e) => {
@@ -699,7 +685,7 @@ class ChapterUrlsUI {
         downloadItem.className = "menu-item";
         let downloadIcon = SvgIcons.createSvgElement(SvgIcons.DOWNLOAD);
         let downloadText = document.createElement("span");
-        downloadText.textContent = ChapterUrlsUI.UIText.menuDownloadChapter;
+        downloadText.textContent = UIText.Chapter.menuDownloadChapter;
         downloadItem.appendChild(downloadIcon);
         downloadItem.appendChild(downloadText);
         downloadItem.onclick = async (e) => {
@@ -1033,7 +1019,7 @@ class ChapterUrlsUI {
         ++ChapterUrlsUI.ConsecutiveRowClicks;
         if (ChapterUrlsUI.ConsecutiveRowClicks === 5) {
             // TODO: make this not an alert, it's annoying
-            alert(ChapterUrlsUI.UIText.shiftClickMessage);
+            alert(UIText.Chapter.shiftClickMessage);
         }
     }
 
@@ -1354,7 +1340,7 @@ class ChapterUrlsUI {
                 ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
                 
                 // Confirm deletion since this is a destructive action
-                if (window.currentLibraryBook && confirm(chrome.i18n.getMessage("__MSG_confirm_delete_library_book__") || "Are you sure you want to delete this library book? This action cannot be undone.")) {
+                if (window.currentLibraryBook && confirm(UIText.Confirm.deleteLibraryBook)) {
                     // Use the existing LibDeleteEpub function with the current library book ID
                     LibraryUI.LibDeleteEpub({ dataset: { libepubid: window.currentLibraryBook.id } });
                 }
@@ -1848,14 +1834,14 @@ class ChapterUrlsUI {
             if (toggleText && toggleIcon) {
                 if (hideLibraryChapters) {
                     // Currently hiding chapters, so show "Show" option
-                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Show_Library_Chapters__");
+                    toggleText.textContent = UIText.Toggle.showLibraryChapters;
                     toggleIcon.innerHTML = "";
                     let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
                     iconElement.style.opacity = "0.5"; // Make it dimmed to indicate hidden state
                     toggleIcon.appendChild(iconElement);
                 } else {
                     // Currently showing chapters, so show "Hide" option
-                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Hide_Library_Chapters__");
+                    toggleText.textContent = UIText.Toggle.hideLibraryChapters;
                     toggleIcon.innerHTML = "";
                     let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
                     iconElement.style.opacity = "1"; // Normal opacity for visible state
@@ -1944,13 +1930,13 @@ class ChapterUrlsUI {
             
             if (toggleText && toggleIcon) {
                 if (hideLibraryChapters) {
-                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Show_Library_Chapters__");
+                    toggleText.textContent = UIText.Toggle.showLibraryChapters;
                     toggleIcon.innerHTML = "";
                     let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
                     iconElement.style.opacity = "0.5";
                     toggleIcon.appendChild(iconElement);
                 } else {
-                    toggleText.textContent = chrome.i18n.getMessage("__MSG_menu_Hide_Library_Chapters__");
+                    toggleText.textContent = UIText.Toggle.hideLibraryChapters;
                     toggleIcon.innerHTML = "";
                     let iconElement = SvgIcons.createSvgElement(SvgIcons.EYE_FILL);
                     iconElement.style.opacity = "1";
@@ -1990,10 +1976,10 @@ ChapterUrlsUI.CHAPTER_STATUS_SLEEPING = 3;
 ChapterUrlsUI.CHAPTER_STATUS_ERROR = 4;
 ChapterUrlsUI.CHAPTER_STATUS_LIBRARY = 5;
 ChapterUrlsUI.TooltipForState = [
-    ChapterUrlsUI.UIText.tooltipDownloadChapter,
-    ChapterUrlsUI.UIText.tooltipChapterDownloading,
-    ChapterUrlsUI.UIText.tooltipViewChapter,
-    ChapterUrlsUI.UIText.tooltipChapterSleeping,
+    UIText.Chapter.tooltipDownloadChapter,
+    UIText.Chapter.tooltipChapterDownloading,
+    UIText.Chapter.tooltipViewChapter,
+    UIText.Chapter.tooltipChapterSleeping,
     "Download failed - click to view error",
     "View chapter from library book"
 ];

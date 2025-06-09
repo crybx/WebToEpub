@@ -46,9 +46,7 @@ class Download {
             return EpubPacker.addExtensionIfMissing(metaInfo.fileName);
         }
         if (Download.isFileNameIllegalOnWindows(CustomFilename)) {
-            ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorIllegalFileName",
-                [CustomFilename, Download.illegalWindowsFileNameChars]
-            ));
+            ErrorLog.showErrorMessage(UIText.Error.errorIllegalFileName(CustomFilename, Download.illegalWindowsFileNameChars));
             return EpubPacker.addExtensionIfMissing("IllegalFileName");
         }
         return EpubPacker.addExtensionIfMissing(CustomFilename);

@@ -95,7 +95,7 @@ const main = (function() {
         if (util.isTextInputField(element) || util.isTextAreaField(element)) {
             element.value = (value == null) ? "" : value;
         } else {
-            throw new Error(chrome.i18n.getMessage("unhandledFieldTypeError"));
+            throw new Error(UIText.Error.unhandledFieldTypeError);
         }
     }
 
@@ -126,7 +126,7 @@ const main = (function() {
         if (util.isTextInputField(element) || util.isTextAreaField(element)) {
             return (element.value === "") ? null : element.value;
         } else {
-            throw new Error(chrome.i18n.getMessage("unhandledFieldTypeError"));
+            throw new Error(UIText.Error.unhandledFieldTypeError);
         }
     }
 
@@ -142,7 +142,7 @@ const main = (function() {
             stopBtn.disabled = !disabled;
             // Reset button text when processing completes
             if (!disabled) {
-                stopBtn.textContent = chrome.i18n.getMessage("__MSG_button_Stop_Download__") || "Stop";
+                stopBtn.textContent = UIText.Common.stopDownload;
             }
         }
 
@@ -181,7 +181,7 @@ const main = (function() {
 
         if (libclick.dataset.libclick === "yes") {
             if (document.getElementById("chaptersPageInChapterListCheckbox")?.checked) {
-                ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorAddToLibraryLibraryAddPageWithChapters"));
+                ErrorLog.showErrorMessage(UIText.Error.errorAddToLibraryLibraryAddPageWithChapters);
                 return;
             }
         }
@@ -444,7 +444,7 @@ const main = (function() {
             parser = parserFactory.manuallySelectParser(manualSelect);
         }
         if (parser === undefined) {
-            ErrorLog.showErrorMessage(chrome.i18n.getMessage("noParserFound"));
+            ErrorLog.showErrorMessage(UIText.Error.noParserFound);
             return false;
         }
 
@@ -601,19 +601,12 @@ const main = (function() {
         updateLibraryButtonText();
     }
 
-    function localize(element) {
-        let localized = chrome.i18n.getMessage(element.textContent.trim());
-        if (!util.isNullOrEmpty(localized)) {
-            element.innerText = localized;
-        }
-    }
-
     function localizeHtmlPage() {
         // can't use a single select, because there are buttons in td elements
         for (let selector of ["button, option", "td, th", ".i18n"]) {
             for (let element of [...document.querySelectorAll(selector)]) {
                 if (element.textContent.startsWith("__MSG_")) {
-                    localize(element);
+                    UIText.localizeElement(element);
                 }
             }
         }
@@ -623,7 +616,7 @@ const main = (function() {
         // Set up trash icon tooltip with localized text
         let deleteTooltip = document.getElementById("deleteAllTooltip");
         if (deleteTooltip) {
-            deleteTooltip.textContent = ChapterUrlsUI.UIText.tooltipDeleteAllCached;
+            deleteTooltip.textContent = UIText.Chapter.tooltipDeleteAllCached;
         }
     }
 
@@ -961,11 +954,7 @@ const main = (function() {
         // Check if we're in library mode by looking for currentLibraryBook global
         let isInLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
         
-        if (isInLibraryMode) {
-            button.textContent = chrome.i18n.getMessage("__MSG_button_Update_Library_Book__");
-        } else {
-            button.textContent = chrome.i18n.getMessage("__MSG_button_Add_to_Library__");
-        }
+        button.textContent = isInLibraryMode ? UIText.Common.updateLibraryBook : UIText.Common.addToLibrary;
     }
 
     return {

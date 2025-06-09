@@ -403,7 +403,7 @@ class BakaTsukiParser extends Parser {
     onFetchImagesClicked() {
         let that = this;
         if (0 === that.imageCollector.imageInfoList.length) {
-            ErrorLog.showErrorMessage(chrome.i18n.getMessage("noImagesFound"));
+            ErrorLog.showErrorMessage(UIText.Error.noImagesFound);
         } else {
             that.fetchContent();
         }

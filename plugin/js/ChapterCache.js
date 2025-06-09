@@ -13,19 +13,6 @@ class ChapterCache {
     static SESSION_MAX_ENTRIES = 3000; // Maximum entries to keep in session storage
     static SESSION_MIN_AGE_HOURS = 2; // Minimum age before entries can be cleaned up
 
-    // Localized text strings for cache functionality
-    static CacheText = {
-        buttonEnabled: chrome.i18n.getMessage("__MSG_button_cache_status_Enabled__"),
-        buttonDisabled: chrome.i18n.getMessage("__MSG_button_cache_status_Disabled__"),
-        toggleOn: chrome.i18n.getMessage("__MSG_toggle_state_On__"),
-        toggleOff: chrome.i18n.getMessage("__MSG_toggle_state_Off__"),
-        statusError: chrome.i18n.getMessage("__MSG_status_Error__"),
-        confirmClearAll: chrome.i18n.getMessage("__MSG_confirm_Clear_All_Cache__"),
-        downloadSuccess: chrome.i18n.getMessage("__MSG_download_Success__"),
-        downloadError: chrome.i18n.getMessage("__MSG_download_Error__"),
-        errorClearCache: chrome.i18n.getMessage("__MSG_error_Failed_Clear_Cache__"),
-        errorSaveSettings: chrome.i18n.getMessage("__MSG_error_Failed_Save_Cache_Settings__")
-    };
 
     // Get storage API (works for both Chrome and Firefox)
     static get storage() {
@@ -443,7 +430,7 @@ class ChapterCache {
             let enabled = this.isEnabled();
             let button = document.getElementById("cacheOptionsButton");
             if (button) {
-                button.textContent = enabled ? this.CacheText.buttonEnabled : this.CacheText.buttonDisabled;
+                button.textContent = enabled ? UIText.Cache.buttonEnabled : UIText.Cache.buttonDisabled;
             }
         } catch (error) {
             console.error("Failed to update cache button text:", error);
@@ -458,8 +445,8 @@ class ChapterCache {
             document.getElementById("cachedChapterCount").textContent = stats.count + " (" + storageTypeText + ")";
             document.getElementById("cacheSize").textContent = stats.sizeFormatted;
         } catch (error) {
-            document.getElementById("cachedChapterCount").textContent = this.CacheText.statusError;
-            document.getElementById("cacheSize").textContent = this.CacheText.statusError;
+            document.getElementById("cachedChapterCount").textContent = UIText.Cache.statusError;
+            document.getElementById("cacheSize").textContent = UIText.Cache.statusError;
             console.error("Failed to refresh cache stats:", error);
         }
     }
@@ -467,7 +454,7 @@ class ChapterCache {
     static setupCacheEventHandlers() {
         // Clear all cache button
         document.getElementById("clearAllCacheButton").onclick = async () => {
-            if (confirm(ChapterCache.CacheText.confirmClearAll)) {
+            if (confirm(UIText.Cache.confirmClearAll)) {
                 try {
                     await this.clearAll();
                     await this.refreshCacheStats();
@@ -475,7 +462,7 @@ class ChapterCache {
                     ChapterUrlsUI.updateHeaderMoreActionsVisibility();
                 } catch (error) {
                     console.error("Failed to clear cache:", error);
-                    alert(ChapterCache.CacheText.errorClearCache.replace("$error$", error.message));
+                    alert(UIText.Cache.errorClearCache.replace("$error$", error.message));
                 }
             }
         };
@@ -523,7 +510,7 @@ class ChapterCache {
             await this.refreshCacheStats();
         } catch (error) {
             console.error("Failed to save cache settings:", error);
-            alert(ChapterCache.CacheText.errorSaveSettings.replace("$error$", error.message));
+            alert(UIText.Cache.errorSaveSettings.replace("$error$", error.message));
         }
     }
 
@@ -531,7 +518,7 @@ class ChapterCache {
         try {
             let toggleText = document.getElementById("toggleStateText");
             if (toggleText) {
-                toggleText.textContent = enabled ? this.CacheText.toggleOn : this.CacheText.toggleOff;
+                toggleText.textContent = enabled ? UIText.Cache.toggleOn : UIText.Cache.toggleOff;
             }
         } catch (error) {
             console.error("Failed to update toggle state text:", error);
@@ -628,7 +615,7 @@ class ChapterCache {
                     }
                 }
             } else {
-                throw new Error(webPage.error || "Failed to fetch web page content");
+                throw new Error(webPage.error);
             }
         } catch (error) {
             console.log("Failed to download chapter:", error);

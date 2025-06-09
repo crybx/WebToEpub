@@ -211,88 +211,6 @@
 
         <!-- Hidden Section - Library -->
         <section id="libraryExpandableSection" hidden="true">
-            <div id="LibraryTemplate" hidden="true">
-                <br>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td id="LibTemplateLibraryUses">Library uses: </td>
-                            <td colspan="2"><button id="LibTemplateUpdateAll">__MSG_button_Lib_Template_Update_All__</button></td>
-                            <td colspan="2"><button id="LibTemplateClearLibrary">__MSG_button_Lib_Template_Clear_Library__</button></td>
-                            <td colspan="2"><button id="LibTemplateExportLibrary">__MSG_button_Lib_Template_Export_Library__</button></td>
-                            <td colspan="2"><button id="LibTemplateImportEpubButton">__MSG_button_Lib_Template_Import_Library__</button></td>
-                            <td colspan="2"><button id="LibTemplateAddListToLibrary">__MSG_button_Lib_Template_Add_List_To_Library__</button></td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateUploadEpubFileLabel">__MSG_label_Lib_Template_Upload_Epub_File_Label__</td>
-                            <button id="LibTemplateUploadEpubButton">__MSG_button_Lib_Template_Upload_Epub__</button>
-                            <input type="file" data-libepubid="LibEpubNew" id="LibEpubNewUpload">
-                        </tr>
-                        <tr>
-                            <td class="lib-book-cover-cell" rowspan="4">
-                                <img src="">
-                            </td>
-                            <td colspan="2">
-                                <button id="LibTemplateDeleteEpub">__MSG_button_Lib_Template_Delete_EPUB__</button>
-                                <button id="LibTemplateSearchNewChapter">__MSG_button_Lib_Template_Search_new_Chapters__</button>
-                                <button id="LibTemplateUpdateNewChapter">__MSG_button_Lib_Template_Update_new_Chapters__</button>
-                                <button id="LibTemplateDownload">__MSG_button_Lib_Template_Download_EPUB__</button>
-                                <button id="LibTemplateSelectBook">__MSG_button_Lib_Template_Select_Book__</button>
-                                <label class="lib-clickable-label">
-                                    <button id="LibTemplateMergeUploadButton" class="lib-upload-button-overlay">__MSG_button_Lib_Template_Add_Chapter_from_different_EPUB__</button>
-                                    <button id="LibTemplateEditMetadataButton">__MSG_button_Lib_Template_Edit_Metadata__</button>
-                                </label>
-                                <input type="file">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateNewChapter">__MSG_label_Lib_Template_New_Chapter__</td><td class="lib-no-padding-cell">
-                            <td id="LibTemplateURL">__MSG_label_Lib_Template_Story_URL__</td><td class="lib-no-padding-cell">
-                                <table class="lib-compact-table">
-                                    <tbody id="LibTemplateURLWarning">
-                                        <tr>
-                                            <td id="LibTemplateWarningURLChange">__MSG_label_Lib_Template_Warning_URL_Change__</td>
-                                        </tr>
-                                    </tbody>
-                                    <tbody>
-                                        <tr>
-                                            <td class="lib-no-padding-cell">
-                                                <input type="url" value="Library template">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateFilename">__MSG_label_Lib_Template_Filename__</td>
-                            <td>
-                                <input type="text" value="Library template">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateMetadataSave">__MSG_label_Metadata_Save__</td>
-                        </tr>
-                        <tr>
-                        <tr>
-                            <td id="LibTemplateMetadataTitle">__MSG_label_Title__</td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateMetadataAuthor">__MSG_label_Author__</td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateMetadataLanguage">__MSG_label_Language__</td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateMetadataSubject">__MSG_label_Metadata_subject__</td>
-                        </tr>
-                        <tr>
-                            <td id="LibTemplateMetadataDescription">__MSG_label_Metadata_description__</td>
-                            <td id="LibTemplateWarningInProgress">__MSG_label_Lib_Warning_In_Progress___</td>
-                            </tr>
-                    </tbody>
-                </table>
-            </div>
             <div id="LibRenderResult">
             </div>
             <div id="libraryCloseSection">
@@ -844,6 +762,7 @@
 
     <span id="scriptContainer">
         <!-- scripts go here -->
+        <script src="js/UIText.js"></script>
         <script src="js/ReadingList.js"></script>
         <script src="js/UserPreferences.js"></script>
         <script src="js/EpubMetaInfo.js"></script>
@@ -869,7 +788,7 @@
         <script src="js/LibraryBookData.js"></script>
         <script src="js/LibraryUI.js"></script>
 
-        <!-- These parsers are (or might be) used as base for other pareser-->
+        <!-- These parsers are (or might be) used as a base for other parsers -->
         <script src="js/parsers/WordpressBaseParser.js"></script>
         <script src="js/parsers/MadaraParser.js"></script>
 

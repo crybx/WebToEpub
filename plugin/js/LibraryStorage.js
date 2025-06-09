@@ -35,9 +35,7 @@ class LibraryStorage {
         if (userPreferences.LibDownloadEpubAfterUpdate.value) {
             fileName = EpubPacker.addExtensionIfMissing(await LibraryStorage.LibGetFromStorage("LibFilename" + LibidURL));
             if (Download.isFileNameIllegalOnWindows(fileName)) {
-                ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorIllegalFileName",
-                    [fileName, Download.illegalWindowsFileNameChars]
-                ));
+                ErrorLog.showErrorMessage(UIText.Error.errorIllegalFileName(fileName, Download.illegalWindowsFileNameChars));
                 return;
             }
             return Download.save(MergedEpub, fileName, overwriteExisting, backgroundDownload);
@@ -361,7 +359,7 @@ class LibraryStorage {
             
             let regex1 = opfFile.match(new RegExp("<dc:title>.+?</dc:creator>", "gs"));
             if ( regex1 == null) {
-                ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorEditMetadata"));
+                ErrorLog.showErrorMessage(UIText.Error.errorEditMetadata);
                 return;
             }
             let LibSaveMetadataString = "";
@@ -386,7 +384,7 @@ class LibraryStorage {
                 });
             };
         } catch {
-            ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorEditMetadata"));
+            ErrorLog.showErrorMessage(UIText.Error.errorEditMetadata);
             return;
         }
     }
