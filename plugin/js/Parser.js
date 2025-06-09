@@ -503,30 +503,29 @@ class Parser {
 
     // called when plugin has obtained the first web page
     async onLoadFirstPage(url, firstPageDom) {
-        let that = this;
         this.state.firstPageDom = firstPageDom;
         this.state.chapterListUrl = url;
         let chapterUrlsUI = new ChapterUrlsUI(this);
         this.userPreferences.setReadingListCheckbox(url);
 
         // returns promise, because may need to fetch additional pages to find list of chapters
-        await that.getChapterUrls(firstPageDom, chapterUrlsUI).then(async function(chapters) {
-            if (that.userPreferences.chaptersPageInChapterList.value) {
-                chapters = that.addFirstPageUrlToWebPages(url, firstPageDom, chapters);
+        await this.getChapterUrls(firstPageDom, chapterUrlsUI).then(async (chapters) => {
+            if (this.userPreferences.chaptersPageInChapterList.value) {
+                chapters = this.addFirstPageUrlToWebPages(url, firstPageDom, chapters);
             }
-            chapters = that.cleanWebPageUrls(chapters);
-            that.userPreferences.readingList.deselectOldChapters(url, chapters);
+            chapters = this.cleanWebPageUrls(chapters);
+            this.userPreferences.readingList.deselectOldChapters(url, chapters);
             chapterUrlsUI.populateChapterUrlsTable(chapters);
             if (0 < chapters.length) {
                 if (chapters[0].sourceUrl === url) {
                     chapters[0].rawDom = firstPageDom;
-                    that.updateLoadState(chapters[0]);
+                    this.updateLoadState(chapters[0]);
                 }
                 ProgressBar.setValue(0);
             }
-            that.state.setPagesToFetch(chapters);
+            this.state.setPagesToFetch(chapters);
             chapterUrlsUI.connectButtonHandlers();
-        }).catch(function(err) {
+        }).catch((err) => {
             ErrorLog.showErrorMessage(err);
         });
     }
@@ -584,8 +583,6 @@ class Parser {
     }
 
     async fetchWebPages() {
-        let that = this;
-
         let pagesToFetch = [...this.state.webPages.values()].filter(c => c.isIncludeable);
         if (pagesToFetch.length === 0) {
             return Promise.reject(new Error("No chapters found."));
@@ -593,8 +590,8 @@ class Parser {
 
         this.setUiToShowLoadingProgress(pagesToFetch.length);
 
-        that.imageCollector.reset();
-        that.imageCollector.setCoverImageUrl(CoverImageUI.getCoverImageUrl());
+        this.imageCollector.reset();
+        this.imageCollector.setCoverImageUrl(CoverImageUI.getCoverImageUrl());
 
         await this.addParsersToPages(pagesToFetch);
         let index = 0;
@@ -631,7 +628,6 @@ class Parser {
     }
 
     async fetchWebPageContent(webPage) {
-        let that = this;
         let pageParser = webPage.parser;
         
         // Check cache first (checks persistent or session storage based on settings)
@@ -672,7 +668,7 @@ class Parser {
         await this.rateLimitDelay();
         ChapterUrlsUI.showChapterStatus(webPage.row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADING, webPage.sourceUrl, webPage.title);
         
-        return pageParser.fetchChapter(webPage.sourceUrl).then(function(webPageDom) {
+        return pageParser.fetchChapter(webPage.sourceUrl).then((webPageDom) => {
             delete webPage.error;
             webPage.rawDom = webPageDom;
             pageParser.preprocessRawDom(webPageDom);
@@ -683,7 +679,7 @@ class Parser {
                 throw new Error(errorMsg);
             }
             return pageParser.fetchImagesUsedInDocument(content, webPage);
-        }).catch(async function(error) {
+        }).catch(async (error) => {
             // Always cache the error and update UI regardless of skipChaptersThatFailFetch setting
             webPage.error = error;
             
@@ -704,7 +700,7 @@ class Parser {
             }
             
             // The preference only controls whether to continue or halt the operation
-            if (that.userPreferences.skipChaptersThatFailFetch.value) {
+            if (this.userPreferences.skipChaptersThatFailFetch.value) {
                 // Log error and continue with other chapters
                 ErrorLog.log(error);
             } else {
@@ -715,13 +711,12 @@ class Parser {
     }
 
     fetchImagesUsedInDocument(content, webPage) {
-        let that = this;
         return this.imageCollector.preprocessImageTags(content, webPage.sourceUrl)
-            .then(function(revisedContent) {
-                that.imageCollector.findImagesUsedInDocument(revisedContent);
-                return that.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
-            }).then(function() {
-                that.updateLoadState(webPage);
+            .then((revisedContent) => {
+                this.imageCollector.findImagesUsedInDocument(revisedContent);
+                return this.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
+            }).then(() => {
+                this.updateLoadState(webPage);
             });
     }
 

@@ -191,9 +191,8 @@ class UserPreferences {
     }
 
     notifyObserversOfChange() {
-        let that = this;
-        for (let observer of that.observers) {
-            observer.onUserPreferencesUpdate(that);
+        for (let observer of this.observers) {
+            observer.onUserPreferencesUpdate(this);
         }
     }
 
