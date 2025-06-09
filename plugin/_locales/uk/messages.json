@@ -308,7 +308,7 @@
 		"description": "Message shown while looking for list of Chapter URLs."
 	},
 	"__MSG_Shift_Click__": {
-		"message": "Ви можете виділити декілька глав наступним чином: відмітьте першу бажану главу, затисніть клавішу Shift та відмітьте останню обрану главу.",
+		"message": "Ви можете виділити декілька глав наступним чином: відмітьте першу бажану главу, затисніть клавішу Shift та відмітьте останню обрану главу.\n\nЦе сповіщення можна вимкнути в Розширених налаштуваннях.",
 		"description": "Tell user how to shift-click to multiselect."
 	},
 	"convertToXhtmlWarning": {

@@ -531,6 +531,10 @@
 		"message": "Don't show 'Save As' dialog when saving EPUB",
 		"description": "Label for checkbox to download the final epub without a popup"
 	},
+	"__MSG_label_Disable_Shift_Click_Alert__": {
+		"message": "Disable Shift+Click Selection Alert",
+		"description": "Label for checkbox to disable the alert shown when user shift-clicks to select multiple chapters"
+	},
 	"__MSG_label_Write_Error_History_To_File__": {
 		"message": "Write error messages to file",
 		"description": "Label for checkbox to write recent error messages to file"
@@ -584,7 +588,7 @@
 		"description": "Message shown while looking for list of Chapter URLs."
 	},
 	"__MSG_Shift_Click__": {
-		"message": "You can select or unselect a range of chapters by clicking on the checkbox for the first chapter, then  hold down the shift key and click the last chapter in the range.",
+		"message": "You can select or unselect a range of chapters by clicking on the checkbox for the first chapter, then holding down the shift key and clicking the last chapter in the range.\n\nThis alert can be disabled in Advanced Options.",
 		"description": "Tell user how to shift-click to multiselect."
 	},
 	"__MSG_Tooltip_chapter_downloading__": {

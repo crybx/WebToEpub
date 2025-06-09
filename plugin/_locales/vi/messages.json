@@ -248,7 +248,7 @@
         "description": ""
     },
     "__MSG_Shift_Click__": {
-        "message": "Bạn có thể chọn hoặc bỏ chọn một dải nhiều chương bằng việc chọn vào ô chọn cho phần chương đầu, sau đó giữ phím Shift và chọn phần chương cuối trong dải chương.",
+        "message": "Bạn có thể chọn hoặc bỏ chọn một dải nhiều chương bằng việc chọn vào ô chọn cho phần chương đầu, sau đó giữ phím Shift và chọn phần chương cuối trong dải chương.\n\nThông báo này có thể được tắt trong Tùy chọn Nâng cao.",
         "description": ""
     },
     "convertToXhtmlWarning": {

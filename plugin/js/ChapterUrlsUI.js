@@ -1005,6 +1005,9 @@ class ChapterUrlsUI {
 
     /** @private */
     static tellUserAboutShiftClick(event, row) {
+        if (UserPreferences.getPreferenceValue("disableShiftClickAlert")) {
+            return;
+        }
         if (event.shiftKey || (ChapterUrlsUI.lastSelectedRow === null)) {
             return;
         }
@@ -1018,7 +1021,6 @@ class ChapterUrlsUI {
         }
         ++ChapterUrlsUI.ConsecutiveRowClicks;
         if (ChapterUrlsUI.ConsecutiveRowClicks === 5) {
-            // TODO: make this not an alert, it's annoying
             alert(UIText.Chapter.shiftClickMessage);
         }
     }
