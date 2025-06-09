@@ -170,26 +170,29 @@ let addCssFileToZip = function(zip, fileName) {
     return addBinaryFileToZip(zip, "../plugin/" + dest, dest);
 };
 
+let addAllCssFilesToZip = function(zip) {
+    return new Promise(function(resolve, reject) {
+        fs.readdir("../plugin/css", function(err, files) {
+            if (err) {
+                reject(err);
+            } else {
+                let cssFiles = files.filter(f => f.endsWith(".css"));
+                let sequence = Promise.resolve();
+                cssFiles.forEach(function(fileName) {
+                    sequence = sequence.then(function() {
+                        return addCssFileToZip(zip, fileName);
+                    });
+                });
+                resolve(sequence);
+            }
+        });
+    });
+};
+
 let packNonManifestExtensionFiles = function(zip, packedFileName) {
     return addBinaryFileToZip(zip, "../plugin/book128.png", "book128.png")
         .then(function() {
-            return addCssFileToZip(zip, "themeBase.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "default.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "chapterUrlsUI.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "modals.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "libraryUI.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "themeAlwaysDark.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "themeAutoDark.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "themeCyberpunk.css");
-        }).then(function() {
-            return addCssFileToZip(zip, "themeSunset.css");
+            return addAllCssFilesToZip(zip);
         }).then(function() {
             return getFileList("../plugin/popup.html");
         }).then(function(fileList) {
