@@ -371,47 +371,29 @@ class Parser {
         return;
     }
 
+    safeExtract = (extractFn, defaultValue = "") => {
+        try {
+            return extractFn();
+        } catch(err) {
+            return defaultValue;
+        }
+    };
+
     getEpubMetaInfo(dom, useFullTitle) {
-        let that = this;
         let metaInfo = new EpubMetaInfo();
         metaInfo.uuid = dom.baseURI;
-        try {
-            metaInfo.title = that.extractTitle(dom);
-        }
-        catch (err) {
-            metaInfo.title = "";
-        }
-        try {
-            metaInfo.author = that.extractAuthor(dom).trim();
-        }
-        catch (err) {
-            metaInfo.author = "";
-        }
-        try {
-            metaInfo.language = that.extractLanguage(dom);
-        }
-        catch (err) {
-            metaInfo.language = "";
-        }
-        try {
-            metaInfo.fileName = that.makeSaveAsFileNameWithoutExtension(metaInfo.title, useFullTitle);
-        }
-        catch (err) {
-            metaInfo.fileName = "web.epub";
-        }
-        try {
-            metaInfo.subject = that.extractSubject(dom);
-        }
-        catch (err) {
-            metaInfo.subject = "";
-        }
-        try {
-            metaInfo.description = that.extractDescription(dom);
-        }
-        catch (err) {
-            metaInfo.description = "";
-        }
-        that.extractSeriesInfo(dom, metaInfo);
+
+        metaInfo.title = this.safeExtract(() => this.extractTitle(dom));
+        metaInfo.author = this.safeExtract(() => this.extractAuthor(dom).trim());
+        metaInfo.language = this.safeExtract(() => this.extractLanguage(dom));
+        metaInfo.fileName = this.safeExtract(
+            () => this.makeSaveAsFileNameWithoutExtension(metaInfo.title, useFullTitle),
+            "web.epub"
+        );
+        metaInfo.subject = this.safeExtract(() => this.extractSubject(dom));
+        metaInfo.description = this.safeExtract(() => this.extractDescription(dom));
+
+        this.extractSeriesInfo(dom, metaInfo);
         return metaInfo;
     }
 
