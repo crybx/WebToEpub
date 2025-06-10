@@ -606,7 +606,7 @@ class ChapterCache {
                         // This is a new chapter - find the correct position based on UI chapter list
                         chapter.epubSpineIndex = await LibraryBookData.calculateChapterInsertionIndex(chapter, sourceUrl);
                     }
-                    await ChapterCache.addChapterToLibraryBook(chapter, content, sourceUrl, title, row);
+                    await LibraryStorage.addChapterToLibrary(chapter, content, sourceUrl, title, row);
                 } else {
                     // Normal mode - add to cache
                     await ChapterCache.set(sourceUrl, content);
@@ -991,10 +991,10 @@ class ChapterCache {
     }
 
     /**
-     * Remove cached chapters when they are moved to library storage
+     * Remove cached chapters from storage (simple cache removal without UI updates)
      * @param {Array<string>} chapterUrls - Array of chapter URLs to remove from cache
      */
-    static async removeChaptersMovedToLibrary(chapterUrls) {
+    static async removeChaptersFromCache(chapterUrls) {
         if (!chapterUrls || chapterUrls.length === 0) {
             return;
         }
@@ -1005,141 +1005,9 @@ class ChapterCache {
             
             // Remove from active storage (either session or persistent based on settings)
             await this.getActiveStorage().remove(keysToRemove);
-
-            // Update UI to reflect the change
-            await this.updateCacheToLibraryIcons(chapterUrls);
             
         } catch (error) {
-            console.error("Error removing cached chapters moved to library:", error);
-        }
-    }
-
-    /**
-     * Add a single chapter directly to library book
-     * @param {Object} chapter - Chapter object with library information
-     * @param {Element} content - Chapter content DOM element
-     * @param {string} sourceUrl - Chapter source URL
-     * @param {string} title - Chapter title
-     * @param {HTMLElement} row - Chapter table row
-     */
-    static async addChapterToLibraryBook(chapter, content, sourceUrl, title, row) {
-        try {
-            // Generate XHTML using existing EPUB infrastructure
-            let epubItem = new ChapterEpubItem({sourceUrl, title}, content, chapter.epubSpineIndex);
-            let parser = ChapterCache.getCurrentParser();
-            let emptyDocFactory = parser.emptyDocFactory || util.createEmptyXhtmlDoc;
-            let contentValidator = parser.contentValidator || (xml => util.isXhtmlInvalid(xml, EpubPacker.XHTML_MIME_TYPE));
-            
-            let newChapterXhtml = epubItem.fileContentForEpub(emptyDocFactory, contentValidator);
-            
-            // Add timestamp for verification
-            let timestamp = new Date().toISOString();
-            let timestampElement = `<p style="font-size: 0.8em; color: #666; text-align: right; margin-top: 2em; border-top: 1px solid #eee; padding-top: 0.5em;"><em>Added: ${timestamp}</em></p>`;
-            
-            // Inject timestamp before </body>
-            if (newChapterXhtml.includes('</body>')) {
-                newChapterXhtml = newChapterXhtml.replace('</body>', `${timestampElement}</body>`);
-            } else if (newChapterXhtml.includes('</html>')) {
-                newChapterXhtml = newChapterXhtml.replace('</html>', `${timestampElement}</html>`);
-            } else {
-                newChapterXhtml = newChapterXhtml + timestampElement;
-            }
-            
-            // Get the stored EPUB data
-            let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + chapter.libraryBookId);
-            if (!epubBase64) {
-                throw new Error("Book not found in library");
-            }
-            
-            // Get the current book data to determine the correct spine index for insertion
-            let bookData = await LibraryBookData.extractBookData(chapter.libraryBookId);
-
-            // EpubUpdater needs the insertIndex to be the actual
-            // correct spot in the epub's spine to put the new chapter at.
-            let insertIndex;
-            let lastBookChapter = bookData.chapters[bookData.chapters.length - 1];
-            if (chapter.epubSpineIndex > lastBookChapter?.epubSpineIndex ?? -1) {
-                // Appending at the end
-                insertIndex = lastBookChapter?.epubSpineIndex + 1;
-            } else {
-                insertIndex = chapter.epubSpineIndex;
-            }
-
-            // Add the new chapter using EpubUpdater.insertChapter for proper positioning
-            let updatedEpubBlob = await EpubUpdater.insertChapter(
-                epubBase64, 
-                insertIndex,
-                newChapterXhtml, 
-                title, 
-                sourceUrl
-            );
-
-            // Convert blob to base64 and save back to storage
-            let newEpubBase64 = await EpubUpdater.blobToBase64(updatedEpubBlob);
-            await LibraryStorage.LibSaveToStorage("LibEpub" + chapter.libraryBookId, newEpubBase64);
-            
-            // Remove from cache if it was there
-            await ChapterCache.deleteChapter(sourceUrl);
-            
-            // Update the cached indices for chapters that got pushed forward by the insertion
-            if (window.parser && window.parser.state && window.parser.state.webPages) {
-                
-                // EpubUpdater.insertChapter inserts BEFORE the given index, pushing subsequent chapters forward
-                // So we need to increment the epubSpineIndex for all chapters at or after the insertion point
-                for (let [key, chapterObj] of window.parser.state.webPages.entries()) {
-                    if (chapterObj.isInBook && 
-                        chapterObj.libraryBookId === chapter.libraryBookId &&
-                        chapterObj.epubSpineIndex !== undefined &&
-                        chapterObj.epubSpineIndex >= insertIndex) {
-                        chapterObj.epubSpineIndex++;
-                    }
-                }
-
-                // Set this chapter's index to the insertion point (it now occupies that position)
-                chapter.isInBook = true;
-                chapter.epubSpineIndex = insertIndex;
-            }
-            
-            // Update UI to show library status
-            if (row) {
-                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, sourceUrl, title);
-            }
-        } catch (error) {
-            console.error("Error adding chapter to library book:", error);
-            // Fall back to cache if library addition fails
-            if (row) {
-                ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED, sourceUrl, title);
-            }
-            throw error;
-        }
-    }
-
-
-    /**
-     * Update UI icons from eye (cache) to book (library) when chapters are moved
-     * Uses setChapterStatusVisuals for consistent behavior
-     * @param {Array<string>} chapterUrls - Array of chapter URLs that moved to library
-     */
-    static async updateCacheToLibraryIcons(chapterUrls) {
-        try {
-            // Update each chapter row to use library status
-            chapterUrls.forEach(sourceUrl => {
-                let row = ChapterUrlsUI.findRowBySourceUrl(sourceUrl);
-                if (row) {
-                    // Find the chapter data to get title
-                    let chapter = null;
-                    if (window.parser && window.parser.state && window.parser.state.webPages) {
-                        chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
-                    }
-                    
-                    let title = chapter ? chapter.title : "Chapter";
-                    
-                    // Use setChapterStatusVisuals to handle the icon transition properly
-                    ChapterUrlsUI.setChapterStatusVisuals(row, ChapterUrlsUI.CHAPTER_STATUS_LIBRARY, sourceUrl, title);
-                }
-            });
-        } catch (error) {
-            console.error("Error updating cache to library icons:", error);
+            console.error("Error removing cached chapters:", error);
         }
     }
 }

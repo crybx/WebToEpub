@@ -805,7 +805,7 @@ class ChapterUrlsUI {
         }
         
         // Remove all state-specific classes before applying new state
-        row.classList.remove("error-state", "chapter-in-library");
+        row.classList.remove("error-state", "chapter-in-library", "chapter-new-on-website");
         
         // Apply state-specific behavior and styling
         switch (state) {
@@ -1527,12 +1527,10 @@ class ChapterUrlsUI {
      */
     static async deleteChapter(chapter, row) {
         try {
-            console.log(chapter);
             // Check if this is a library chapter or a cached chapter
             if (chapter && chapter.isInBook && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
                 // Store the deleted index before we modify the chapter object
                 let deletedIndex = chapter.epubSpineIndex;
-                console.log(chapter);
                 // Use the LibraryBookData method to delete
                 let isDeleted = await EpubUpdater.deleteChapter(chapter);
                 if (isDeleted) {

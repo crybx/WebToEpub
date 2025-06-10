@@ -305,7 +305,7 @@ class LibraryBookData {
     /**
      * Get chapter URLs that exist in a library book (RELIABLE - uses actual EPUB content)
      * @param {string} bookId - The Library book ID
-     * @returns {Array<string>} Array of chapter URLs found in the book
+     * @returns {Promise<Array<string>>} Array of chapter URLs found in the book
      */
     static async getChapterUrlsInBook(bookId) {
         try {
