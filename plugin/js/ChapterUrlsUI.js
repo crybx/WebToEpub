@@ -862,6 +862,10 @@ class ChapterUrlsUI {
         document.getElementById("editURLsHint").hidden = toTable;
         document.querySelector(".progressSection").hidden = !toTable;
         document.querySelector(".HiddenButtonSection").hidden = !toTable;
+        let libraryBanner = document.getElementById("libraryBookIndicator");
+        if (libraryBanner) {
+            libraryBanner.hidden = !toTable;
+        }
     }
 
     /** @private */
