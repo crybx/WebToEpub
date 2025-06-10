@@ -1005,7 +1005,8 @@ class ChapterUrlsUI {
 
     /** @private */
     static tellUserAboutShiftClick(event, row) {
-        if (UserPreferences.getPreferenceValue("disableShiftClickAlert")) {
+        let userPreferences = main.getUserPreferences();
+        if (userPreferences && userPreferences.disableShiftClickAlert.value) {
             return;
         }
         if (event.shiftKey || (ChapterUrlsUI.lastSelectedRow === null)) {

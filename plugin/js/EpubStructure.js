@@ -61,7 +61,8 @@ class EpubStructure {
      */
     static get(preferenceValue) {
         if (preferenceValue === undefined) {
-            preferenceValue = UserPreferences.getPreferenceValue("epubInternalStructure");
+            let userPreferences = main.getUserPreferences();
+            preferenceValue = userPreferences ? userPreferences.epubInternalStructure.value : "OEBPS";
         }
         return (preferenceValue === "EPUB") ? 
             EpubStructure.EPUB_STRUCTURE_EPUB : 
