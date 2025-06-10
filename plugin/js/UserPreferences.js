@@ -204,10 +204,95 @@ class UserPreferences {
         UserPreferences.SetTheme();
     }
 
+    async handleEpubStructureChange(event) {
+        let newStructure = event.target.value;
+        let epubStructurePref = this.getPreference("epubInternalStructure");
+        let currentStructure = epubStructurePref.value;
+        
+        if (newStructure === currentStructure) {
+            return; // No change
+        }
+
+        try {
+            // Check if user has library books
+            let bookCount = await LibraryStorage.getLibraryBookCount();
+            
+            if (bookCount === 0) {
+                // No library books, just update the preference
+                epubStructurePref.value = newStructure;
+                this.writeToLocalStorage();
+                this.notifyObserversOfChange();
+                return;
+            }
+
+            // Show confirmation dialog
+            let confirmMessage = `You have ${bookCount} book${bookCount > 1 ? "s" : ""} in your library that need${bookCount === 1 ? "s" : ""} to be converted to the new EPUB structure.\n\nThis conversion will update all your library books to use the new internal file structure. This process may take a few moments.\n\nDo you want to proceed with the conversion?`;
+            
+            if (!confirm(confirmMessage)) {
+                // User cancelled, revert the dropdown
+                event.target.value = currentStructure;
+                return;
+            }
+
+            // Show progress indication
+            let statusElement = document.createElement("span");
+            statusElement.textContent = " (Converting library books...)";
+            statusElement.style.color = "orange";
+            event.target.parentElement.appendChild(statusElement);
+            
+            // Disable the dropdown during conversion
+            event.target.disabled = true;
+
+            // Perform the conversion
+            let result = await EpubStructure.convertAllLibraryBooks(newStructure);
+            
+            // Remove status indication
+            statusElement.remove();
+            event.target.disabled = false;
+
+            if (result.success) {
+                // Update the preference
+                epubStructurePref.value = newStructure;
+                this.writeToLocalStorage();
+                this.notifyObserversOfChange();
+                
+                alert(`Successfully converted ${result.converted} library book${result.converted > 1 ? "s" : ""} to the new EPUB structure.`);
+            } else {
+                // Conversion failed, revert dropdown
+                event.target.value = currentStructure;
+                let errorMsg = `Failed to convert library books. ${result.converted} succeeded, ${result.failed} failed.`;
+                if (result.error) {
+                    errorMsg += `\n\nError: ${result.error}`;
+                }
+                alert(errorMsg);
+            }
+
+        } catch (error) {
+            // Error during conversion, revert dropdown
+            event.target.value = currentStructure;
+            event.target.disabled = false;
+            
+            // Remove any status elements
+            let statusElements = event.target.parentElement.querySelectorAll("span[style*='color: orange']");
+            statusElements.forEach(el => el.remove());
+            
+            console.error("Error handling EPUB structure change:", error);
+            alert(`Error during conversion: ${error.message}\n\nYour EPUB structure setting has been reverted.`);
+        }
+    }
+
     hookupUi() {
         let readFromUi = this.readFromUi.bind(this);
         for (let p of this.preferences) {
-            p.hookupUi(readFromUi);
+            if (p.storageName === "epubInternalStructure") {
+                // Special handling for EPUB structure changes
+                let element = p.getUiElement();
+                if (element) {
+                    element.onchange = this.handleEpubStructureChange.bind(this);
+                }
+            } else {
+                p.hookupUi(readFromUi);
+            }
         }
 
         this.notifyObserversOfChange();
@@ -311,6 +396,15 @@ class UserPreferences {
         } else if (theme === "SunsetMode") {
             sunset.disabled = false;
         }
+    }
+
+    /**
+     * Get preference object by storage name
+     * @param {string} storageName - The storage name of the preference
+     * @returns {UserPreference|null} The preference object or null if not found
+     */
+    getPreference(storageName) {
+        return this.preferences.find(p => p.storageName === storageName) || null;
     }
 
     static getPreferenceValue(key) {

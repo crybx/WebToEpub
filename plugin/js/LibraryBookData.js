@@ -69,7 +69,7 @@ class LibraryBookData {
             };
             
             // Try to get additional metadata from content.opf
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
             let opfFile = epubContent.find(entry => entry.filename === epubPaths.contentOpf);
             if (opfFile) {
                 let opfContent = await opfFile.getData(new zip.TextWriter());
@@ -153,7 +153,7 @@ class LibraryBookData {
     static async extractChapterList(epubContent, bookId) {
         try {
             // Get content.opf to find chapter order
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
             let opfFile = epubContent.find(entry => entry.filename === epubPaths.contentOpf);
             if (!opfFile) {
                 throw new Error("content.opf not found");

@@ -293,7 +293,7 @@ class EpubUpdater {
 
             // Load the EPUB using helper
             let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
 
             // Read metadata files using helper
             let {navXhtmlEntry, contentOpfText, tocNcxText, navXhtmlText} = await EpubUpdater.readMetadataFiles(entries, epubPaths);
@@ -350,7 +350,7 @@ class EpubUpdater {
         try {
             // Load the EPUB using helper
             let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
 
             // Find and validate chapter files using helpers
             let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
@@ -541,7 +541,7 @@ class EpubUpdater {
             let entries = await epubZip.getEntries();
             entries = entries.filter(a => !a.directory);
 
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
 
             // Check for required files
             let hasContentOpf = entries.some(e => e.filename === epubPaths.contentOpf);
@@ -613,7 +613,7 @@ class EpubUpdater {
 
             // STEP 4: Update EPUB content (inline the refreshChapter logic)
             let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
 
             // Find target chapter file
             let chapterFiles = EpubUpdater.findChapterFiles(entries, epubPaths);
@@ -665,7 +665,7 @@ class EpubUpdater {
 
             // Load the EPUB
             let {entries, epubZip} = await EpubUpdater.loadEpub(epubBase64);
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
 
             // Read current metadata files
             let {navXhtmlEntry, contentOpfText, tocNcxText, navXhtmlText} = await EpubUpdater.readMetadataFiles(entries, epubPaths);

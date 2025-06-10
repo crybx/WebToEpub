@@ -29,7 +29,7 @@ class EpubPacker {
     }
 
     static coverImageXhtmlHref() {
-        let paths = util.getEpubStructure();
+        let paths = EpubStructure.get();
         return paths.coverXhtml;
     }
 
@@ -38,7 +38,7 @@ class EpubPacker {
     }
 
     assemble(epubItemSupplier) {
-        let paths = util.getEpubStructure();
+        let paths = EpubStructure.get();
         let zipFileWriter = new zip.BlobWriter("application/epub+zip");
         let zipWriter = new zip.ZipWriter(zipFileWriter,{useWebWorkers: false,compressionMethod: 8, extendedTimestamp: false});
         this.addRequiredFiles(zipWriter);
@@ -48,7 +48,7 @@ class EpubPacker {
             zipWriter.add(paths.navFile, new zip.TextReader(this.buildNavigationDocument(epubItemSupplier)));
         }
         this.packContentFiles(zipWriter, epubItemSupplier);
-        zipWriter.add(util.getEpubStructure().stylesheet, new zip.TextReader(this.metaInfo.styleSheet));
+        zipWriter.add(EpubStructure.get().stylesheet, new zip.TextReader(this.metaInfo.styleSheet));
         return zipWriter.close();
     }
 
@@ -59,7 +59,7 @@ class EpubPacker {
 
     // every EPUB must have a mimetype and a container.xml file
     addRequiredFiles(zipFile) {
-        let paths = util.getEpubStructure();
+        let paths = EpubStructure.get();
         zipFile.add("mimetype",  new zip.TextReader("application/epub+zip"),{compressionMethod: 0});
         zipFile.add("META-INF/container.xml",
             new zip.TextReader("<?xml version=\"1.0\"?>" +
@@ -175,8 +175,8 @@ class EpubPacker {
             this.setSvgPropertyForManifestItem(item, i.hasSvg());
         }
 
-        let paths = util.getEpubStructure();
-        this.addManifestItem(manifest, ns, util.getEpubStructure().stylesheet, "stylesheet", "text/css");
+        let paths = EpubStructure.get();
+        this.addManifestItem(manifest, ns, EpubStructure.get().stylesheet, "stylesheet", "text/css");
         this.addManifestItem(manifest, ns, paths.tocNcx, "ncx", "application/x-dtbncx+xml");
         if (epubItemSupplier.hasCoverImageFile()) {
             let item = this.addManifestItem(manifest, ns, EpubPacker.coverImageXhtmlHref(), EpubPacker.coverImageXhtmlId(), "application/xhtml+xml");
@@ -366,7 +366,7 @@ class EpubPacker {
     // changes href to be relative to manifest (and toc.ncx)
     // which are in content directory
     makeRelative(href) {
-        let paths = util.getEpubStructure();
+        let paths = EpubStructure.get();
         let contentDirPrefix = paths.contentDir + "/";
         if (href.startsWith(contentDirPrefix)) {
             return href.substring(contentDirPrefix.length);

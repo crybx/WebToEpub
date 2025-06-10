@@ -71,7 +71,7 @@ class LibraryStorage {
         let MergedEpubWriter = new zip.BlobWriter("application/epub+zip");
         let MergedEpubZip = new zip.ZipWriter(MergedEpubWriter,{useWebWorkers: false,compressionMethod: 8, extendedTimestamp: false});
         //Copy PreviousEpub in MergedEpub
-        let epubPaths = util.getEpubStructure();
+        let epubPaths = EpubStructure.get();
         for (let element of PreviousEpubContent.filter(a => a.filename !== epubPaths.contentOpf && a.filename !== epubPaths.tocNcx && a.filename !== epubPaths.navXhtml)) {
             if (element.filename === "mimetype") {
                 MergedEpubZip.add(element.filename, new zip.TextReader(await element.getData(new zip.TextWriter())), {compressionMethod: 0});
@@ -230,7 +230,7 @@ class LibraryStorage {
                     let EpubContent =  await EpubZip.getEntries();
                     EpubContent = EpubContent.filter(a => a.directory == false);
 
-                    let epubPaths = util.getEpubStructure();
+                    let epubPaths = EpubStructure.get();
                     let Coverxml = await EpubContent.filter( a => a.filename == epubPaths.coverXhtml)[0].getData(new zip.TextWriter());
                     let CoverimgPath = epubPaths.contentDir + Coverxml.match(new RegExp(`"\\.\\.\/${epubPaths.imagesDirRel}\/000.+?"`))[0].replace(/"../,"").replace("\"","");
                     let Coverimage = await EpubContent.filter( a => a.filename == CoverimgPath)[0].getData(new zip.Data64URIWriter());
@@ -315,7 +315,7 @@ class LibraryStorage {
             let EpubReader = await new zip.Data64URIReader(await LibraryStorage.LibGetFromStorage("LibEpub"+libepubid));
             let EpubZip = new zip.ZipReader(EpubReader, {useWebWorkers: false});
             let EpubContent =  await EpubZip.getEntries();
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
             let opfFile = await EpubContent.filter(a => a.filename == epubPaths.contentOpf)[0].getData(new zip.TextWriter());
             
             let LibMetadataTags = ["dc:title", "dc:creator", "dc:language", "dc:subject", "dc:description"];
@@ -347,7 +347,7 @@ class LibraryStorage {
             let EpubZipRead = new zip.ZipReader(EpubReader, {useWebWorkers: false});
             let EpubContent =  await EpubZipRead.getEntries();
             EpubContent = EpubContent.filter(a => a.directory == false);
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
             let opfFile = await EpubContent.filter(a => a.filename == epubPaths.contentOpf)[0].getData(new zip.TextWriter());
             
             let EpubWriter = new zip.BlobWriter("application/epub+zip");
@@ -472,7 +472,7 @@ class LibraryStorage {
             let EpubReader = await new zip.Data64URIReader(EpubAsDataURL);
             let EpubZip = new zip.ZipReader(EpubReader, {useWebWorkers: false});
             let EpubContent =  await EpubZip.getEntries();
-            let epubPaths = util.getEpubStructure();
+            let epubPaths = EpubStructure.get();
             let opfFile = await EpubContent.filter(a => a.filename == epubPaths.contentOpf)[0].getData(new zip.TextWriter());
             return (opfFile.match(/<dc:identifier id="BookId" opf:scheme="URI">.+?<\/dc:identifier>/)[0].replace(/<dc:identifier id="BookId" opf:scheme="URI">/,"").replace(/<\/dc:identifier>/,""));
         } catch {
@@ -716,6 +716,20 @@ class LibraryStorage {
             
         } catch (error) {
             console.error("Error removing cached chapters moved to library:", error);
+        }
+    }
+
+    /**
+     * Check how many library books a user has
+     * @returns {Promise<number>} Number of library books
+     */
+    static async getLibraryBookCount() {
+        try {
+            let libraryIds = await LibraryStorage.LibGetStorageIDs();
+            return libraryIds ? libraryIds.length : 0;
+        } catch (error) {
+            console.error("Error getting library book count:", error);
+            return 0;
         }
     }
 }
