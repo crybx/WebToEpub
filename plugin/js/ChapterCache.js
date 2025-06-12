@@ -6,7 +6,7 @@
 class ChapterCache {
     static CACHE_PREFIX = "webtoepub_chapter_";
     static CACHE_VERSION = "1.0";  // Only bump this if cache format changes
-    static MAX_CACHE_AGE_DAYS = 30;
+    static MAX_CACHE_AGE_DAYS = 7;
     static CACHE_ENABLED_KEY = "chapterCacheEnabled";
     static CACHE_RETENTION_KEY = "chapterCacheRetentionDays";
     static SESSION_CLEANUP_INTERVAL = 4 * 60 * 60 * 1000; // 4 hours
