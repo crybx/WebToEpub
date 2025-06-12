@@ -306,7 +306,19 @@ class LibraryUI {
             for (let i = 0; i < storyurls.length; i++) {
                 UserPreferences.readFromLocalStorage().readingList.tryDeleteEpubAndSave(storyurls[i]);
             }
-            chrome.storage.local.clear();
+            
+            // Selectively remove only library-specific keys instead of clearing all storage
+            let libraryKeysToRemove = [];
+            for (let key in items) {
+                if (key.startsWith("Lib")) {
+                    libraryKeysToRemove.push(key);
+                }
+            }
+            
+            if (libraryKeysToRemove.length > 0) {
+                chrome.storage.local.remove(libraryKeysToRemove);
+            }
+            
             LibraryUI.LibRenderSavedEpubs();
         });
     }
