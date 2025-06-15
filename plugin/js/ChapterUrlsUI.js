@@ -585,12 +585,16 @@ class ChapterUrlsUI {
     }
 
     /**
-    * Update visibility of header more actions based on whether any chapters are downloaded or if in Library Mode
+    * Update visibility of header more actions menu items
     */
     static updateHeaderMoreActionsVisibility() {
         let headerMoreActions = document.getElementById("headerMoreActionsWrapper");
+        let headerMoreActionsMenu = document.getElementById("headerMoreActionsMenu");
         
-        if (headerMoreActions) {
+        if (headerMoreActions && headerMoreActionsMenu) {
+            // Always show the menu
+            headerMoreActions.style.display = "block";
+            
             // Check for library mode first
             let isLibraryMode = window.currentLibraryBook && window.currentLibraryBook.id;
             
@@ -604,8 +608,13 @@ class ChapterUrlsUI {
                 hasCachedChapters = cachedCheckboxes.length > 0 || errorRows.length > 0;
             }
             
-            let showMenu = isLibraryMode || hasCachedChapters;
-            headerMoreActions.style.display = showMenu ? "block" : "none";
+            // Show/hide cache-dependent items based on whether we have cached chapters
+            let showCacheItems = isLibraryMode || hasCachedChapters;
+            if (showCacheItems) {
+                headerMoreActionsMenu.classList.remove("cache-items-hidden");
+            } else {
+                headerMoreActionsMenu.classList.add("cache-items-hidden");
+            }
         }
     }
 
@@ -1262,6 +1271,12 @@ class ChapterUrlsUI {
         if (deleteLibraryBookIcon && deleteLibraryBookIcon.children.length === 0) {
             deleteLibraryBookIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL));
         }
+
+        // Set up export JSON icon
+        let exportJsonIcon = document.getElementById("exportJsonIcon");
+        if (exportJsonIcon && exportJsonIcon.children.length === 0) {
+            exportJsonIcon.appendChild(SvgIcons.createSvgElement(SvgIcons.FILE_EARMARK_CHECK));
+        }
         
         // Set up click handler for the three dots icon
         let headerMoreActionsWrapper = document.getElementById("headerMoreActionsWrapper");
@@ -1353,6 +1368,16 @@ class ChapterUrlsUI {
                 }
             };
         }
+
+        // Set up export JSON handler
+        let exportJsonItem = document.getElementById("exportJsonMenuItem");
+        if (exportJsonItem) {
+            exportJsonItem.onclick = async (e) => {
+                e.stopPropagation();
+                ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu);
+                await ChapterUrlsUI.exportStoryAsJson(chapters);
+            };
+        }
         
         // Close menu when clicking outside
         document.addEventListener("click", () => ChapterUrlsUI.hideHeaderMoreActionsMenu(headerMoreActionsMenu));
@@ -1411,6 +1436,67 @@ class ChapterUrlsUI {
         } catch (error) {
             console.error("Error downloading selected chapters:", error);
             alert("Failed to download selected chapters: " + error.message);
+        }
+    }
+
+    /**
+     * Export story information as JSON file
+     */
+    static async exportStoryAsJson(chapters) {
+        try {
+            // Get title and starting URL from main UI
+            let title = document.getElementById("titleInput")?.value || "Untitled Story";
+            let mainStoryUrl = document.getElementById("startingUrlInput")?.value || "";
+            
+            // Get selected chapters to find the last one
+            let selectedChapters = ChapterUrlsUI.getSelectedChapters(chapters);
+            
+            // Get last selected chapter (fallback to last chapter in list if no selection)
+            let lastChapter = null;
+            if (selectedChapters.length > 0) {
+                lastChapter = selectedChapters[selectedChapters.length - 1];
+            } else if (chapters && chapters.length > 0) {
+                lastChapter = chapters[chapters.length - 1];
+            }
+            
+            // Build JSON structure
+            let jsonData = {
+                "stories": [
+                    {
+                        "title": title,
+                        "mainStoryUrl": mainStoryUrl,
+                        "lastChapterUrl": lastChapter?.sourceUrl || "",
+                        "lastChapterTitle": lastChapter?.title || "",
+                        "secondaryUrlMatches": [],
+                        "tags": [],
+                        "dateLastGrabbed": null,
+                        "dateAdded": new Date().toISOString()
+                    }
+                ]
+            };
+            
+            // Create and download JSON file
+            let jsonString = JSON.stringify(jsonData, null, 2);
+            let blob = new Blob([jsonString], { type: "application/json" });
+            let url = URL.createObjectURL(blob);
+            
+            // Generate filename from title
+            let filename = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            if (filename.length === 0) filename = "story";
+            filename += "_export.json";
+            
+            // Download the file
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+        } catch (error) {
+            console.error("Error exporting story as JSON:", error);
+            alert("Failed to export story as JSON: " + error.message);
         }
     }
 

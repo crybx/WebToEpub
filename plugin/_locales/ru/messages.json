@@ -612,6 +612,10 @@
 		"message": "Показать главы из библиотеки",
 		"description": "Menu option to show chapters that are already in the library book"
 	},
+	"__MSG_menu_Export_Story_Details_JSON__": {
+		"message": "Экспорт деталей истории в JSON",
+		"description": "Menu option to export story metadata and details as JSON file"
+	},
 	"__MSG_modal_title_Reorder_Chapters__": {
 		"message": "Переупорядочить главы",
 		"description": "Title for the chapter reordering modal"

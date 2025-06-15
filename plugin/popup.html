@@ -9,6 +9,7 @@
     <link href="css/chapterUrlsUI.css" rel="stylesheet" type="text/css" />
     <link href="css/modals.css" rel="stylesheet" type="text/css" />
     <link href="css/libraryUI.css" rel="stylesheet" type="text/css" />
+    <link href="css/menus.css" rel="stylesheet" type="text/css" />
     <link href="css/themeAutoDark.css" rel="stylesheet" type="text/css"  id="autoDark" />
     <link href="css/themeAlwaysDark.css" rel="stylesheet" type="text/css" id="alwaysDark" disabled="true"/>
     <link href="css/themeCyberpunk.css" rel="stylesheet" type="text/css" id="cyberpunk" disabled="true"/>
@@ -560,17 +561,21 @@
                                     <span id="deleteLibraryBookIcon"></span>
                                     <span class="i18n">__MSG_button_Lib_Template_Delete_EPUB__</span>
                                 </div>
-                                <div class="menu-item" id="deleteSelectedChaptersMenuItem">
+                                <div class="menu-item cache-dependent" id="deleteSelectedChaptersMenuItem">
                                     <span id="deleteSelectedChaptersIcon"></span>
                                     <span>Delete Selected Chapters</span>
                                 </div>
-                                <div class="menu-item non-library-only" id="deleteAllChaptersMenuItem">
+                                <div class="menu-item cache-dependent non-library-only" id="deleteAllChaptersMenuItem">
                                     <span id="deleteAllChaptersIcon"></span>
                                     <span>Delete All Chapters on Page</span>
                                 </div>
-                                <div class="menu-item" id="downloadSelectedChaptersHtml">
+                                <div class="menu-item cache-dependent" id="downloadSelectedChaptersHtml">
                                   <span id="downloadSelectedHtmlIcon"></span>
                                   <span>Download Selected Chapters as Individual HTML Files</span>
+                                </div>
+                                <div class="menu-item" id="exportJsonMenuItem">
+                                  <span id="exportJsonIcon"></span>
+                                  <span class="i18n">__MSG_menu_Export_Story_Details_JSON__</span>
                                 </div>
                             </div>
                         </div>
