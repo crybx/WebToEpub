@@ -792,21 +792,7 @@ class LibraryStorage {
             let parser = ChapterCache.getCurrentParser();
             let emptyDocFactory = parser.emptyDocFactory || util.createEmptyXhtmlDoc;
             let contentValidator = parser.contentValidator || (xml => util.isXhtmlInvalid(xml, EpubPacker.XHTML_MIME_TYPE));
-            
             let newChapterXhtml = epubItem.fileContentForEpub(emptyDocFactory, contentValidator);
-            
-            // Add timestamp for verification
-            let timestamp = new Date().toISOString();
-            let timestampElement = `<p style="font-size: 0.8em; color: #666; text-align: right; margin-top: 2em; border-top: 1px solid #eee; padding-top: 0.5em;"><em>Added: ${timestamp}</em></p>`;
-            
-            // Inject timestamp before </body>
-            if (newChapterXhtml.includes('</body>')) {
-                newChapterXhtml = newChapterXhtml.replace('</body>', `${timestampElement}</body>`);
-            } else if (newChapterXhtml.includes('</html>')) {
-                newChapterXhtml = newChapterXhtml.replace('</html>', `${timestampElement}</html>`);
-            } else {
-                newChapterXhtml = newChapterXhtml + timestampElement;
-            }
             
             // Get the stored EPUB data
             let epubBase64 = await LibraryStorage.LibGetFromStorage("LibEpub" + chapter.libraryBookId);
