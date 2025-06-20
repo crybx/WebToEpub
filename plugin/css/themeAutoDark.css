@@ -56,7 +56,6 @@
         --icon-accent: var(--color-success);
         --icon-hover: var(--color-secondary-hover);
 
-        --library-banner-text: --color-primary-light;
         --library-banner-border: var(--color-primary-hover);
         --lib-new-chapter-badge: var(--color-secondary-light);
 

@@ -2,15 +2,12 @@
 
 :root {
     /* ===== SUNSET BASE COLOR PALETTE ===== */
-    /* Warm oranges, reds, and soft yellows with minimal blue */
-    
-    /* Primary colors - warm orange/amber */
-    --color-primary: #ff6b35;
+
+    --color-primary: #9C1A42;
     --color-primary-hover: #e55a2b;
     --color-primary-light: #ff8c69;
     --color-primary-dark: #cc5429;
-    
-    /* Secondary colors - deep amber instead of blue */
+
     --color-secondary: #f57c00;
     --color-secondary-hover: #ef6c00;
     --color-secondary-light: #ffb74d;
@@ -33,7 +30,7 @@
     --color-surface-tertiary: #fff3e0;
     
     /* Status colors - warm variants */
-    --color-success: #689f38;      /* Warm green */
+    --color-success: #a34d96;      /* Warm not green */
     --color-success-light: #aed581;
     --color-warning: #ff8f00;      /* Warm amber */
     --color-warning-light: #ffcc02;
@@ -41,6 +38,24 @@
     --color-error-light: #ff8a65;
     --color-info: #f57c00;         /* Warm amber instead of blue */
     --color-info-light: #ffb74d;
+
+    /* Sunset styles  */
+    --library-banner-bg: linear-gradient(135deg, rgba(255, 243, 224, 0.9), rgba(255, 236, 179, 0.9));
+    --library-banner-border: var(--color-primary);
+    --library-banner-text: var(--color-neutral-800);
+    --library-banner-button-bg: var(--color-primary);
+    --library-banner-button-text: white;
+    --library-banner-button-border: var(--color-primary);
+    --library-banner-button-hover: var(--color-primary-hover);
+    --library-chapter-icon: var(--color-primary);
+
+    --menu-item-text: var(--color-neutral-700);
+    --menu-item-hover-icon: var(--color-primary);
+    --menu-item-hover-text: var(--color-primary);
+    --menu-item-hover-bg: linear-gradient(90deg, rgba(245, 124, 0, 0.1) 0%, rgba(255, 140, 105, 0.1) 100%) !important;
+    
+    /* Modal backdrop for sunset theme */
+    --modal-backdrop-bg: rgba(14, 6, 3, 0.85);
 }
 
 /* Body styling for sunset warmth */
@@ -173,34 +188,14 @@ input[type=checkbox].successBox {
     border-bottom: 1px solid var(--color-neutral-200) !important;
 }
 
-.more-actions-menu .menu-item:hover,
-.header-more-actions-menu .menu-item:hover {
-    background: linear-gradient(90deg, rgba(245, 124, 0, 0.1) 0%, rgba(255, 140, 105, 0.1) 100%) !important;
-}
-
-.more-actions-menu .menu-item span,
-.header-more-actions-menu .menu-item span {
-    color: var(--color-neutral-700) !important;
-}
-
-.more-actions-menu .menu-item:hover span,
-.header-more-actions-menu .menu-item:hover span {
-    color: var(--color-primary) !important;
-}
-
-.more-actions-menu .menu-item:hover svg,
-.header-more-actions-menu .menu-item:hover svg {
-    fill: var(--color-primary) !important;
-}
-
 /* Library chapter highlighting - sunset colors */
 .chapter-in-library {
-    background: linear-gradient(90deg, rgba(104, 159, 56, 0.15) 0%, rgba(139, 195, 74, 0.1) 100%) !important;
-    border-left: 2px solid var(--color-success) !important;
+    background: linear-gradient(90deg, rgb(156 26 66 / 52%) 0%, rgb(247 219 245 / 49%) 100%) !important;
+    border-left: 2px solid #be2525 !important;
 }
 
 .chapter-in-library:hover {
-    background: linear-gradient(90deg, rgba(104, 159, 56, 0.25) 0%, rgba(139, 195, 74, 0.2) 100%) !important;
+    background: linear-gradient(90deg, #f57c00 0%, #fff3e0 100%) !important;
 }
 
 .chapter-new-on-website {
@@ -210,11 +205,6 @@ input[type=checkbox].successBox {
 
 .chapter-new-on-website:hover {
     background: linear-gradient(90deg, rgba(255, 143, 0, 0.25) 0%, rgba(255, 204, 2, 0.2) 100%) !important;
-}
-
-/* Modal styling */
-.modal-backdrop {
-    background: rgba(45, 24, 16, 0.7);
 }
 
 .modal-container {
@@ -253,20 +243,6 @@ input[type=checkbox].successBox {
 .warning-text {
     color: var(--color-warning) !important;
     font-weight: 600;
-}
-
-/* Library banner sunset styling */
-:root {
-    --library-banner-bg: linear-gradient(135deg, rgba(255, 243, 224, 0.9), rgba(255, 236, 179, 0.9));
-    --library-banner-border: var(--color-primary);
-    --library-banner-text: var(--color-neutral-800);
-    --library-banner-button-bg: var(--color-primary);
-    --library-banner-button-text: white;
-    --library-banner-button-border: var(--color-primary);
-    --library-banner-button-hover: var(--color-primary-hover);
-    
-    /* Sunset Library Icons */
-    --library-chapter-icon: var(--color-primary);
 }
 
 .library-banner-button {
@@ -317,9 +293,3 @@ a:hover {
     color: var(--color-primary-dark);
 }
 
-/* Reduce blue light - override any remaining blue elements */
-.blue-override {
-    color: var(--color-warning) !important;
-    border-color: var(--color-warning) !important;
-    background-color: rgba(245, 124, 0, 0.1) !important;
-}

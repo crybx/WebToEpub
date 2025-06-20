@@ -40,6 +40,10 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     height: 300px;
 }
 
+#errorSectionTable {
+    padding: 0 10px;
+}
+
 #progressString {
     width: 36px;
     display: inline-block;
@@ -58,7 +62,6 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     width: 100%;
 }
 
-/* Advanced Options Header */
 .advanced-options-header {
     display: flex;
     background-color: var(--header-bg, #f8f9fa);
@@ -100,7 +103,6 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     width: 100px;
 }
 
-/* Close Advanced Options Section */
 #advancedOptionsCloseSection {
     border-bottom: 1px solid var(--border-color, #ccc);
     text-align: center;
@@ -296,7 +298,8 @@ button {
     padding: 6px 10px;
     margin-right: 2px;
     text-decoration: none;
-    /* Flexible height and word wrap for buttons to make sure various translations can fit longer text */
+    /* Flexible height and word wrap for buttons to make
+    sure various translations can fit longer text */
     height: auto;
     max-height: none;
     white-space: normal;
@@ -401,20 +404,35 @@ button:active {
     width: 320px;
 }
 
+/* Top right controls positioning - outside container */
+.top-right-controls {
+    position: absolute;
+    top: 8px;
+    right: 0;
+    z-index: 1000;
+}
+
+#openSidebarButton,
+#sbClose {
+    padding: 6px;
+    border-radius: 4px;
+}
+
+#openSidebarIcon svg,
+#sbCloseIcon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Flip the sidebar icon horizontally */
+#openSidebarIcon svg {
+    transform: scaleX(-1);
+}
+
 .sidebar-close-wrapper {
     display: flex;
     justify-content: flex-start;
     padding: 10px 0 10px 8px;
-}
-
-.sidebar-close {
-    padding: 8px;
-    border-radius: 6px;
-}
-
-.sidebar-close svg {
-    width: 20px;
-    height: 20px;
 }
 
 .sidebar th {
@@ -594,9 +612,7 @@ button:active {
 
 /* Default light theme - uses base theme as-is */
 /* Base colors are already defined in themeBase.css */
-/* Override specific base colors here if needed for light theme customization */
 
-/* Base element styles using CSS variables */
 body {
     background: var(--body-bg);
     color: var(--body-text);
@@ -607,12 +623,48 @@ input, select, progress, textarea {
     color: var(--input-text);
 }
 
-/* Default icon colors */
-.sleeping-icon {
-    color: var(--icon-secondary);
+svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
 }
 
-/* Clickable icon styles */
+.sleeping-icon {
+    color: var(--icon-secondary);
+    fill: var(--icon-secondary);
+}
+
+.bi-eye-fill,
+.downloading-icon {
+    color: dodgerblue;
+}
+
+.chapter-status-column svg {
+    margin: 2px;
+    transition: filter 0.2s ease;
+}
+
+#chapterSelectInfo svg {
+    color: var(--icon-primary, #808080);
+}
+
+.library-chapter-view-icon {
+    color: var(--icon-primary);
+    cursor: pointer;
+    margin-right: 4px;
+    font-size: 14px;
+}
+
+.clickable-icon {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .clickable-icon > svg,
 .clickable-icon > span > svg {
     fill: var(--icon-primary);
@@ -635,7 +687,16 @@ input, select, progress, textarea {
     color: var(--clickable-hover-icon);
 }
 
-/* Checkbox styles */
+.error-state .chapter-status-icon,
+.error-state:hover .chapter-status-icon,
+.error-state:hover .menu-icon {
+    fill: var(--color-error);
+}
+
+.error-state .clickable-icon:hover {
+    background-color: var(--color-error-bg);
+}
+
 input[type=checkbox] {
     accent-color: var(--checkbox-accent);
 }
@@ -652,95 +713,6 @@ input[type=checkbox].successBox {
     accent-color: var(--checkbox-exclude);
 }
 
-/* Library UI styles */
 .new-chapter-badge {
     color: var(--lib-new-chapter-badge);
 }
-
-.warning-text {
-    color: var(--lib-warning-text);
-}
-
-
-/* Chapter refresh timestamp styles */
-.refresh-timestamp {
-    font-size: 0.8em;
-    color: #666;
-    text-align: right;
-    margin-top: 2em;
-    border-top: 1px solid #eee;
-    padding-top: 0.5em;
-}
-
-/* Shared more actions dropdown menu styles */
-.more-actions-menu,
-.header-more-actions-menu,
-.lib-more-actions-menu {
-    background-color: var(--menu-bg);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    border: 1px solid var(--menu-border);
-    border-radius: 4px;
-}
-
-.more-actions-menu .menu-item,
-.header-more-actions-menu .menu-item,
-.lib-more-actions-menu .menu-item {
-    display: flex;
-    align-items: center;
-    text-align: left;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--menu-item-border);
-    transition: background-color 0.2s ease;
-}
-
-.more-actions-menu .menu-item svg,
-.header-more-actions-menu .menu-item svg,
-.lib-more-actions-menu .menu-item svg {
-    width: 14px;
-    height: 14px;
-    margin-right: 8px;
-    fill: var(--menu-item-text);
-}
-
-.more-actions-menu .menu-item span,
-.header-more-actions-menu .menu-item span,
-.lib-more-actions-menu .menu-item span {
-    font-size: 14px;
-    font-weight: normal;
-    color: var(--menu-item-text);
-}
-
-.more-actions-menu .menu-item:hover,
-.header-more-actions-menu .menu-item:hover,
-.lib-more-actions-menu .menu-item:hover {
-    background-color: var(--menu-item-hover-bg);
-}
-
-.more-actions-menu .menu-item:hover span,
-.header-more-actions-menu .menu-item:hover span,
-.lib-more-actions-menu .menu-item:hover span {
-    color: var(--menu-item-hover-text);
-}
-
-.more-actions-menu .menu-item:hover svg,
-.header-more-actions-menu .menu-item:hover svg,
-.lib-more-actions-menu .menu-item:hover svg {
-    fill: var(--menu-item-hover-icon);
-    filter: brightness(1.2);
-}
-
-.more-actions-menu .menu-item:last-child,
-.header-more-actions-menu .menu-item:last-child,
-.lib-more-actions-menu .menu-item:last-child {
-    border-bottom: none;
-}
-
-.more-actions-menu.show,
-.header-more-actions-menu.show,
-.lib-more-actions-menu.show {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0);
-}
-

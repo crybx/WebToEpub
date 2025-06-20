@@ -1,9 +1,5 @@
-/* Cyberpunk Theme for WebToEpub */
-
-/* Cyberpunk theme - overrides base colors for neon aesthetic */
+/*  Cyberpunk theme - overrides base colors for neon aesthetic */
 :root {
-    /* Cyberpunk base color palette */
-
     /* Primary colors - purple/magenta */
     --color-primary: #8b00ff;
     --color-primary-hover: #a000ff;
@@ -35,6 +31,8 @@
     /* Status colors - neon variants */
     --color-success: #00ff41;
     --color-success-light: #61f161;
+    --color-warning: #B8860B;
+    --color-warning-light: #ffff99;
     --color-error: #ff0040;
     --color-error-light: #be1922;
 
@@ -46,7 +44,7 @@
     --checkbox-success: var(--color-secondary);
 
     --icon-primary: var(--color-secondary) !important;
-    --icon-secondary: var(--color-primary);
+    --icon-secondary: var(--color-warning-light) !important;
 
     --clickable-hover-icon: var(--color-neutral-900);
     --clickable-hover-bg: var(--color-primary-light);
@@ -81,7 +79,7 @@ body {
 
 /* Input and form elements */
 input, select, progress, textarea {
-    background: #1a1a2e;
+    background: var(--color-neutral-50);
     color: var(--color-secondary);
     border: 1px solid var(--color-primary);
     box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
@@ -94,7 +92,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Buttons */
 button {
-    background: linear-gradient(45deg, #16213e 0%, #1a1a2e 50%, #16213e 100%) !important;
+    background: linear-gradient(45deg, #16213e 0%, var(--color-neutral-50) 50%, #16213e 100%) !important;
     color: var(--color-secondary) !important;
     border: 1px solid var(--color-primary) !important;
     box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
@@ -117,12 +115,12 @@ button:hover {
 
 /* Progress bars */
 progress {
-    background: #1a1a2e;
+    background: var(--color-neutral-50);
     border: 1px solid var(--color-primary);
 }
 
 progress::-webkit-progress-bar {
-    background: #1a1a2e;
+    background: var(--color-neutral-50);
     border: 1px solid var(--color-primary);
 }
 
@@ -166,7 +164,7 @@ progress::-moz-progress-bar {
 }
 
 .error-state input[type=checkbox] {
-    accent-color: #be1922 !important;
+    accent-color: var(--color-error-light) !important;
 }
 
 /* More actions menu cyberpunk styling */
@@ -205,10 +203,6 @@ progress::-moz-progress-bar {
     color: #ff0040 !important;
 }
 
-.sleeping-icon {
-    color: var(--color-warning-light);
-}
-
 /* Library Chapter Highlighting - Cyberpunk */
 .chapter-in-library {
     background: rgba(86, 170, 155, 0.35) !important;
@@ -229,7 +223,7 @@ progress::-moz-progress-bar {
 
 /* Tooltip cyberpunk styling */
 .tooltip-wrapper .tooltipText {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: linear-gradient(135deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
     color: var(--color-secondary);
     border: 1px solid var(--color-primary);
     box-shadow: 0 0 10px rgba(139, 0, 255, 0.4);
@@ -239,7 +233,7 @@ progress::-moz-progress-bar {
 /* Chapter Viewer Scrollbar - Cyberpunk */
 #chapterViewer {
     --scrollbar-track: rgba(26, 26, 46, 0.3);
-    --scrollbar-thumb: #6600cc;
+    --scrollbar-thumb: var(--color-primary-dark);
     --scrollbar-thumb-hover: var(--color-secondary);
     --scrollbar-border: rgba(102, 0, 204, 0.3);
 }
@@ -247,18 +241,15 @@ progress::-moz-progress-bar {
 /* Reorder Chapter List Scrollbar - Cyberpunk */
 .reorder-chapter-list {
     --scrollbar-track: rgba(26, 26, 46, 0.3);
-    --scrollbar-thumb: #6600cc;
+    --scrollbar-thumb: var(--color-primary-dark);
     --scrollbar-thumb-hover: var(--color-secondary);
     --scrollbar-border: rgba(102, 0, 204, 0.3);
 }
 
 /* Modal cyberpunk styling */
-.modal-backdrop {
-    background: rgba(0, 0, 0, 0.8);
-}
 
 .modal-container {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: linear-gradient(135deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
     border: 2px solid var(--color-primary);
     box-shadow: 0 0 30px rgba(139, 0, 255, 0.5);
 }
@@ -286,7 +277,7 @@ progress::-moz-progress-bar {
 }
 
 .warning-text {
-    color: #ff0040 !important; /* Cyberpunk red-pink instead of yellow */
+    color: var(--color-warning-light) !important;
     text-shadow: 0 0 3px rgba(255, 0, 64, 0.8);
 }
 
@@ -295,20 +286,9 @@ progress::-moz-progress-bar {
     text-shadow: 0 0 2px rgba(139, 0, 255, 0.5);
 }
 
-.file-upload-label:hover,
-.lib-clickable-label:hover {
+.file-upload-label:hover {
     background: rgba(139, 0, 255, 0.1);
     box-shadow: 0 0 5px rgba(139, 0, 255, 0.3);
-}
-
-/* Library template styling */
-.lib-compact-table {
-    border-color: var(--color-primary);
-}
-
-.lib-book-cover-cell {
-    border: 1px solid #6a00cc;
-    background: rgba(26, 26, 46, 0.3);
 }
 
 .library-book-banner {

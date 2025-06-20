@@ -12,7 +12,7 @@ body.modal-open {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: var(--modal-backdrop-bg);
     z-index: 1000;
     justify-content: center;
     align-items: center;
@@ -259,7 +259,6 @@ body.modal-open {
     resize: vertical;
 }
 
-
 /* Style the enable caching checkbox as a toggle switch */
 #enableChapterCachingCheckbox {
     position: relative;
@@ -267,7 +266,7 @@ body.modal-open {
     height: 24px;
     -webkit-appearance: none;
     appearance: none;
-    background-color: var(--color-neutral-400);
+    background-color: var(--color-neutral-500);
     border-radius: 12px;
     outline: none;
     cursor: pointer;
@@ -278,7 +277,7 @@ body.modal-open {
 }
 
 #enableChapterCachingCheckbox:checked {
-    background-color: var(--color-success);
+    background-color: var(--color-primary-hover);
 }
 
 #enableChapterCachingCheckbox::before {
@@ -459,7 +458,6 @@ body.modal-open {
 .reorder-chapter-item:last-child {
     border-bottom: none;
 }
-
 
 .reorder-chapter-number {
     min-width: 40px;

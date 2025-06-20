@@ -3,7 +3,6 @@
     width: 100%;
 }
 
-/* Select All Checkbox Styling */
 #selectAllUrlsCheckbox {
     width: 12px;
     height: 12px;
@@ -57,7 +56,6 @@ input#selectAllUrlsCheckbox {
     padding: 0 10px;
 }
 
-/* Range Select Table - Flex Layout */
 #rangeSelectTable {
     display: flex;
     flex-direction: column;
@@ -286,7 +284,6 @@ input#selectAllUrlsCheckbox {
     border-bottom: none;
 }
 
-/* Column Widths and Styling */
 .chapter-checkbox-column {
     flex: 0 0 20px;
     display: flex;
@@ -324,7 +321,6 @@ input#selectAllUrlsCheckbox {
     padding: 0 0 0 4px;
 }
 
-/* Input Styling */
 .chapter-list input[type=text],
 .chapter-list input[type=url] {
     width: 100%;
@@ -343,7 +339,6 @@ input#selectAllUrlsCheckbox {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-/* Disabled input styling */
 .chapter-list input[type=text]:disabled,
 .chapter-list input[type=url]:disabled {
     background-color: var(--input-disabled-bg, #f5f5f5);
@@ -370,68 +365,6 @@ input#selectAllUrlsCheckbox {
     opacity: 0.5;
 }
 
-/* SVG Icons */
-svg {
-    width: 16px;
-    height: 16px;
-    vertical-align: middle;
-}
-
-/* Default icon colors */
-.bi-eye-fill,
-.downloading-icon {
-    color: dodgerblue;
-}
-
-.sleeping-icon {
-    color: var(--color-warning);
-}
-
-.chapter-status-column svg {
-    margin: 2px;
-    transition: filter 0.2s ease;
-}
-
-#chapterSelectInfo svg {
-    color: var(--icon-primary, #808080);
-}
-
-/* Clickable Icons */
-.clickable-icon {
-    cursor: pointer;
-    border-radius: 4px;
-    padding: 2px;
-    transition: background-color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-}
-
-/* Error state styling */
-.error-state .chapter-status-icon,
-.error-state:hover .chapter-status-icon,
-.error-state:hover .menu-icon,
-.error-state .more-actions-menu .menu-item:hover svg,
-.error-state .header-more-actions-menu .menu-item:hover svg,
-.error-state .lib-more-actions-menu .menu-item:hover svg {
-    fill: var(--color-error);
-}
-
-.error-state .clickable-icon:hover,
-.error-state .more-actions-menu .menu-item:hover,
-.error-state .header-more-actions-menu .menu-item:hover,
-.error-state .lib-more-actions-menu .menu-item:hover {
-    background-color: var(--color-error-bg);
-}
-
-.error-state .more-actions-menu .menu-item:hover span,
-.error-state .header-more-actions-menu .menu-item:hover span,
-.error-state .lib-more-actions-menu .menu-item:hover span {
-    color: var(--color-error);
-}
-
-/* Chapter Highlighting */
 .chapter-in-library {
     background-color: var(--color-surface-tertiary);
     border-left: 2px solid var(--color-primary);
@@ -450,14 +383,6 @@ svg {
     background-color: var(--color-error-bg);
 }
 
-.library-chapter-view-icon {
-    color: var(--icon-primary);
-    cursor: pointer;
-    margin-right: 4px;
-    font-size: 14px;
-}
-
-/* Tooltip Styles */
 .tooltip-wrapper {
     position: relative;
     display: inline-block;
@@ -491,7 +416,6 @@ svg {
     left: auto;
 }
 
-
 /* Tooltip positioning for filter button */
 #viewFiltersButton .tooltipText {
     bottom: 100%;
@@ -502,102 +426,3 @@ svg {
     margin-bottom: 4px;
     white-space: normal;
 }
-
-/* Top right controls positioning - outside container */
-.top-right-controls {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 1000;
-}
-
-/* Open sidebar button sizing to match close button */
-#openSidebarButton {
-    padding: 6px;
-    border-radius: 4px;
-}
-
-/* Flip the open sidebar icon horizontally and size to match close button */
-#openSidebarIcon svg {
-    transform: scaleX(-1);
-    width: 16px;
-    height: 16px;
-}
-
-
-/* More actions dropdown menu */
-.more-actions-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.more-actions-menu {
-    visibility: hidden;
-    position: absolute;
-    min-width: 180px;
-    z-index: 1000;
-    top: 100%;
-    right: 0;
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-}
-
-
-/* Header more actions menu specific styling */
-.header-more-actions-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.header-more-actions-menu {
-    visibility: hidden;
-    position: absolute;
-    min-width: 270px;
-    z-index: 1000;
-    top: 100%;
-    right: 0;
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-}
-
-/* Library Status Badge Styles */
-.library-status-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 1px solid var(--color-surface-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8px;
-    z-index: 1;
-    font-weight: bold;
-}
-
-/* Duplicate chapter badge */
-.library-status-badge.duplicate {
-    background: var(--color-warning);
-    color: #000;
-    width: 18px;
-    font-size: 7px;
-}
-
-/* Library-only chapter badge */
-.library-status-badge.library-only {
-    background: var(--color-info);
-    color: var(--color-surface-primary);
-}
-
-/* Both library and website chapter badge */
-.library-status-badge.both {
-    background: var(--color-success);
-    color: var(--color-surface-primary);
-}
-
-
-

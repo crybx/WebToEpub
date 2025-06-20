@@ -1,13 +1,10 @@
-/* Library UI Styles */
 
-/* Close Library Section */
 #libraryCloseSection {
     border-bottom: 1px solid var(--border-color, #ccc);
     text-align: center;
     padding: 8px 12px;
 }
 
-/* File Upload Components */
 .file-upload-label {
     cursor: pointer;
 }
@@ -16,7 +13,6 @@
     pointer-events: none;
 }
 
-/* Layout Utilities */
 .library-header {
     display: flex;
     flex-wrap: wrap;
@@ -64,7 +60,6 @@
     display: block;
 }
 
-/* Library Table Layout */
 .chapter-indicator-cell {
     height: 1.2em;
 }
@@ -74,7 +69,6 @@
     width: 106.5px;
 }
 
-/* New Chapter Badges */
 .new-chapter-badge {
     font-size: 1.1em;
     color: var(--lib-new-chapter-badge);
@@ -93,13 +87,11 @@
     justify-content: flex-end;
 }
 
-/* Library Cover Images */
 .cover-compact-clickable {
     cursor: pointer;
     /* Dynamic max-height and max-width will be set via JavaScript */
 }
 
-/* Library Section Container Constraints */
 #page-container #libraryExpandableSection {
     width: 100%;
     max-width: 100%;
@@ -111,8 +103,6 @@
     clear: both;
 }
 
-
-/* Library Compact View Container */
 .lib-compact-view-container {
     width: 100%;
     max-width: 100%;
@@ -123,7 +113,6 @@
     min-height: fit-content;
 }
 
-/* Library List View Container (flex-based) */
 .lib-list-view-container {
     width: 100%;
     max-width: 100%;
@@ -150,7 +139,6 @@
     position: relative;
 }
 
-/* Cover image section - left column */
 .lib-list-cover {
     flex-shrink: 0;
     margin-right: 16px;
@@ -165,7 +153,6 @@
     cursor: pointer;
 }
 
-/* Content section containing controls and fields - right column */
 .lib-list-content,
 .lib-metadata-wrapper {
     flex: 1;
@@ -177,7 +164,6 @@
     overflow: visible;
 }
 
-/* Controls row (buttons and menu) */
 .lib-list-controls {
     display: flex;
     align-items: center;
@@ -188,7 +174,6 @@
     margin-bottom: 2px;
 }
 
-/* Title row */
 .lib-title-row {
     display: flex;
     align-items: flex-start;
@@ -229,7 +214,6 @@
     min-width: 70px;
 }
 
-/* Description field always uses column layout */
 .lib-description-field {
     flex-direction: column !important;
     align-items: stretch !important;
@@ -241,7 +225,6 @@
     min-width: auto !important;
 }
 
-/* Switch to column layout on very small screens */
 @media (max-width: 480px) {
     .lib-list-field {
         flex-direction: column;
@@ -271,15 +254,13 @@
     resize: vertical;
 }
 
-/* URL warning styling */
 .lib-url-warning {
     font-size: 12px;
-    color: var(--lib-warning-text);
+    color: var(--color-warning);
     margin-bottom: 4px;
     line-height: 1.3;
 }
 
-/* Metadata button section */
 .lib-metadata-save {
     display: flex;
     justify-content: flex-end;
@@ -291,7 +272,6 @@
     width: 100%;
     height: 0;
     position: relative;
-    /* This element maintains height in the document flow while library is positioned absolute */
 }
 
 /* Compact Grid Wrapper - Positioned to Not Affect Container Width */
@@ -341,7 +321,6 @@
     box-sizing: border-box;
 }
 
-/* Simple responsive sizing for mobile */
 @media (max-width: 480px) {
     .lib-compact-item {
         width: 120px;
@@ -380,12 +359,10 @@
     transform: scale(1.05);
 }
 
-/* Warning Messages */
 .warning-text {
-    color: var(--lib-warning-text);
+    color: var(--color-warning);
 }
 
-/* Library Specific Layouts */
 .library-url-table {
     padding: 0;
 }
@@ -394,34 +371,6 @@
     padding: 0;
 }
 
-/* Library HTML Template Styles */
-.lib-book-cover-cell {
-    /* Same as .cover-image-cell but separate for semantic clarity in HTML templates */
-    height: 115.5px;
-    width: 106.5px;
-}
-
-.lib-clickable-label {
-    /* Same as .file-upload-label but separate for semantic clarity */
-    cursor: pointer;
-}
-
-.lib-upload-button-overlay {
-    /* Same as .disabled-button */
-    pointer-events: none;
-}
-
-.lib-no-padding-cell {
-    /* Same as .no-padding but specific to library table cells */
-    padding: 0;
-}
-
-.lib-compact-table {
-    /* Same as .no-border-spacing */
-    border-spacing: 0;
-}
-
-/* Library Book Indicator Banner */
 .library-book-banner {
     background-color: var(--library-banner-bg, #e8f5e8);
     border: 1px solid var(--library-banner-border, #4caf50);
@@ -440,7 +389,6 @@
 #page-container .library-book-banner {
     align-self: stretch;
 }
-
 
 .library-banner-left {
     display: flex;
@@ -461,9 +409,7 @@
     font-size: 14px;
 }
 
-
 .library-banner-button {
-    background-color: var(--library-banner-button-bg, #4caf50);
     color: var(--library-banner-button-text, white) !important;
     border: 1px solid var(--library-banner-button-border, #4caf50);
     padding: 6px 12px;
@@ -472,7 +418,6 @@
     font-size: 12px;
     font-weight: 500;
     flex-shrink: 0;
-    /* Ensure good contrast in all themes */
     background: var(--library-banner-button-bg, #4caf50) !important;
     text-shadow: none;
     /* Override default button styles for better readability */
@@ -480,70 +425,10 @@
 }
 
 .library-banner-button:hover {
-    background-color: var(--library-banner-button-hover, #45a049) !important;
     background: var(--library-banner-button-hover, #45a049) !important;
     border-color: var(--library-banner-button-hover, #45a049);
 }
 
-/* Library Three Dots Icon Button */
-.lib-more-actions-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    margin-right: 2px;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 26px;
-    max-height: 30px;
-    vertical-align: middle;
-}
-
-.lib-more-actions-icon:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-.lib-more-actions-icon svg {
-    width: 16px;
-    height: 16px;
-    fill: var(--color-neutral-600);
-}
-
-/* Library more actions menu positioning and visibility */
-.lib-more-actions-wrapper {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: inline-block;
-    z-index: 10;
-}
-
-.lib-more-actions-wrapper.active {
-    z-index: 3000;
-}
-
-.lib-more-actions-menu {
-    visibility: hidden;
-    position: absolute;
-    min-width: 180px;
-    z-index: 3001;
-    top: 100%;
-    right: 0;
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-}
-
-/* Ensure library menu shows properly when .show class is added - increased specificity */
-.lib-more-actions-wrapper .lib-more-actions-menu.show {
-    visibility: visible !important;
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-}
-
-/* Empty library message */
 .lib-empty-message {
     text-align: center;
     color: var(--color-neutral-600);

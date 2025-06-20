@@ -110,10 +110,10 @@
     --lib-card-border: var(--color-neutral-300);
     --lib-card-title: var(--color-neutral-800);
     --lib-new-chapter-badge: var(--color-primary);
-    --lib-warning-text: var(--color-warning);
     
     /* Modal colors */
     --modal-bg: var(--color-surface-primary);
+    --modal-backdrop-bg: rgba(0, 0, 0, 0.8);
     --modal-title-bg: var(--color-neutral-50);
     --modal-title-text: var(--color-neutral-800);
     --modal-border: var(--color-neutral-400);
