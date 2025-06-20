@@ -818,42 +818,42 @@ class ChapterUrlsUI {
         
         // Apply state-specific behavior and styling
         switch (state) {
-        case ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
-            wrapper.className += " clickable-icon";
-            wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-            ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
-            break;
+            case ChapterUrlsUI.CHAPTER_STATUS_DOWNLOADED: // Chapter is cached - show eye icon
+                wrapper.className += " clickable-icon";
+                wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
+                ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
+                break;
 
-        case ChapterUrlsUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
-            wrapper.className += " clickable-icon";
-            wrapper.onclick = async () => {
-                await ChapterCache.downloadChapter(sourceUrl, title, row);
-            };
-            break;
+            case ChapterUrlsUI.CHAPTER_STATUS_NONE: // Chapter not cached - show download icon
+                wrapper.className += " clickable-icon";
+                wrapper.onclick = async () => {
+                    await ChapterCache.downloadChapter(sourceUrl, title, row);
+                };
+                break;
 
-        case ChapterUrlsUI.CHAPTER_STATUS_ERROR: // Chapter failed to download - show error icon
-            wrapper.className += " clickable-icon error-state";
-            wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
-            row.classList.add("error-state");
-            ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
-            break;
+            case ChapterUrlsUI.CHAPTER_STATUS_ERROR: // Chapter failed to download - show error icon
+                wrapper.className += " clickable-icon error-state";
+                wrapper.onclick = () => ChapterViewer.viewChapter(sourceUrl, title);
+                row.classList.add("error-state");
+                ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
+                break;
 
-        case ChapterUrlsUI.CHAPTER_STATUS_LIBRARY: // Chapter is in library - show book icon
-            wrapper.className += " clickable-icon";
-            wrapper.onclick = (e) => {
-                e.stopPropagation();
-                // Find the chapter data to get library information
-                let chapter = null;
-                if (window.parser && window.parser.state && window.parser.state.webPages) {
-                    chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
-                }
-                if (chapter && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
-                    ChapterViewer.openLibraryChapter(chapter.libraryBookId, chapter.epubSpineIndex);
-                }
-            };
-            row.classList.add("chapter-in-library");
-            ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
-            break;
+            case ChapterUrlsUI.CHAPTER_STATUS_LIBRARY: // Chapter is in library - show book icon
+                wrapper.className += " clickable-icon";
+                wrapper.onclick = (e) => {
+                    e.stopPropagation();
+                    // Find the chapter data to get library information
+                    let chapter = null;
+                    if (window.parser && window.parser.state && window.parser.state.webPages) {
+                        chapter = [...window.parser.state.webPages.values()].find(ch => ch.sourceUrl === sourceUrl);
+                    }
+                    if (chapter && chapter.libraryBookId && chapter.epubSpineIndex !== undefined) {
+                        ChapterViewer.openLibraryChapter(chapter.libraryBookId, chapter.epubSpineIndex);
+                    }
+                };
+                row.classList.add("chapter-in-library");
+                ChapterUrlsUI.addMoreActionsMenu(row, sourceUrl, title);
+                break;
         }
 
         this.updateHeaderMoreActionsVisibility();

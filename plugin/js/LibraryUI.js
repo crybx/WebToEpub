@@ -758,21 +758,21 @@ class LibraryUI {
             let svgElement;
             
             switch (iconType) {
-            case "select":
-                svgElement = SvgIcons.createSvgElement(SvgIcons.CHECK_CIRCLE);
-                break;
-            case "update":
-                svgElement = SvgIcons.createSvgElement(SvgIcons.ARROW_CLOCKWISE);
-                break;
-            case "download":
-                svgElement = SvgIcons.createSvgElement(SvgIcons.DOWNLOAD);
-                break;
-            case "open-url":
-                svgElement = SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT);
-                break;
-            case "delete":
-                svgElement = SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL);
-                break;
+                case "select":
+                    svgElement = SvgIcons.createSvgElement(SvgIcons.CHECK_CIRCLE);
+                    break;
+                case "update":
+                    svgElement = SvgIcons.createSvgElement(SvgIcons.ARROW_CLOCKWISE);
+                    break;
+                case "download":
+                    svgElement = SvgIcons.createSvgElement(SvgIcons.DOWNLOAD);
+                    break;
+                case "open-url":
+                    svgElement = SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT);
+                    break;
+                case "delete":
+                    svgElement = SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL);
+                    break;
             }
             
             if (svgElement) {
@@ -806,21 +806,21 @@ class LibraryUI {
                 
                 // Execute the action
                 switch (action) {
-                case "select":
-                    LibraryUI.loadLibraryBook({dataset: {libepubid}});
-                    break;
-                case "update":
-                    LibraryUI.LibUpdateNewChapter({dataset: {libepubid}});
-                    break;
-                case "download":
-                    LibraryUI.LibDownload({dataset: {libepubid}});
-                    break;
-                case "open-url":
-                    LibraryUI.LibOpenStoryUrl(libepubid);
-                    break;
-                case "delete":
-                    LibraryUI.LibDeleteEpub({dataset: {libepubid}});
-                    break;
+                    case "select":
+                        LibraryUI.loadLibraryBook({dataset: {libepubid}});
+                        break;
+                    case "update":
+                        LibraryUI.LibUpdateNewChapter({dataset: {libepubid}});
+                        break;
+                    case "download":
+                        LibraryUI.LibDownload({dataset: {libepubid}});
+                        break;
+                    case "open-url":
+                        LibraryUI.LibOpenStoryUrl(libepubid);
+                        break;
+                    case "delete":
+                        LibraryUI.LibDeleteEpub({dataset: {libepubid}});
+                        break;
                 }
             }
         });

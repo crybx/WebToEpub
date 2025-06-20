@@ -64,24 +64,24 @@ var ChapterInclusionLogic = (function() {
             // Library mode: only include new website chapters by default
             // Chapters already in the book (library-only or both) start unchecked
             switch (source) {
-            case "website":
-                return true;  // New chapters from website should be included
-            case "library-only":
-            case "both":
-                return false; // Existing chapters start unchecked
-            case "unknown":
-            default:
-                return false; // Conservative default for library mode
+                case "website":
+                    return true;  // New chapters from website should be included
+                case "library-only":
+                case "both":
+                    return false; // Existing chapters start unchecked
+                case "unknown":
+                default:
+                    return false; // Conservative default for library mode
             }
         } else {
             // Normal mode: include all chapters by default
             // This is the fallback when parsers don't specify and Reading List doesn't apply
             switch (source) {
-            case "unknown":
-            case undefined:
-                return true;  // Default to including chapters in normal mode
-            default:
-                return true;  // Normal mode is inclusive by default
+                case "unknown":
+                case undefined:
+                    return true;  // Default to including chapters in normal mode
+                default:
+                    return true;  // Normal mode is inclusive by default
             }
         }
     }

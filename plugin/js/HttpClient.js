@@ -96,10 +96,10 @@ class FetchErrorHandler {
             case 504:
             case 520:
             case 522:
-            // intermittant fault
+            // intermittent fault
                 return {retryDelay: retryDelay, promptUser: true};
             case 524:
-            // claudflare random error
+            // cloudflare random error
                 return {retryDelay: [1], promptUser: true};
             case 999:
             // custom WebToEpub error (some api's fail and a few seconds later it is a success)
