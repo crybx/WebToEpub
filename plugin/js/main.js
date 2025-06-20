@@ -294,7 +294,7 @@ const main = (function() {
         }
     }
 
-    function stopDownload(){
+    function stopDownload() {
         // Immediately update button to show stopping state
         let stopBtn = document.getElementById("stopDownloadButton");
         if (stopBtn) {
@@ -754,11 +754,11 @@ const main = (function() {
                 // Extract file extension from URL
                 let url = new URL(this.src);
                 let pathname = url.pathname;
-                let extension = 'unknown';
+                let extension = "unknown";
 
                 // Check if pathname has a dot and extract extension
-                if (pathname.includes('.')) {
-                    let possibleExt = pathname.split('.').pop().toLowerCase();
+                if (pathname.includes(".")) {
+                    let possibleExt = pathname.split(".").pop().toLowerCase();
                     // Validate it's a reasonable image extension
                     if (possibleExt && possibleExt.length <= 4 && /^[a-z0-9]+$/.test(possibleExt)) {
                         extension = possibleExt;
@@ -766,10 +766,10 @@ const main = (function() {
                 }
 
                 // If still unknown, check query parameters for image URLs (like wsrv.nl)
-                if (extension === 'unknown' && url.searchParams.has('url')) {
-                    let embeddedUrl = url.searchParams.get('url');
-                    if (embeddedUrl && embeddedUrl.includes('.')) {
-                        let possibleExt = embeddedUrl.split('.').pop().toLowerCase();
+                if (extension === "unknown" && url.searchParams.has("url")) {
+                    let embeddedUrl = url.searchParams.get("url");
+                    if (embeddedUrl && embeddedUrl.includes(".")) {
+                        let possibleExt = embeddedUrl.split(".").pop().toLowerCase();
                         if (possibleExt && possibleExt.length <= 4 && /^[a-z0-9]+$/.test(possibleExt)) {
                             extension = possibleExt;
                         }

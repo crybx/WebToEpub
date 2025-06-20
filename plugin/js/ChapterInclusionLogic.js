@@ -24,17 +24,17 @@ var ChapterInclusionLogic = (function() {
      * @returns {string} Source type: 'library-only', 'both', or 'website'
      */
     function determineChapterSource(bookChapter, normalizedWebsiteUrls) {
-        if (!bookChapter.sourceUrl || bookChapter.sourceUrl.startsWith('library://')) {
-            return 'library-only'; // Generated content like Information pages
+        if (!bookChapter.sourceUrl || bookChapter.sourceUrl.startsWith("library://")) {
+            return "library-only"; // Generated content like Information pages
         }
         
         let normalizedBookUrl = normalizeUrl(bookChapter.sourceUrl);
         let isOnWebsite = normalizedWebsiteUrls.has(normalizedBookUrl);
         
         if (isOnWebsite) {
-            return 'both'; // Available on both website and in book
+            return "both"; // Available on both website and in book
         } else {
-            return 'library-only'; // Only in book (removed from website or historical)
+            return "library-only"; // Only in book (removed from website or historical)
         }
     }
 
@@ -64,24 +64,24 @@ var ChapterInclusionLogic = (function() {
             // Library mode: only include new website chapters by default
             // Chapters already in the book (library-only or both) start unchecked
             switch (source) {
-                case 'website':
-                    return true;  // New chapters from website should be included
-                case 'library-only':
-                case 'both':
-                    return false; // Existing chapters start unchecked
-                case 'unknown':
-                default:
-                    return false; // Conservative default for library mode
+            case "website":
+                return true;  // New chapters from website should be included
+            case "library-only":
+            case "both":
+                return false; // Existing chapters start unchecked
+            case "unknown":
+            default:
+                return false; // Conservative default for library mode
             }
         } else {
             // Normal mode: include all chapters by default
             // This is the fallback when parsers don't specify and Reading List doesn't apply
             switch (source) {
-                case 'unknown':
-                case undefined:
-                    return true;  // Default to including chapters in normal mode
-                default:
-                    return true;  // Normal mode is inclusive by default
+            case "unknown":
+            case undefined:
+                return true;  // Default to including chapters in normal mode
+            default:
+                return true;  // Normal mode is inclusive by default
             }
         }
     }
@@ -94,17 +94,17 @@ var ChapterInclusionLogic = (function() {
      * @param {string} context - Description of where this validation is called from
      * @returns {Array} Array of warnings about potential issues
      */
-    function validateChapterInclusionValues(chapters, context = 'unknown') {
+    function validateChapterInclusionValues(chapters, context = "unknown") {
         let warnings = [];
         
         chapters.forEach((chapter, index) => {
             // Check for chapters that have been processed by multiple systems
-            if (chapter.hasOwnProperty('isIncludeable') && 
-                chapter.hasOwnProperty('previousDownload') && 
-                chapter.hasOwnProperty('source')) {
+            if (Object.hasOwn(chapter, "isIncludeable") && 
+                Object.hasOwn(chapter, "previousDownload") && 
+                Object.hasOwn(chapter, "source")) {
                 
                 // Warning: Library chapters marked as includeable might be incorrect
-                if (chapter.source === 'library-only' && chapter.isIncludeable === true) {
+                if (chapter.source === "library-only" && chapter.isIncludeable === true) {
                     warnings.push(`${context}: Chapter ${index} (${chapter.title}) is library-only but marked includeable`);
                 }
                 
@@ -158,7 +158,7 @@ var ChapterInclusionLogic = (function() {
         // Create set of normalized book URLs for comparison
         let normalizedBookUrls = new Set(
             bookChapters
-                .filter(ch => ch.sourceUrl && !ch.sourceUrl.startsWith('library://'))
+                .filter(ch => ch.sourceUrl && !ch.sourceUrl.startsWith("library://"))
                 .map(ch => normalizeUrl(ch.sourceUrl))
         );
         
@@ -169,14 +169,14 @@ var ChapterInclusionLogic = (function() {
                 return !normalizedBookUrls.has(normalizedWebsiteUrl);
             })
             .map(websiteChapter => {
-                let isIncludeable = shouldChapterBeIncluded('website', true, websiteChapter.isIncludeable);
+                let isIncludeable = shouldChapterBeIncluded("website", true, websiteChapter.isIncludeable);
                 
                 return {
                     ...websiteChapter,
                     isInBook: false,
                     previousDownload: false,
                     libraryBookId: bookId,
-                    source: 'website',
+                    source: "website",
                     isIncludeable: isIncludeable
                 };
             });
@@ -188,19 +188,19 @@ var ChapterInclusionLogic = (function() {
      * @returns {string} Normalized URL
      */
     function normalizeUrl(url) {
-        if (!url) return '';
+        if (!url) return "";
         
         try {
             let normalizedUrl = new URL(url);
             // Remove fragment and trailing slash
-            normalizedUrl.hash = '';
-            if (normalizedUrl.pathname.endsWith('/') && normalizedUrl.pathname.length > 1) {
+            normalizedUrl.hash = "";
+            if (normalizedUrl.pathname.endsWith("/") && normalizedUrl.pathname.length > 1) {
                 normalizedUrl.pathname = normalizedUrl.pathname.slice(0, -1);
             }
             return normalizedUrl.toString();
         } catch (e) {
             // If URL parsing fails, just trim and remove fragment
-            return url.replace(/#.*$/, '').replace(/\/$/, '');
+            return url.replace(/#.*$/, "").replace(/\/$/, "");
         }
     }
 

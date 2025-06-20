@@ -24,16 +24,16 @@ class EpubUpdater {
         let updated = contentOpf;
 
         // Remove dc:source for the chapter
-        let sourceRegex = new RegExp(`\\s*<dc:source id="id\\.xhtml${chapterNumberStr}"[^>]*>[^<]*<\\/dc:source>`, 'g');
-        updated = updated.replace(sourceRegex, '');
+        let sourceRegex = new RegExp(`\\s*<dc:source id="id\\.xhtml${chapterNumberStr}"[^>]*>[^<]*<\\/dc:source>`, "g");
+        updated = updated.replace(sourceRegex, "");
 
         // Remove manifest item for the chapter
-        let manifestRegex = new RegExp(`\\s*<item href="${epubPaths.textDirRel}\\/${chapterNumberStr}\\.xhtml"[^>]*\\/>`, 'g');
-        updated = updated.replace(manifestRegex, '');
+        let manifestRegex = new RegExp(`\\s*<item href="${epubPaths.textDirRel}\\/${chapterNumberStr}\\.xhtml"[^>]*\\/>`, "g");
+        updated = updated.replace(manifestRegex, "");
 
         // Remove spine itemref for the chapter
-        let spineRegex = new RegExp(`\\s*<itemref idref="xhtml${chapterNumberStr}"\\/>`, 'g');
-        updated = updated.replace(spineRegex, '');
+        let spineRegex = new RegExp(`\\s*<itemref idref="xhtml${chapterNumberStr}"\\/>`, "g");
+        updated = updated.replace(spineRegex, "");
 
         return updated;
     }
@@ -49,8 +49,8 @@ class EpubUpdater {
         let updated = tocNcx;
 
         // Remove the navPoint for the deleted chapter
-        let navPointRegex = new RegExp(`\\s*<navPoint id="body${chapterNumberStr}"[^>]*>.*?<\\/navPoint>`, 'gs');
-        updated = updated.replace(navPointRegex, '');
+        let navPointRegex = new RegExp(`\\s*<navPoint id="body${chapterNumberStr}"[^>]*>.*?<\\/navPoint>`, "gs");
+        updated = updated.replace(navPointRegex, "");
 
         // Update playOrder for subsequent chapters (decrement by 1)
         // Find all playOrder values greater than the deleted chapter
@@ -78,8 +78,8 @@ class EpubUpdater {
         let updated = navXhtml;
 
         // Remove the list item for the deleted chapter
-        let listItemRegex = new RegExp(`\\s*<li><a href="${epubPaths.textDirRel}\\/${chapterNumberStr}\\.xhtml"[^>]*>[^<]*<\\/a><\\/li>`, 'g');
-        updated = updated.replace(listItemRegex, '');
+        let listItemRegex = new RegExp(`\\s*<li><a href="${epubPaths.textDirRel}\\/${chapterNumberStr}\\.xhtml"[^>]*>[^<]*<\\/a><\\/li>`, "g");
+        updated = updated.replace(listItemRegex, "");
         return updated;
     }
 
@@ -94,19 +94,19 @@ class EpubUpdater {
         let updated = contentOpf;
 
         // Remove dc:source for the chapter (may have various id formats)
-        let sourceRegex = new RegExp(`\\s*<dc:source[^>]*>[^<]*${chapterBasename}[^<]*<\\/dc:source>`, 'gi');
-        updated = updated.replace(sourceRegex, '');
+        let sourceRegex = new RegExp(`\\s*<dc:source[^>]*>[^<]*${chapterBasename}[^<]*<\\/dc:source>`, "gi");
+        updated = updated.replace(sourceRegex, "");
 
         // Remove manifest item for the chapter by href
-        let manifestRegex = new RegExp(`\\s*<item href="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}"[^>]*\\/>`, 'g');
-        updated = updated.replace(manifestRegex, '');
+        let manifestRegex = new RegExp(`\\s*<item href="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^>]*\\/>`, "g");
+        updated = updated.replace(manifestRegex, "");
 
         // Remove spine itemref by finding the id from manifest and removing spine reference
-        let idMatch = contentOpf.match(new RegExp(`<item href="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}"[^>]*id="([^"]+)"`));
+        let idMatch = contentOpf.match(new RegExp(`<item href="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^>]*id="([^"]+)"`));
         if (idMatch) {
             let itemId = idMatch[1];
-            let spineRegex = new RegExp(`\\s*<itemref idref="${itemId}"[^>]*\\/>`, 'g');
-            updated = updated.replace(spineRegex, '');
+            let spineRegex = new RegExp(`\\s*<itemref idref="${itemId}"[^>]*\\/>`, "g");
+            updated = updated.replace(spineRegex, "");
         }
 
         return updated;
@@ -122,8 +122,8 @@ class EpubUpdater {
         let updated = tocNcx;
 
         // Remove the navPoint for the deleted chapter by content src
-        let navPointRegex = new RegExp(`\\s*<navPoint[^>]*>.*?<content src="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}"[^/>]*/>.*?<\\/navPoint>`, 'gs');
-        updated = updated.replace(navPointRegex, '');
+        let navPointRegex = new RegExp(`\\s*<navPoint[^>]*>.*?<content src="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^/>]*/>.*?<\\/navPoint>`, "gs");
+        updated = updated.replace(navPointRegex, "");
 
         return updated;
     }
@@ -138,8 +138,8 @@ class EpubUpdater {
         let updated = navXhtml;
 
         // Remove the list item for the deleted chapter by href
-        let listItemRegex = new RegExp(`\\s*<li><a href="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}"[^>]*>[^<]*<\\/a><\\/li>`, 'g');
-        updated = updated.replace(listItemRegex, '');
+        let listItemRegex = new RegExp(`\\s*<li><a href="${chapterRelativePath.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^>]*>[^<]*<\\/a><\\/li>`, "g");
+        updated = updated.replace(listItemRegex, "");
 
         return updated;
     }
@@ -168,8 +168,8 @@ class EpubUpdater {
     static findChapterFiles(entries, epubPaths) {
         return entries.filter(e => 
             e.filename.startsWith(epubPaths.textDir) && 
-            e.filename.endsWith('.xhtml') &&
-            !e.filename.includes('Cover')
+            e.filename.endsWith(".xhtml") &&
+            !e.filename.includes("Cover")
         ).sort((a, b) => a.filename.localeCompare(b.filename));
     }
 
@@ -315,7 +315,7 @@ class EpubUpdater {
 
             // Extract chapter identifier from the actual filename for metadata processing
             let chapterRelativePath = chapter.libraryFilePath.replace(epubPaths.contentDir + "/", "");
-            let chapterBasename = chapter.libraryFilePath.split('/').pop().replace('.xhtml', '');
+            let chapterBasename = chapter.libraryFilePath.split("/").pop().replace(".xhtml", "");
             
             let updatedContentOpf = EpubUpdater.removeChapterFromContentOpfByFilename(contentOpfText, chapterRelativePath, chapterBasename);
             let updatedTocNcx = EpubUpdater.removeChapterFromTocNcxByFilename(tocNcxText, chapterRelativePath);
@@ -410,12 +410,12 @@ class EpubUpdater {
         // Add dc:source for the chapter if source URL is provided
         if (chapterSourceUrl && chapterSourceUrl.trim() !== "") {
             let sourceElement = `\n        <dc:source id="id.xhtml${chapterNumberStr}">${chapterSourceUrl}</dc:source>`;
-            updated = updated.replace('</metadata>', sourceElement + '\n    </metadata>');
+            updated = updated.replace("</metadata>", sourceElement + "\n    </metadata>");
         }
 
         // For manifest, we can append since file order doesn't matter
         let manifestItem = `\n        <item href="${epubPaths.textDirRel}/${chapterNumberStr}.xhtml" id="xhtml${chapterNumberStr}" media-type="application/xhtml+xml"/>`;
-        updated = updated.replace('</manifest>', manifestItem + '\n    </manifest>');
+        updated = updated.replace("</manifest>", manifestItem + "\n    </manifest>");
 
         // For spine, we need to insert at the correct position
         let spineItem = `\n        <itemref idref="xhtml${chapterNumberStr}"/>`;
@@ -426,11 +426,11 @@ class EpubUpdater {
         
         if (insertIndex >= itemrefs.length) {
             // Insert at end
-            updated = updated.replace('</spine>', spineItem + '\n    </spine>');
+            updated = updated.replace("</spine>", spineItem + "\n    </spine>");
         } else {
             // Insert before the itemref at insertIndex
             let targetItemref = itemrefs[insertIndex][0];
-            updated = updated.replace(targetItemref, spineItem + '\n        ' + targetItemref);
+            updated = updated.replace(targetItemref, spineItem + "\n        " + targetItemref);
         }
 
         return updated;
@@ -475,11 +475,11 @@ class EpubUpdater {
 
         if (insertIndex >= navPoints.length) {
             // Insert at end
-            updated = updated.replace('</navMap>', navPointElement + '\n    </navMap>');
+            updated = updated.replace("</navMap>", navPointElement + "\n    </navMap>");
         } else {
             // Insert before the navPoint at insertIndex
             let targetNavPoint = navPoints[insertIndex][0];
-            updated = updated.replace(targetNavPoint, navPointElement + '\n        ' + targetNavPoint);
+            updated = updated.replace(targetNavPoint, navPointElement + "\n        " + targetNavPoint);
         }
 
         return updated;
@@ -506,11 +506,11 @@ class EpubUpdater {
 
         if (insertIndex >= listItems.length) {
             // Insert at end
-            updated = updated.replace('</ol></nav>', listItem + '\n        </ol></nav>');
+            updated = updated.replace("</ol></nav>", listItem + "\n        </ol></nav>");
         } else {
             // Insert before the list item at insertIndex
             let targetListItem = listItems[insertIndex][0];
-            updated = updated.replace(targetListItem, listItem + '\n            ' + targetListItem);
+            updated = updated.replace(targetListItem, listItem + "\n            " + targetListItem);
         }
 
         return updated;
@@ -822,7 +822,7 @@ class EpubUpdater {
         // Create new navMap order based on chapter order
         let newNavMapContent = "\n";
         newChapterOrder.forEach((chapter, index) => {
-            let chapterBasename = chapter.libraryFilePath.split('/').pop().replace('.xhtml', '');
+            let chapterBasename = chapter.libraryFilePath.split("/").pop().replace(".xhtml", "");
             let expectedId = `navpoint${chapterBasename}`;
             
             let navPoint = existingNavPoints.find(np => np.id === expectedId);
@@ -879,7 +879,7 @@ class EpubUpdater {
         // Create new navigation order based on chapter order
         let newListContent = "\n";
         newChapterOrder.forEach(chapter => {
-            let chapterFilename = chapter.libraryFilePath.split('/').pop();
+            let chapterFilename = chapter.libraryFilePath.split("/").pop();
             
             // Find the matching navigation item by href
             let navItem = existingItems.find(item => 
@@ -893,9 +893,9 @@ class EpubUpdater {
 
         // Replace the list content
         if (tocMatch) {
-            let isOlElement = updated.includes('<ol');
-            let tagName = isOlElement ? 'ol' : 'nav epub:type="toc"';
-            let closeTag = isOlElement ? 'ol' : 'nav';
+            let isOlElement = updated.includes("<ol");
+            let tagName = isOlElement ? "ol" : "nav epub:type=\"toc\"";
+            let closeTag = isOlElement ? "ol" : "nav";
             updated = updated.replace(tocRegex, `<${tagName}>${newListContent}        </${closeTag}>`);
         }
 

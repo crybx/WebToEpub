@@ -120,7 +120,7 @@ class ChapterCache {
                 let ageInDays = (Date.now() - data.timestamp) / (1000 * 60 * 60 * 24);
                 if (ageInDays < retentionDays && data.version === this.CACHE_VERSION) {
                     // If this is an error entry (no HTML content), return null so error handling can proceed
-                    if (!data.html && data.hasOwnProperty("error")) {
+                    if (!data.html && Object.hasOwn(data, "error")) {
                         return null;
                     }
                     // Convert the HTML string back to DOM
@@ -287,7 +287,7 @@ class ChapterCache {
             let storage = await this.getActiveStorage().get(key);
             let cached = storage[key];
             
-            if (cached && cached.hasOwnProperty("error") && cached.error !== null) {
+            if (cached && Object.hasOwn(cached, "error") && cached.error !== null) {
                 // Check if cache is expired using current retention setting
                 let retentionDays = this.getRetentionDays();
                 let ageInDays = (Date.now() - cached.timestamp) / (1000 * 60 * 60 * 24);

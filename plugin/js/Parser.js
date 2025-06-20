@@ -374,7 +374,7 @@ class Parser {
     safeExtract = (extractFn, defaultValue = "") => {
         try {
             return extractFn();
-        } catch(err) {
+        } catch (err) {
             return defaultValue;
         }
     };
@@ -435,7 +435,7 @@ class Parser {
             // Check if this is an update to an existing library book by looking for library chapters
             // that already exist in a book (have isInBook === true)
             let hasExistingLibraryChapters = [...this.state.webPages.values()].some(chapter => 
-                chapter.isInBook === true || chapter.source === 'library-only'
+                chapter.isInBook === true || chapter.source === "library-only"
             );
             isLibraryBookUpdate = hasExistingLibraryChapters;
         } catch (e) {

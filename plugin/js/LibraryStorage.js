@@ -232,7 +232,7 @@ class LibraryStorage {
 
                     let epubPaths = EpubStructure.get();
                     let Coverxml = await EpubContent.filter( a => a.filename == epubPaths.coverXhtml)[0].getData(new zip.TextWriter());
-                    let CoverimgPath = epubPaths.contentDir + Coverxml.match(new RegExp(`"\\.\\.\/${epubPaths.imagesDirRel}\/000.+?"`))[0].replace(/"../,"").replace("\"","");
+                    let CoverimgPath = epubPaths.contentDir + Coverxml.match(new RegExp(`"\\.\\./${epubPaths.imagesDirRel}/000.+?"`))[0].replace(/"../,"").replace("\"","");
                     let Coverimage = await EpubContent.filter( a => a.filename == CoverimgPath)[0].getData(new zip.Data64URIWriter());
 
                     let CoverFiletype = CoverimgPath.split(".")[1];
@@ -710,7 +710,7 @@ class LibraryStorage {
             let bookData = await LibraryBookData.extractBookData(bookId);
             let chapterUrls = bookData.chapters
                 .map(ch => ch.sourceUrl)
-                .filter(url => url && !url.startsWith('library://'));
+                .filter(url => url && !url.startsWith("library://"));
             
             if (chapterUrls && chapterUrls.length > 0) {
                 // Remove chapters from cache storage
@@ -734,7 +734,7 @@ class LibraryStorage {
         try {
             // Update each chapter's parser state and visual status
             bookData.chapters.forEach(libraryChapter => {
-                if (libraryChapter.sourceUrl && !libraryChapter.sourceUrl.startsWith('library://')) {
+                if (libraryChapter.sourceUrl && !libraryChapter.sourceUrl.startsWith("library://")) {
                     let row = ChapterUrlsUI.findRowBySourceUrl(libraryChapter.sourceUrl);
                     if (row) {
                         // Find and update the chapter object in parser state

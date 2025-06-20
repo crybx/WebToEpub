@@ -572,11 +572,11 @@ class LibraryUI {
      */
     static async LibAutoSaveMetadata(inputElement) {
         // Extract the book ID from the input element's ID
-        let bookId = inputElement.id.replace(/^Lib\w+Input/, '');
+        let bookId = inputElement.id.replace(/^Lib\w+Input/, "");
         await LibraryStorage.LibSaveMetadataChange({dataset: {libepubid: bookId}});
         
         // Update the title display if the title was changed
-        if (inputElement.id.includes('TitleInput')) {
+        if (inputElement.id.includes("TitleInput")) {
             let titleDisplay = document.getElementById("LibTitleDisplay" + bookId);
             if (titleDisplay) {
                 titleDisplay.textContent = inputElement.value || "Untitled";
@@ -758,21 +758,21 @@ class LibraryUI {
             let svgElement;
             
             switch (iconType) {
-                case "select":
-                    svgElement = SvgIcons.createSvgElement(SvgIcons.CHECK_CIRCLE);
-                    break;
-                case "update":
-                    svgElement = SvgIcons.createSvgElement(SvgIcons.ARROW_CLOCKWISE);
-                    break;
-                case "download":
-                    svgElement = SvgIcons.createSvgElement(SvgIcons.DOWNLOAD);
-                    break;
-                case "open-url":
-                    svgElement = SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT);
-                    break;
-                case "delete":
-                    svgElement = SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL);
-                    break;
+            case "select":
+                svgElement = SvgIcons.createSvgElement(SvgIcons.CHECK_CIRCLE);
+                break;
+            case "update":
+                svgElement = SvgIcons.createSvgElement(SvgIcons.ARROW_CLOCKWISE);
+                break;
+            case "download":
+                svgElement = SvgIcons.createSvgElement(SvgIcons.DOWNLOAD);
+                break;
+            case "open-url":
+                svgElement = SvgIcons.createSvgElement(SvgIcons.BOX_ARROW_RIGHT);
+                break;
+            case "delete":
+                svgElement = SvgIcons.createSvgElement(SvgIcons.TRASH3_FILL);
+                break;
             }
             
             if (svgElement) {
@@ -806,21 +806,21 @@ class LibraryUI {
                 
                 // Execute the action
                 switch (action) {
-                    case "select":
-                        LibraryUI.loadLibraryBook({dataset: {libepubid}});
-                        break;
-                    case "update":
-                        LibraryUI.LibUpdateNewChapter({dataset: {libepubid}});
-                        break;
-                    case "download":
-                        LibraryUI.LibDownload({dataset: {libepubid}});
-                        break;
-                    case "open-url":
-                        LibraryUI.LibOpenStoryUrl(libepubid);
-                        break;
-                    case "delete":
-                        LibraryUI.LibDeleteEpub({dataset: {libepubid}});
-                        break;
+                case "select":
+                    LibraryUI.loadLibraryBook({dataset: {libepubid}});
+                    break;
+                case "update":
+                    LibraryUI.LibUpdateNewChapter({dataset: {libepubid}});
+                    break;
+                case "download":
+                    LibraryUI.LibDownload({dataset: {libepubid}});
+                    break;
+                case "open-url":
+                    LibraryUI.LibOpenStoryUrl(libepubid);
+                    break;
+                case "delete":
+                    LibraryUI.LibDeleteEpub({dataset: {libepubid}});
+                    break;
                 }
             }
         });
@@ -1066,7 +1066,7 @@ class LibraryUI {
             document.body.classList.add("library-mode");
 
             // Update library button text
-            if (typeof main !== 'undefined' && main.updateLibraryButtonText) {
+            if (typeof main !== "undefined" && main.updateLibraryButtonText) {
                 main.updateLibraryButtonText();
             }
         } catch (error) {
@@ -1088,7 +1088,7 @@ class LibraryUI {
         document.body.classList.remove("library-mode");
         
         // Update library button text
-        if (typeof main !== 'undefined' && main.updateLibraryButtonText) {
+        if (typeof main !== "undefined" && main.updateLibraryButtonText) {
             main.updateLibraryButtonText();
         }
         
@@ -1537,7 +1537,7 @@ class LibraryUI {
             async fetchWebPageContent(sourceUrl) {
                 try {
                     // Ensure sourceUrl is a string
-                    let urlString = typeof sourceUrl === 'string' ? sourceUrl : sourceUrl?.sourceUrl || String(sourceUrl);
+                    let urlString = typeof sourceUrl === "string" ? sourceUrl : sourceUrl?.sourceUrl || String(sourceUrl);
                     
                     // Check if this is a library chapter
                     if (urlString.startsWith("library://")) {

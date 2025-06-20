@@ -11,8 +11,7 @@ class ChapterViewer {
         try {
             let chapterContent = null;
             let contentSource = "unknown";
-            
-            
+
             // Check if this is a library chapter or a chapter from a library book
             if (sourceUrl.startsWith("library://")) {
                 chapterContent = await ChapterViewer.getLibraryChapterContent(sourceUrl);
@@ -21,17 +20,10 @@ class ChapterViewer {
                 // Try to get from cache for regular web chapters
                 chapterContent = await ChapterCache.get(sourceUrl);
                 
-                if (chapterContent) {
-                    contentSource = "Cache";
-                } else {
-                    
+                if (!chapterContent) {
                     // If not in cache, check if this might be a library chapter with original URL
                     if (window.parser && window.parser.constructor.name === "LibraryParser") {
                         chapterContent = await ChapterViewer.getLibraryChapterByOriginalUrl(sourceUrl);
-                        if (chapterContent) {
-                            contentSource = "EPUB Library";
-                        } else {
-                        }
                     }
                 }
                 
@@ -44,7 +36,6 @@ class ChapterViewer {
                         errorElement.className = "chapter-error";
                         errorElement.innerHTML = `<h3>Chapter Download Failed</h3><p><strong>Error:</strong> ${errorMessage}</p><p class="error-details">Click the refresh icon in the chapter list to retry downloading this chapter.</p>`;
                         chapterContent = errorElement;
-                        contentSource = "Error Message";
                     }
                 }
             }
@@ -363,7 +354,7 @@ class ChapterViewer {
     static async openLibraryChapter(bookId, spinePosition) {
         try {
             // Validate inputs - this is a spine position, not a UI array index
-            if (typeof spinePosition !== 'number' || spinePosition < 0) {
+            if (typeof spinePosition !== "number" || spinePosition < 0) {
                 throw new Error("Spine position must be a non-negative number");
             }
             

@@ -671,6 +671,7 @@ Open Firefox and visit [WebToEpub on Firefox Add-ons][firefox-add-ons].
    - Install [Node.js](https://nodejs.org/) (if not already installed)
    - Run `npm install` to install dependencies
    - Run `npm run lint` to build plugin and lint
+   - To auto-fix lint errors: `npm run lint:fix`
    - This will produce 3 files in the eslint directory.
      - WebToEpub0.0.0.x.xpi (Firefox version of plug-in)
      - WebToEpub0.0.0.x.zip (Chrome version of plug-in)

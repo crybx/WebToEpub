@@ -239,7 +239,7 @@ class LibraryBookData {
 
             // Filter out cover and TOC pages for display, but keep real spine positions
             return chapters.filter(chapter => {
-                let href = chapter.libraryFilePath.split('/').pop();
+                let href = chapter.libraryFilePath.split("/").pop();
                 return !href.includes("Cover") && !href.includes("nav.xhtml") && !href.includes("toc");
             });
         } catch (error) {
@@ -313,7 +313,7 @@ class LibraryBookData {
             // Return only real URLs (not library:// URLs) that exist in the book
             return bookData.chapters
                 .map(ch => ch.sourceUrl)
-                .filter(url => url && !url.startsWith('library://'));
+                .filter(url => url && !url.startsWith("library://"));
         } catch (error) {
             console.error("Error extracting chapter URLs from book:", error);
             return [];
@@ -326,16 +326,16 @@ class LibraryBookData {
      * @returns {string} Normalized URL
      */
     static normalizeUrl(url) {
-        if (!url || typeof url !== 'string') {
+        if (!url || typeof url !== "string") {
             return url;
         }
         
         // Decode HTML entities
         return url
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&quot;/g, "\"")
             .replace(/&#39;/g, "'");
     }
 
@@ -364,7 +364,7 @@ class LibraryBookData {
             
             // First pass: count URL occurrences and track first occurrence
             bookData.chapters.forEach((bookChapter, index) => {
-                if (bookChapter.sourceUrl && !bookChapter.sourceUrl.startsWith('library://')) {
+                if (bookChapter.sourceUrl && !bookChapter.sourceUrl.startsWith("library://")) {
                     let normalizedUrl = LibraryBookData.normalizeUrl(bookChapter.sourceUrl);
                     let count = urlCounts.get(normalizedUrl) || 0;
                     urlCounts.set(normalizedUrl, count + 1);
@@ -381,7 +381,7 @@ class LibraryBookData {
                 let isDuplicate = false;
                 let duplicateInfo = null;
                 
-                if (chapter.isInBook && chapter.sourceUrl && !chapter.sourceUrl.startsWith('library://')) {
+                if (chapter.isInBook && chapter.sourceUrl && !chapter.sourceUrl.startsWith("library://")) {
                     let normalizedUrl = LibraryBookData.normalizeUrl(chapter.sourceUrl);
                     let totalCount = urlCounts.get(normalizedUrl) || 1;
                     let bookIndex = chapter.epubSpineIndex;
@@ -415,7 +415,7 @@ class LibraryBookData {
                 isInBook: false,
                 isIncludeable: true,
                 previousDownload: false,
-                source: 'website'
+                source: "website"
             }));
         }
     }
