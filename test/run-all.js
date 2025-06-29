@@ -54,13 +54,17 @@ async function main() {
     console.log('WebToEpub CI Test Suite');
     console.log('='.repeat(80));
     console.log('This test suite validates:');
-    console.log('• Core utility functions');
+    console.log('• Core utility functions and HTML sanitization');
     console.log('• EPUB structure preferences (OEBPS/EPUB)');
     console.log('• Path generation logic');
     console.log('• Chapter inclusion logic for library mode');
     console.log('• EPUB modification and chapter reordering');
+    console.log('• Parser functionality and content extraction');
+    console.log('• RoyalRoad parser specific features');
+    console.log('• EPUB generation correctness and structure');
+    console.log('• Chapter cache system reliability');
+    console.log('• Error handling and edge cases');
     console.log('• Regression prevention for structure changes');
-    console.log('• Test framework compatibility');
     
     const tests = [
         'simple.test.js',
