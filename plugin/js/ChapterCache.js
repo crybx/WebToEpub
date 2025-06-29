@@ -424,6 +424,90 @@ class ChapterCache {
         }
     }
 
+    // Cache Cleanup Functions
+    static LAST_CLEANUP_KEY = "chapterCacheLastCleanup";
+
+    static shouldRunDailyCleanup() {
+        try {
+            let lastCleanup = localStorage.getItem(this.LAST_CLEANUP_KEY);
+            if (!lastCleanup) {
+                return true; // Never cleaned up before
+            }
+            let daysSince = (Date.now() - parseInt(lastCleanup)) / (1000 * 60 * 60 * 24);
+            return daysSince >= 1; // Run if it's been 24+ hours
+        } catch (e) {
+            console.error("Error checking cleanup date:", e);
+            return true; // Run cleanup on error to be safe
+        }
+    }
+
+    static async runDailyCleanupIfNeeded() {
+        if (!this.shouldRunDailyCleanup()) {
+            return;
+        }
+        
+        try {
+            let cleanedCount = await this.cleanupExpiredEntries();
+            console.log(`Cache cleanup: removed ${cleanedCount} expired entries`);
+            
+            // Update last cleanup timestamp
+            localStorage.setItem(this.LAST_CLEANUP_KEY, Date.now().toString());
+        } catch (e) {
+            console.error("Error during daily cache cleanup:", e);
+        }
+    }
+
+    static async cleanupExpiredEntries() {
+        try {
+            let storage = this.getActiveStorage();
+            let allData = await storage.get();
+            let retentionDays = this.getRetentionDays();
+            let now = Date.now();
+            let expiredKeys = [];
+            
+            // Find all expired cache entries
+            for (let key in allData) {
+                if (key.startsWith(this.CACHE_PREFIX)) {
+                    let cached = allData[key];
+                    if (cached && cached.timestamp) {
+                        let ageInDays = (now - cached.timestamp) / (1000 * 60 * 60 * 24);
+                        if (ageInDays >= retentionDays || cached.version !== this.CACHE_VERSION) {
+                            expiredKeys.push(key);
+                        }
+                    } else {
+                        // Remove entries without proper timestamp or structure
+                        expiredKeys.push(key);
+                    }
+                }
+            }
+            
+            if (expiredKeys.length > 0) {
+                await storage.remove(expiredKeys);
+            }
+            
+            return expiredKeys.length;
+        } catch (e) {
+            console.error("Error cleaning up expired cache entries:", e);
+            return 0;
+        }
+    }
+
+    static async cleanupExpiredEntriesButtonHandler() {
+        try {
+            let cleanedCount = await this.cleanupExpiredEntries();
+            if (cleanedCount > 0) {
+                alert(`Removed ${cleanedCount} expired entries older than ${this.getRetentionDays()} days.`);
+            } else {
+                alert("No expired entries found to remove.");
+            }
+            await this.refreshCacheStats();
+            ChapterUrlsUI.updateHeaderMoreActionsVisibility();
+        } catch (error) {
+            console.error("Failed to cleanup expired entries:", error);
+            alert("Error cleaning up expired entries: " + error.message);
+        }
+    }
+
     // UI Management Functions
     static updateCacheButtonText() {
         try {
@@ -466,6 +550,9 @@ class ChapterCache {
                 }
             }
         };
+        
+        // Cleanup expired entries button
+        document.getElementById("cleanupExpiredCacheButton").onclick = this.cleanupExpiredEntriesButtonHandler.bind(this);
         
         // Load current settings
         this.loadCacheSettings();

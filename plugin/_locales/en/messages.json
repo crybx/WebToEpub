@@ -838,6 +838,10 @@
 		"message": "Delete All Cached Chapters",
 		"description": "Label on button to delete all cached chapters"
 	},
+	"__MSG_button_Cleanup_Expired_Entries__": {
+		"message": "Cleanup Expired Entries",
+		"description": "Label on button to clean up expired cache entries based on retention days"
+	},
 	"__MSG_label_Chapter_Cache_Size__": {
 		"message": "Chapter Cache Size",
 		"description": "Label for display of total cache storage size"

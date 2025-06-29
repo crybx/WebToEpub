@@ -938,6 +938,7 @@ const main = (function() {
             updateSidebarButtons();
             ChapterCache.updateCacheButtonText();
             updateLibraryButtonText();
+            ChapterCache.runDailyCleanupIfNeeded().then();
             populateControls();
             if (util.isFirefox()) {
                 Firefox.startWebRequestListeners();
