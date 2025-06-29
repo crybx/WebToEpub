@@ -860,20 +860,14 @@ class ChapterUrlsUI {
     }
 
     static setVisibleUI(toTable) {
-        // toggle mode
-        ChapterUrlsUI.getEditChaptersUrlsInput().hidden = toTable;
-        ChapterUrlsUI.getChapterUrlsTable().hidden = !toTable;
-        document.getElementById("inputSection").hidden = !toTable;
-        document.getElementById("coverUrlSection").hidden = !toTable;
-        document.getElementById("chapterSelectControlsDiv").hidden = !toTable;
-        ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = toTable);
-        ChapterUrlsUI.modifyCancelEditButtons(button => button.hidden = toTable);
-        document.getElementById("editURLsHint").hidden = toTable;
-        document.querySelector(".progressSection").hidden = !toTable;
-        document.querySelector(".HiddenButtonSection").hidden = !toTable;
-        let libraryBanner = document.getElementById("libraryBookIndicator");
-        if (libraryBanner) {
-            libraryBanner.hidden = !toTable;
+        if (toTable) {
+            // Table mode - restore normal UI sections
+            if (ChapterUrlsUI.restoreSections) {
+                ChapterUrlsUI.restoreSections();
+                ChapterUrlsUI.restoreSections = null;
+            }
+        } else {
+            ChapterUrlsUI.restoreSections = main.hideAllSectionsExcept("bulkEditSection");
         }
     }
 

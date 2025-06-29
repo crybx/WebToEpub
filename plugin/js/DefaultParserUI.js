@@ -136,15 +136,15 @@ class DefaultParserUI {
     }
 
     static setDefaultParserUiVisibility(isVisible) {
-        // toggle mode
-        ChapterUrlsUI.setVisibleUI(!isVisible);
         if (isVisible) {
-            ChapterUrlsUI.getEditChaptersUrlsInput().hidden = true;
-            ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = true);
-            ChapterUrlsUI.modifyCancelEditButtons(button => button.hidden = true);
-            document.getElementById("editURLsHint").hidden = true;
+            DefaultParserUI.restoreSections = main.hideAllSectionsExcept("defaultParserSection");
+        } else {
+            // Restore previous section visibility state
+            if (DefaultParserUI.restoreSections) {
+                DefaultParserUI.restoreSections();
+                DefaultParserUI.restoreSections = null;
+            }
         }
-        document.getElementById("defaultParserSection").hidden = !isVisible;
     }
 
     static testDefaultParser(parser) {
