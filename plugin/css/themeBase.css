@@ -132,6 +132,10 @@
     /* Library icons */
     --library-chapter-icon: var(--color-primary);
     
+    /* Links - these colors match browser defaults */
+    --link-color: #0000EE;
+    --link-hover-color: #551A8B;
+
     /* Common UI variables */
     --header-bg: var(--color-neutral-50);
     --row-hover-bg: var(--color-neutral-50);

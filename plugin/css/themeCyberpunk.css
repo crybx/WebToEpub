@@ -63,6 +63,9 @@
     --menu-item-hover-icon: #b565ff;
 
     --sidebar-bg: rgba(26, 26, 46, 0.95);
+
+    --link-color: var(--color-secondary);
+    --link-hover-color: var(--color-primary-light);
 }
 
 #page-container {
@@ -75,6 +78,10 @@ body {
     min-height: 100vh;
     color: var(--color-secondary);
     font-family: 'Courier New', monospace;
+}
+
+a:hover {
+    text-shadow: 0 0 3px rgba(139, 0, 255, 0.7);
 }
 
 /* Input and form elements */

@@ -1,8 +1,6 @@
 /* Sunset Theme for WebToEpub - Warm palette that minimizes blue light */
 
 :root {
-    /* ===== SUNSET BASE COLOR PALETTE ===== */
-
     --color-primary: #9C1A42;
     --color-primary-hover: #e55a2b;
     --color-primary-light: #ff8c69;
@@ -39,7 +37,6 @@
     --color-info: #f57c00;         /* Warm amber instead of blue */
     --color-info-light: #ffb74d;
 
-    /* Sunset styles  */
     --library-banner-bg: linear-gradient(135deg, rgba(255, 243, 224, 0.9), rgba(255, 236, 179, 0.9));
     --library-banner-border: var(--color-primary);
     --library-banner-text: var(--color-neutral-800);
@@ -53,9 +50,11 @@
     --menu-item-hover-icon: var(--color-primary);
     --menu-item-hover-text: var(--color-primary);
     --menu-item-hover-bg: linear-gradient(90deg, rgba(245, 124, 0, 0.1) 0%, rgba(255, 140, 105, 0.1) 100%) !important;
-    
-    /* Modal backdrop for sunset theme */
+
     --modal-backdrop-bg: rgba(14, 6, 3, 0.85);
+
+    --link-color: var(--color-primary);
+    --link-hover-color: var(--color-primary-dark);
 }
 
 /* Body styling for sunset warmth */
@@ -283,13 +282,3 @@ input[type=checkbox].successBox {
 .error-state input[type=checkbox] {
     accent-color: var(--color-error) !important;
 }
-
-/* Additional warm touches */
-a {
-    color: var(--color-primary);
-}
-
-a:hover {
-    color: var(--color-primary-dark);
-}
-

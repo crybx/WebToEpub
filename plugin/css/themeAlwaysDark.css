@@ -64,4 +64,7 @@
 
     --tooltip-text: var(--color-neutral-800);
     --tooltip-bg: var(--color-neutral-200);
+
+    --link-color: var(--color-secondary);
+    --link-hover-color: var(--color-primary-light);
 }

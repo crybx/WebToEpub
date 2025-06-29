@@ -35,6 +35,15 @@ input[type=text], input[type=url], textarea, select, #manualDelayPerChapterTag {
     font-weight: bold;
 }
 
+a {
+    color: var(--link-color);
+    text-decoration: underline;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
+
 .scrollingtable {
     overflow: scroll;
     height: 300px;
