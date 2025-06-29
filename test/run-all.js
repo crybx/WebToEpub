@@ -98,14 +98,17 @@ async function main() {
     console.log('='.repeat(80));
     console.log(`📊: TEST TOTALS: ${totalCounts.total} tests, ${totalCounts.passed} passed, ${totalCounts.failed} failed`);
 
-    if (allPassed) {
-        console.log('🎉: ALL TESTS PASSED!');
-    } else {
+    // Use actual failed count instead of exit codes - a test suite can "pass" but still have failing individual tests
+    const hasFailures = totalCounts.failed > 0;
+    
+    if (hasFailures) {
         console.log('❌: SOME TESTS FAILED! Please review the failed tests above.');
+    } else {
+        console.log('🎉: ALL TESTS PASSED!');
     }
 
     console.log('='.repeat(80));
-    process.exit(allPassed ? 0 : 1);
+    process.exit(hasFailures ? 1 : 0);
 }
 
 main().catch(error => {

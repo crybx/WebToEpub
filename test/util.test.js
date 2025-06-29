@@ -50,7 +50,11 @@ global.ReadingList = class ReadingList {
     }
 };
 
-// Load UserPreferences.js first (required by Util.js)
+// Load EpubStructure.js first (required by Util.js)
+const epubStructurePath = path.join(__dirname, '../plugin/js/EpubStructure.js');
+const epubStructureCode = fs.readFileSync(epubStructurePath, 'utf8');
+
+// Load UserPreferences.js (required by Util.js)
 const userPrefsPath = path.join(__dirname, '../plugin/js/UserPreferences.js');
 const userPrefsCode = fs.readFileSync(userPrefsPath, 'utf8');
 
@@ -58,7 +62,23 @@ const userPrefsCode = fs.readFileSync(userPrefsPath, 'utf8');
 const utilPath = path.join(__dirname, '../plugin/js/Util.js');
 const utilCode = fs.readFileSync(utilPath, 'utf8');
 
-// Execute UserPreferences.js first
+// Mock main.getUserPreferences() that EpubStructure.get() needs
+global.main = {
+    getUserPreferences: () => ({
+        epubInternalStructure: { value: "OEBPS" }  // Default to OEBPS structure for tests
+    })
+};
+
+// Execute EpubStructure.js first
+try {
+    const modifiedEpubStructureCode = epubStructureCode.replace('class EpubStructure', 'global.EpubStructure = class EpubStructure');
+    eval(modifiedEpubStructureCode);
+    console.log('EpubStructure loaded successfully');
+} catch (error) {
+    console.error('Failed to load EpubStructure:', error.message);
+}
+
+// Execute UserPreferences.js
 try {
     const modifiedUserPrefsCode = userPrefsCode.replace('class UserPreferences', 'global.UserPreferences = class UserPreferences');
     eval(modifiedUserPrefsCode);
@@ -146,8 +166,8 @@ test("makeStorageFileName", function (assert) {
 });
 
 test("stylesheet path from constants", function (assert) {
-    // This should return the current structure path
-    const filename = util.getEpubStructure().stylesheet;
+    // This should return the current structure path using EpubStructure directly
+    const filename = EpubStructure.get().stylesheet;
     assert.ok(filename.includes("stylesheet.css"), "Should contain stylesheet.css");
     assert.ok(filename.includes("OEBPS") || filename.includes("EPUB"), "Should contain OEBPS or EPUB directory");
 });

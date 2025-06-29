@@ -143,6 +143,18 @@ class TestAssert {
         this.failures.push(message);
     }
 
+    true(value, message = 'Expected true') {
+        if (value !== true) {
+            this.failures.push(`${message} (got: ${value})`);
+        }
+    }
+
+    false(value, message = 'Expected false') {
+        if (value !== false) {
+            this.failures.push(`${message} (got: ${value})`);
+        }
+    }
+
     isDeepEqual(a, b) {
         if (a === b) return true;
         if (a == null || b == null) return false;
