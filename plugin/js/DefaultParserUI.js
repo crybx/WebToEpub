@@ -141,6 +141,7 @@ class DefaultParserUI {
         if (isVisible) {
             ChapterUrlsUI.getEditChaptersUrlsInput().hidden = true;
             ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = true);
+            ChapterUrlsUI.modifyCancelEditButtons(button => button.hidden = true);
             document.getElementById("editURLsHint").hidden = true;
         }
         document.getElementById("defaultParserSection").hidden = !isVisible;
