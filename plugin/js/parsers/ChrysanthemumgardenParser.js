@@ -10,6 +10,19 @@ class ChrysanthemumgardenParser extends WordpressBaseParser {
     populateUIImpl() {
         document.getElementById("passwordRow").hidden = false;
         document.getElementById("removeAuthorNotesRow").hidden = false;
+        
+        // Pre-populate password field with saved value for this site
+        let passwordInput = document.getElementById("passwordInput");
+        if (passwordInput) {
+            let hostname = "chrysanthemumgarden.com";
+            let savedPassword = this.userPreferences.getSitePassword(hostname);
+            passwordInput.value = savedPassword;
+            
+            // Set up event listener to save password when changed
+            passwordInput.addEventListener("input", () => {
+                this.userPreferences.setSitePassword(hostname, passwordInput.value);
+            });
+        }
     }
 
     customRawDomToContentStep(chapter, content) {

@@ -142,8 +142,43 @@ class UserPreferences {
         this.LibDownloadEpubAfterUpdate = this.addPreference("LibDownloadEpubAfterUpdate", "LibDownloadEpubAfterUpdateCheckbox", false);
         this.disableShiftClickAlert = this.addPreference("disableShiftClickAlert", "disableShiftClickAlertCheckbox", false);
         this.defaultAuthorName = this.addPreference("defaultAuthorName", "defaultAuthorNameInput", "<unknown>");
+        this.sitePasswords = this.addPreference("sitePasswords", "", "{}");
 
         document.getElementById("themeColorTag").addEventListener("change", UserPreferences.SetTheme);
+    }
+
+    /**
+     * Get the stored password for a specific site
+     * @param {string} hostname - The hostname (e.g., "chrysanthemumgarden.com")
+     * @returns {string} The stored password or empty string if none
+     */
+    getSitePassword(hostname) {
+        try {
+            let passwords = JSON.parse(this.sitePasswords.value);
+            return passwords[hostname] || "";
+        } catch (e) {
+            return "";
+        }
+    }
+
+    /**
+     * Set the password for a specific site
+     * @param {string} hostname - The hostname (e.g., "chrysanthemumgarden.com")
+     * @param {string} password - The password to store
+     */
+    setSitePassword(hostname, password) {
+        try {
+            let passwords = JSON.parse(this.sitePasswords.value);
+            passwords[hostname] = password;
+            this.sitePasswords.value = JSON.stringify(passwords);
+            this.sitePasswords.writeToLocalStorage();
+        } catch (e) {
+            // If JSON is corrupted, start fresh
+            let passwords = {};
+            passwords[hostname] = password;
+            this.sitePasswords.value = JSON.stringify(passwords);
+            this.sitePasswords.writeToLocalStorage();
+        }
     }
 
     /** @private */
