@@ -56,6 +56,7 @@
     --icon-hover: var(--color-secondary-hover);
 
     --library-banner-border: var(--color-primary-hover);
+    --library-banner-text: var(--color-neutral-800);
     --lib-new-chapter-badge: var(--color-secondary-light);
 
     --menu-item-hover-bg: var(--color-primary-light);
