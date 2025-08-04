@@ -142,7 +142,8 @@
 
 
 .more-actions-menu.show,
-.header-more-actions-menu.show {
+.header-more-actions-menu.show,
+.lib-more-actions-menu.show {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
