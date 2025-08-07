@@ -555,7 +555,7 @@ class VariableSizeImageCollector extends ImageCollector {
 
     onUserPreferencesUpdate(userPreferences) {
         super.onUserPreferencesUpdate(userPreferences);
-        if (userPreferences.higestResolutionImages.value) {
+        if (userPreferences.highestResolutionImages.value) {
             this.initialUrlToTry = (imageInfo) => imageInfo.wrappingUrl;
         } else {
             this.initialUrlToTry = (imageInfo) => imageInfo.sourceUrl;

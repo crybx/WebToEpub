@@ -104,7 +104,7 @@ class UserPreferences {
         // (autocomplete, type inference, no more unresolved variable warnings)
         this.removeDuplicateImages = this.addPreference("removeDuplicateImages", "removeDuplicateImages", false);
         this.includeImageSourceUrl = this.addPreference("includeImageSourceUrl", "includeImageSourceUrlCheckboxInput", true);
-        this.higestResolutionImages = this.addPreference("higestResolutionImages", "higestResolutionImagesCheckboxInput", true);
+        this.highestResolutionImages = this.addPreference("highestResolutionImages", "highestResolutionImagesCheckboxInput", true);
         this.unSuperScriptAlternateTranslations = this.addPreference("unSuperScriptAlternateTranslations", "unSuperScriptCheckboxInput", false);
         this.styleSheet = this.addPreference("styleSheet", "stylesheetInput", EpubMetaInfo.getDefaultStyleSheet());
         this.CustomFilename = this.addPreference("CustomFilename", "CustomFilenameInput", "%Filename%");
