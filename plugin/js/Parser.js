@@ -602,7 +602,8 @@ class Parser {
                 await Promise.all(group.map(async (webPage) => {
                     await this.fetchWebPageContent(webPage);
                     // Process and cache content immediately after download (like Download Chapters does)
-                    if (webPage.rawDom && !webPage.error) {
+                    // Skip processing for cached content to avoid breaking parsers
+                    if (webPage.rawDom && !webPage.error && !webPage.isCachedContent) {
                         this.convertRawDomToContent(webPage);
                     }
                 }));
