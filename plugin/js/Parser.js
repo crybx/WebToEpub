@@ -712,7 +712,21 @@ class Parser {
     }
 
     fetchImagesUsedInDocument(content, webPage) {
-        return this.imageCollector.preprocessImageTags(content, webPage.sourceUrl)
+        let contentForImageCollection;
+        
+        // For cached content, don't apply cleanup again - it was already processed
+        if (webPage.isCachedContent) {
+            contentForImageCollection = content;
+        } else {
+            // For fresh content, clone and apply cleanup to ensure we only collect 
+            // images that will actually be in the final content.
+            // Working on a clone because some parsers break if processed multiple times.
+            contentForImageCollection = content.cloneNode(true);
+            this.customRawDomToContentStep(webPage, contentForImageCollection);
+            this.removeUnwantedElementsFromContentElement(contentForImageCollection);
+        }
+        
+        return this.imageCollector.preprocessImageTags(contentForImageCollection, webPage.sourceUrl)
             .then((revisedContent) => {
                 this.imageCollector.findImagesUsedInDocument(revisedContent);
                 return this.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
